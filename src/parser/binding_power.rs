@@ -1,7 +1,7 @@
 use super::token::Token;
 use crate::T;
 
-pub fn prefix_binding_power(op: Token) -> ((), u8) { 
+pub fn prefix_binding_power(op: Token) -> ((), u8) {
     match op {
         T![not] => ((), 6),
         T![+] | T![-] | T![~] | T![#] => ((), 7),
