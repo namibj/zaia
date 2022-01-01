@@ -3,7 +3,8 @@ use crate::T;
 
 pub fn prefix_binding_power(op: Token) -> ((), u8) { 
     match op {
-        T![+] | T![-] => ((), 7),
+        T![not] => ((), 6),
+        T![+] | T![-] | T![~] | T![#] => ((), 7),
         _ => panic!("bad prefix op: {:?}", op),
     }
 }
