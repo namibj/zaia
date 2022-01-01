@@ -78,7 +78,14 @@ pub enum Expr {
     Table(Table),
 }
 
-pub struct Table {}
+pub struct Table {
+    elements: Vec<TableElement>,
+}
+
+pub struct TableElement {
+    pub key: Option<Expr>,
+    pub value: Expr,
+}
 
 pub struct FunctionCall {
     pub func: Expr,
