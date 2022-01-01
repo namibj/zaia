@@ -76,6 +76,12 @@ pub enum Token {
     #[token("//")]
     DSlash,
 
+    #[token(".")]
+    Dot,
+
+    #[token("..")]
+    DDot,
+
     // Keywords
     #[token("local")]
     Local,
@@ -195,12 +201,6 @@ pub enum Token {
 
     #[token(",")]
     Comma,
-
-    #[token(".")]
-    Dot,
-
-    #[token("..")]
-    DDot,
 
     #[token("...")]
     TDot,
