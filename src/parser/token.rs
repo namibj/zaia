@@ -1,7 +1,7 @@
 use logos::{Logos, Lexer};
 use std::fmt::{self, Display};
 
-#[derive(Logos, Debug, PartialEq)]
+#[derive(Logos, Debug, PartialEq, Clone, Copy)]
 pub enum Token {
     // General
 
@@ -10,6 +10,8 @@ pub enum Token {
     #[regex(r"--\[=*\[", skip_long_comment)]
     #[error]
     Invalid,
+
+    EOF,
 
     #[regex(r"[a-zA-Z][a-zA-Z0-9]*")]
     Ident,
@@ -259,7 +261,9 @@ fn is_long_delimiter(slice: &str, delim: char) -> bool {
 
 #[macro_export]
 macro_rules! T {
+
     [invalid] => { $crate::parser::token::Token::Invalid };
+    [eof] => { $crate::parser::token::Token::EOF };
     [ident] => { $crate::parser::token::Token::Ident };
     [+] => { $crate::parser::token::Token::Plus };
     [-] => { $crate::parser::token::Token::Minus };
@@ -329,6 +333,7 @@ impl Display for Token {
     fn fmt(&self, f: &mut fmt::Formatter) -> fmt::Result {
         write!(f, "{}", match self {
             T![invalid] => "INVALID",
+            T![eof] => "EOF",
             T![ident] => "IDENTIFIER",
             T![+] => "PLUS",
             T![-] => "MINUS",

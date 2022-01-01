@@ -1,26 +1,41 @@
 use logos::{Logos, Lexer};
 use super::token::Token;
 use std::ops::{Deref,DerefMut};
+use crate::T;
 
 pub struct State<'source> {
     lexer: Lexer<'source, Token>,
-    peeked: Option<Token>,
+    peeked: Token,
 }
 
 impl<'source> State<'source> {
     pub fn new(source: &'source str) -> Self {
         State {
             lexer: Token::lexer(source),
-            peeked: None,
+            peeked: T![eof],
         }
     }
 
-    pub fn peek(&mut self) -> Option<&Token> {
-        if self.peeked.is_none() {
-            self.peeked = self.lexer.next();
+    pub fn peek(&mut self) -> Token {
+        if self.peeked == T![eof] {
+            if let Some(token) = self.lexer.next() {
+                self.peeked = token;
+            } else {
+                return T![eof];
+            }
         }
 
-        self.peeked.as_ref()
+        self.peeked
+    }
+
+    pub fn at(&mut self, token: Token) -> bool {
+        self.peek() == token
+    }
+
+    pub fn eat(&mut self, token: Token) {
+        if self.next() != Some(token) {
+            panic!("expected {:?}", token);
+        }
     }
 }
 
@@ -28,8 +43,8 @@ impl<'source> Iterator for State<'source> {
     type Item = Token;
 
     fn next(&mut self) -> Option<Self::Item> {
-        if self.peeked.is_some() {
-            self.peeked.take()
+        if self.peeked != T![eof] {
+            Some(self.peeked)
         } else {
             self.lexer.next()
         }
