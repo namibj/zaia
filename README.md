@@ -9,3 +9,5 @@ Zaia currently targets Lua 5.4.3. We expect to support newer versions as they co
 with possible support for older versions if breaking changes are made to the reference.
 
 We do not support the `goto` functionality included with PUC-Rio Lua for ethical reasons.
+
+We use parts of the PUC-Rio test suite in combination with custom tests to ensure that the implementation is correct.
