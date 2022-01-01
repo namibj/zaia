@@ -6,6 +6,8 @@ pub enum Token {
     // General
 
     #[regex(r"([ \t\n\f]|\r\n)+", logos::skip)]
+    #[token("--", logos::skip)]
+    #[regex(r"--\[=*\[", skip_long_comment)]
     #[error]
     Invalid,
 
@@ -150,7 +152,7 @@ pub enum Token {
     #[regex(r#""((\\"|\\\\)|[^\\"])*""#)]
     String,
 
-    #[regex(r"\[=*\[", |x| long_lexeme(x, 0))]
+    #[regex(r"\[=*\[", long_string)]
     LongString,
 
     #[regex(r"[0-9]+")]
@@ -205,18 +207,10 @@ pub enum Token {
 
     #[token("...")]
     TDot,
-
-    // Comments
-
-    #[token("--")]
-    Comment,
-
-    #[regex(r"--\[=*\[", |x| long_lexeme(x, 2))]
-    LongComment,
 }
 
-fn long_lexeme(lex: &mut Lexer<Token>, skips: usize) -> bool {
-    let count = lex.slice().len() - skips;
+fn long_string(lex: &mut Lexer<Token>) -> bool {
+    let count = lex.slice().len() - 1;
     let rem = lex.remainder();
  
     for (i, _) in rem.char_indices() {
@@ -233,6 +227,26 @@ fn long_lexeme(lex: &mut Lexer<Token>, skips: usize) -> bool {
     }
  
     false
+}
+
+fn skip_long_comment(lexer: &mut Lexer<Token>) -> logos::Skip {
+    let count = lexer.slice().len() - 2;
+    let rem = lexer.remainder();
+ 
+    for (i, _) in rem.char_indices() {
+        match rem.get(i..i + count) {
+            Some(slice) => {
+                if is_long_delimiter(slice, ']') {
+                    lexer.bump(i + 1);
+                    break;
+                }
+            }
+ 
+            None => break,
+        }
+    }
+ 
+    logos::Skip
 }
  
 fn is_long_delimiter(slice: &str, delim: char) -> bool {
@@ -309,8 +323,6 @@ macro_rules! T {
     [.] => { $crate::parser::token::Token::Dot };
     [..] => { $crate::parser::token::Token::DDot };
     [...] => { $crate::parser::token::Token::TDot };
-    [comment] => { $crate::parser::token::Token::Comment };
-    [long_comment] => { $crate::parser::token::Token::LongComment };
 }
 
 impl Display for Token {
@@ -380,8 +392,6 @@ impl Display for Token {
             T![.] => "DOT",
             T![..] => "DDOT",
             T![...] => "TDOT",
-            T![comment] => "COMMENT",
-            T![long_comment] => "LONG_COMMENT",
         }) 
     }
 }
