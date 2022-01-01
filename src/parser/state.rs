@@ -44,12 +44,14 @@ impl<'source> State<'source> {
                 "NONE".to_string()
             };
 
-            let report = 
+            let report =
                 ariadne::Report::build(ariadne::ReportKind::Error, (), self.peeked.1.start)
                     .with_message("Unexpected token")
-                    .with_label(ariadne::Label::new(self.peeked.1.clone()).with_message(found_message))
+                    .with_label(
+                        ariadne::Label::new(self.peeked.1.clone()).with_message(found_message),
+                    )
                     .finish();
-            
+
             self.reports.push(report);
         }
     }
