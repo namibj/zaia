@@ -229,5 +229,5 @@ fn is_long_delimiter(slice: &str, delim: char) -> bool {
         return false;
     }
  
-    slice.chars().filter(|&c| c == '=').count() == slice.len() - 2
+    slice.chars().filter(|c| *c == '=').count() == slice.len() - 2
 }
