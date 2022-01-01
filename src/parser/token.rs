@@ -5,6 +5,7 @@ use std::fmt::{self, Display};
 pub enum Token {
     // General
 
+    #[regex(r"([ \t\n\f]|\r\n)+", logos::skip)]
     #[error]
     Invalid,
 
