@@ -137,7 +137,7 @@ pub enum Token {
     #[token("and")]
     And,
 
-    #[token("const")]
+    #[token("<const>")]
     Const,
 
     #[token("close")]
