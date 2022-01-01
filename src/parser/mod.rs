@@ -1,17 +1,16 @@
 mod token;
+mod state;
 
-use logos::{Logos, Lexer};
-use super::ir::syntax_tree::{SyntaxTree,Stmt,Do,While,Repeat,If,IfChain,ForNumeric,ForGeneric,Return,Label,Assign,Expr,Table,FunctionCall,Function,Ident,UnaryExpr,BinaryExpr,UnaryOp,BinaryOp,Literal,NumLiteral};
+use logos::Logos;
 use token::Token;
+use super::syntax_tree::{SyntaxTree,Stmt,Do,While,Repeat,If,IfChain,ForNumeric,ForGeneric,Return,Label,Assign,Expr,Table,FunctionCall,Function,Ident,UnaryExpr,BinaryExpr,UnaryOp,BinaryOp,Literal,NumLiteral};
+use state::State;
 
-pub struct Parser<'source> {
-    lexer: Lexer<'source, Token>,
-}
+pub fn parse(source: &str) -> SyntaxTree {
+    let mut state = State::new(source);
+    let mut tree = SyntaxTree {
+        block: Vec::new(),
+    };
 
-impl<'source> Parser<'source> {
-    pub fn new(source: &'source str) -> Self {
-        Self {
-            lexer: Token::lexer(source),
-        }
-    }
+    tree
 }
