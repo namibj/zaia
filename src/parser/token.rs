@@ -1,10 +1,9 @@
-use logos::{Logos, Lexer};
+use logos::{Lexer, Logos};
 use std::fmt::{self, Display};
 
 #[derive(Logos, Debug, PartialEq, Clone, Copy)]
 pub enum Token {
     // General
-
     #[regex(r"([ \t\n\f]|\r\n)+", logos::skip)]
     #[token("--", logos::skip)]
     #[regex(r"--\[=*\[", skip_long_comment)]
@@ -17,7 +16,6 @@ pub enum Token {
     Ident,
 
     // Character operators
-
     #[token("+")]
     Plus,
 
@@ -79,7 +77,6 @@ pub enum Token {
     DSlash,
 
     // Keywords
-
     #[token("local")]
     Local,
 
@@ -136,12 +133,11 @@ pub enum Token {
 
     #[token("const")]
     Const,
- 
+
     #[token("close")]
     Close,
 
     // Literals
-
     #[token("nil")]
     Nil,
 
@@ -170,7 +166,6 @@ pub enum Token {
     HexFloat,
 
     // Grouping
-
     #[token("(")]
     LParen,
 
@@ -214,7 +209,7 @@ pub enum Token {
 fn long_string(lex: &mut Lexer<Token>) -> bool {
     let count = lex.slice().len() - 1;
     let rem = lex.remainder();
- 
+
     for (i, _) in rem.char_indices() {
         match rem.get(i..i + count) {
             Some(slice) => {
@@ -223,18 +218,18 @@ fn long_string(lex: &mut Lexer<Token>) -> bool {
                     return true;
                 }
             }
- 
+
             None => break,
         }
     }
- 
+
     false
 }
 
 fn skip_long_comment(lexer: &mut Lexer<Token>) -> logos::Skip {
     let count = lexer.slice().len() - 2;
     let rem = lexer.remainder();
- 
+
     for (i, _) in rem.char_indices() {
         match rem.get(i..i + count) {
             Some(slice) => {
@@ -243,25 +238,24 @@ fn skip_long_comment(lexer: &mut Lexer<Token>) -> logos::Skip {
                     break;
                 }
             }
- 
+
             None => break,
         }
     }
- 
+
     logos::Skip
 }
- 
+
 fn is_long_delimiter(slice: &str, delim: char) -> bool {
     if !slice.starts_with(delim) || !slice.ends_with(delim) {
         return false;
     }
- 
+
     slice.chars().filter(|c| *c == '=').count() == slice.len() - 2
 }
 
 #[macro_export]
 macro_rules! T {
-
     [invalid] => { $crate::parser::token::Token::Invalid };
     [eof] => { $crate::parser::token::Token::EOF };
     [ident] => { $crate::parser::token::Token::Ident };
@@ -331,72 +325,76 @@ macro_rules! T {
 
 impl Display for Token {
     fn fmt(&self, f: &mut fmt::Formatter) -> fmt::Result {
-        write!(f, "{}", match self {
-            T![invalid] => "INVALID",
-            T![eof] => "EOF",
-            T![ident] => "IDENTIFIER",
-            T![+] => "PLUS",
-            T![-] => "MINUS",
-            T![*] => "STAR",
-            T![/] => "SLASH",
-            T![%] => "PERCENT",
-            T![^] => "CARET",
-            T![#] => "HASH",
-            T![&] => "AMPERSAND",
-            T![|] => "PIPE",
-            T![~] => "TILDE",
-            T![<<] => "DLANGLE",
-            T![>>] => "DRANGLE",
-            T![==] => "EQ",
-            T![~=] => "NOT_EQ",
-            T![<=] => "LEQ",
-            T![>=] => "GEQ",
-            T![<] => "LANGLE",
-            T![>] => "RANGLE",
-            T![=] => "ASSIGN",
-            T![D/] => "DSLASH",
-            T![local] => "LOCAL",
-            T![function] => "FUNCTION",
-            T![end] => "END",
-            T![in] => "IN",
-            T![then] => "THEN",
-            T![break] => "BREAK",
-            T![for] => "FOR",
-            T![do] => "DO",
-            T![until] => "UNTIL",
-            T![else] => "ELSE",
-            T![while] => "WHILE",
-            T![elseif] => "ELSEIF",
-            T![if] => "IF",
-            T![repeat] => "REPEAT",
-            T![return] => "RETURN",
-            T![not] => "NOT",
-            T![or] => "OR",
-            T![and] => "AND",
-            T![const] => "CONST",
-            T![close] => "CLOSE",
-            T![nil] => "NIL",
-            T![true] => "TRUE",
-            T![false] => "FALSE",
-            T![string] => "STRING",
-            T![long_string] => "LONG_STRING",
-            T![int] => "INT",
-            T![hex_int] => "HEX_INT",
-            T![float] => "FLOAT",
-            T![hex_float] => "HEX_FLOAT",
-            T!['('] => "LPAREN",
-            T![')'] => "RPAREN",
-            T!['{'] => "LCURLY",
-            T!['}'] => "RCURLY",
-            T!['['] => "LBRACKET",
-            T![']'] => "RBRACKET",
-            T![:] => "COLON",
-            T![::] => "DCOLON",
-            T![;] => "SEMICOLON",
-            T![,] => "COMMA",
-            T![.] => "DOT",
-            T![..] => "DDOT",
-            T![...] => "TDOT",
-        }) 
+        write!(
+            f,
+            "{}",
+            match self {
+                T![invalid] => "INVALID",
+                T![eof] => "EOF",
+                T![ident] => "IDENTIFIER",
+                T![+] => "PLUS",
+                T![-] => "MINUS",
+                T![*] => "STAR",
+                T![/] => "SLASH",
+                T![%] => "PERCENT",
+                T![^] => "CARET",
+                T![#] => "HASH",
+                T![&] => "AMPERSAND",
+                T![|] => "PIPE",
+                T![~] => "TILDE",
+                T![<<] => "DLANGLE",
+                T![>>] => "DRANGLE",
+                T![==] => "EQ",
+                T![~=] => "NOT_EQ",
+                T![<=] => "LEQ",
+                T![>=] => "GEQ",
+                T![<] => "LANGLE",
+                T![>] => "RANGLE",
+                T![=] => "ASSIGN",
+                T![D/] => "DSLASH",
+                T![local] => "LOCAL",
+                T![function] => "FUNCTION",
+                T![end] => "END",
+                T![in] => "IN",
+                T![then] => "THEN",
+                T![break] => "BREAK",
+                T![for] => "FOR",
+                T![do] => "DO",
+                T![until] => "UNTIL",
+                T![else] => "ELSE",
+                T![while] => "WHILE",
+                T![elseif] => "ELSEIF",
+                T![if] => "IF",
+                T![repeat] => "REPEAT",
+                T![return] => "RETURN",
+                T![not] => "NOT",
+                T![or] => "OR",
+                T![and] => "AND",
+                T![const] => "CONST",
+                T![close] => "CLOSE",
+                T![nil] => "NIL",
+                T![true] => "TRUE",
+                T![false] => "FALSE",
+                T![string] => "STRING",
+                T![long_string] => "LONG_STRING",
+                T![int] => "INT",
+                T![hex_int] => "HEX_INT",
+                T![float] => "FLOAT",
+                T![hex_float] => "HEX_FLOAT",
+                T!['('] => "LPAREN",
+                T![')'] => "RPAREN",
+                T!['{'] => "LCURLY",
+                T!['}'] => "RCURLY",
+                T!['['] => "LBRACKET",
+                T![']'] => "RBRACKET",
+                T![:] => "COLON",
+                T![::] => "DCOLON",
+                T![;] => "SEMICOLON",
+                T![,] => "COMMA",
+                T![.] => "DOT",
+                T![..] => "DDOT",
+                T![...] => "TDOT",
+            }
+        )
     }
 }
