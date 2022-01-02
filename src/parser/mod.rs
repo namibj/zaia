@@ -53,6 +53,7 @@ pub fn parse(source: &str) -> (SyntaxTree, Vec<ariadne::Report>) {
 fn parse_stmt(state: &mut State) -> Stmt {
     loop {
         match state.peek() {
+            // TODO: dispatch correct tokens here
             T![invalid] => {
                 let item = parse_expr(state);
                 return Stmt::Expr(item);
