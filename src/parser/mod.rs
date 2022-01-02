@@ -519,14 +519,9 @@ fn parse_string(state: &mut State) -> String {
 
 fn parse_long_string(state: &mut State) -> String {
     let mut chars = state.slice().chars();
-    let mut delim_len = 1;
     chars.next();
-
-    while chars.next() != Some('[') {
-        delim_len += 1;
-    }
-
-    chars.skip(delim_len).take(state.slice().len()-delim_len*2).collect()
+    let delim_len = chars.by_ref().take_while(|c| *c != '[').count() + 1;
+    chars.take(state.slice().len() - delim_len * 2).collect()
 }
 
 fn parse_int(state: &mut State) -> i64 {
@@ -552,7 +547,6 @@ fn parse_hex_float(state: &mut State) -> f64 {
         value
     } else {
         let span = state.span();
-
         let report = ariadne::Report::build(ariadne::ReportKind::Error, (), span.start)
             .with_message("Invalid hexadecimal float literal")
             .with_label(ariadne::Label::new(span).with_message("Invalid literal found here"))
