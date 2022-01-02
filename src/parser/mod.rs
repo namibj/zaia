@@ -143,8 +143,6 @@ fn parse_function(state: &mut State) -> Function {
     todo!()
 }
 
-// Literals
-
 fn parse_literal(state: &mut State) -> Literal {
     match state.peek() {
         T![nil] => {
@@ -195,8 +193,6 @@ fn parse_float(state: &mut State) -> f64 {
 fn parse_hex_float(state: &mut State) -> f64 {
     todo!()
 }
-
-// --------
 
 fn parse_function_call(state: &mut State) -> FunctionCall {
     todo!()
