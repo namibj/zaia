@@ -75,7 +75,7 @@ pub struct Assign {
     pub is_local: bool,
     pub is_const: bool,
     pub target: Vec<Expr>,
-    pub value: Expr,
+    pub value: Vec<Expr>,
 }
 
 pub struct Table {
@@ -94,7 +94,7 @@ pub struct FunctionCall {
 
 pub struct Function {
     pub args: Vec<Ident>,
-    // FIXME
+    pub block: Vec<Stmt>,
 }
 
 pub struct Ident {
