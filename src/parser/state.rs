@@ -1,10 +1,10 @@
 use super::token::Token;
 use crate::T;
-use logos::{Logos, SpannedIter};
+use logos::{Logos, Lexer};
 use std::ops::{Deref, DerefMut};
 
 pub struct State<'source> {
-    lexer: SpannedIter<'source, Token>,
+    lexer: Lexer<'source, Token>,
     peeked: (Token, logos::Span),
     reports: Vec<ariadne::Report>,
 }
@@ -12,7 +12,7 @@ pub struct State<'source> {
 impl<'source> State<'source> {
     pub fn new(source: &'source str) -> Self {
         State {
-            lexer: Token::lexer(source).spanned(),
+            lexer: Token::lexer(source),
             peeked: (T![eof], logos::Span::default()),
             reports: Vec::new(),
         }
@@ -20,8 +20,8 @@ impl<'source> State<'source> {
 
     pub fn peek(&mut self) -> Token {
         if self.peeked.0 == T![eof] {
-            if let Some((token, span)) = self.lexer.next() {
-                self.peeked = (token, span);
+            if let Some(token) = self.lexer.next() {
+                self.peeked = (token, self.lexer.span());
             } else {
                 return T![eof];
             }
@@ -37,12 +37,14 @@ impl<'source> State<'source> {
     pub fn eat(&mut self, token: Token) {
         let found = self.next();
 
-        if found == Some(token) {
-            let found_message = if let Some(token) = found {
+        if found != Some(token) {
+            let found_name = if let Some(token) = found {
                 token.to_string()
             } else {
                 "NONE".to_string()
             };
+
+            let found_message = format!("Expected {} but found {}", token, found_name);
 
             let report =
                 ariadne::Report::build(ariadne::ReportKind::Error, (), self.peeked.1.start)
@@ -74,13 +76,13 @@ impl<'source> Iterator for State<'source> {
             self.peeked.0 = T![eof];
             Some(token)
         } else {
-            self.lexer.next().map(|(token, _)| token)
+            self.lexer.next()
         }
     }
 }
 
 impl<'source> Deref for State<'source> {
-    type Target = SpannedIter<'source, Token>;
+    type Target = Lexer<'source, Token>;
 
     fn deref(&self) -> &Self::Target {
         &self.lexer

@@ -8,6 +8,7 @@ use super::syntax_tree::{
     UnaryOp, While,
 };
 use crate::T;
+use logos::Source;
 use state::State;
 use either::Either;
 
@@ -171,7 +172,29 @@ fn parse_literal(state: &mut State) -> Literal {
 }
 
 fn parse_string(state: &mut State) -> String {
-    todo!()
+    state.eat(T![string]);
+    let mut value = String::new();
+    let mut chars = state.slice().chars();
+    let mut escaped = false;
+    chars.next();
+
+    for char in state.slice().chars() {
+        match char {
+            '"' if !escaped => break,
+            '\\' if !escaped => escaped = true,
+            '\\' if escaped => {
+                escaped = false;
+                value.push(char);
+            }
+            _ => {
+                escaped = false;
+                value.push(char);
+            }
+        }
+
+    }
+
+    value
 }
 
 fn parse_long_string(state: &mut State) -> String {
