@@ -5,13 +5,15 @@ use logos::{Lexer, Logos};
 #[derive(Logos, Debug, PartialEq, Clone, Copy)]
 pub enum Token {
     // General
-    #[regex(r"([ \t\n\f]|\r\n)+", logos::skip)]
     #[token("--", logos::skip)]
     #[regex(r"--\[=*\[", skip_long_comment)]
     #[error]
     Invalid,
 
     EOF,
+
+    #[regex(r"(\n|\r\n)+")]
+    Newline,
 
     #[regex(r"[a-zA-Z][a-zA-Z0-9]*")]
     Ident,
@@ -258,6 +260,7 @@ fn is_long_delimiter(slice: &str, delim: char) -> bool {
 macro_rules! T {
     [invalid] => { $crate::parser::token::Token::Invalid };
     [eof] => { $crate::parser::token::Token::EOF };
+    [newline] => { $crate::parser::token::Token::Newline };
     [ident] => { $crate::parser::token::Token::Ident };
     [+] => { $crate::parser::token::Token::Plus };
     [-] => { $crate::parser::token::Token::Minus };
@@ -331,6 +334,7 @@ impl Display for Token {
             match self {
                 T![invalid] => "INVALID",
                 T![eof] => "EOF",
+                T![newline] => "NEWLINE",
                 T![ident] => "IDENTIFIER",
                 T![+] => "PLUS",
                 T![-] => "MINUS",

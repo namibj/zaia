@@ -208,7 +208,23 @@ fn parse_for_generic(state: &mut State) -> ForGeneric {
 }
 
 fn parse_return(state: &mut State) -> Return {
-    todo!()
+    let mut values = Vec::new();
+
+    loop {
+        match state.peek() {
+            T![newline] => {
+                state.next();
+                break;
+            },
+            T![,] => continue,
+            _ => {
+                let arg = parse_expr(state);
+                values.push(arg);
+            },
+        }
+    }
+
+    Return { values }
 }
 
 fn parse_ident(state: &mut State) -> Ident {
@@ -407,3 +423,5 @@ fn token_is_literal(token: Token) -> bool {
 }
 
 // TODO: use location specifiers instead of exprs where applicable
+// TODO: handle newline and semicolon
+// TODO: error handling

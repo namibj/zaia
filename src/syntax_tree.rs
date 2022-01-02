@@ -53,7 +53,7 @@ pub struct ForGeneric {
 }
 
 pub struct Return {
-    pub value: Vec<Expr>,
+    pub values: Vec<Expr>,
 }
 
 pub struct Label {
