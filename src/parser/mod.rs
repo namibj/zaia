@@ -221,7 +221,39 @@ fn parse_function(state: &mut State) -> Either<Assign, Function> {
 }
 
 fn parse_function_trail(state: &mut State) -> Function {
-    todo!()
+    state.eat(T!['(']);
+    let mut args = Vec::new();
+    let mut block = Vec::new();
+
+    loop {
+        match state.peek() {
+            T![ident] => {
+                let arg = parse_ident(state);
+                args.push(arg);
+            },
+            T![')'] => {
+                state.next();
+                break;
+            },
+            T![,] => continue,
+            _ => todo!(),
+        }
+    }
+
+    loop {
+        match state.peek() {
+            T![end] => {
+                state.next();
+                break;
+            },
+            _ => {
+                let stmt = parse_stmt(state);
+                block.push(stmt)
+            },
+        }
+    }
+
+    Function { args, block }
 }
 
 fn parse_literal(state: &mut State) -> Literal {
