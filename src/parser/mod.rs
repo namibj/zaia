@@ -194,6 +194,34 @@ fn parse_binary_expr(state: &mut State) -> BinaryExpr {
 }
 
 fn parse_function(state: &mut State) -> Either<Assign, Function> {
+    let is_local = {
+        if state.at(T![local]) {
+            state.next();
+            true
+        } else {
+            false
+        }
+    };
+
+    state.eat(T![function]);
+
+    if state.at(T![ident]) {
+        let target = parse_expr(state);
+        let item = Assign {
+            is_local,
+            is_const: false,
+            target: vec![target],
+            value: vec![Expr::Function(parse_function_trail(state))],
+        };
+
+        return Either::Left(item);
+    } else {
+        let item = parse_function_trail(state);
+        return Either::Right(item);
+    }
+}
+
+fn parse_function_trail(state: &mut State) -> Function {
     todo!()
 }
 
@@ -313,3 +341,5 @@ fn token_is_literal(token: Token) -> bool {
             | T![long_string]
     )
 }
+
+// TODO: use location specifiers instead of exprs where applicable
