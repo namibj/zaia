@@ -86,6 +86,10 @@ fn parse_stmt(state: &mut State) -> Stmt {
                 state.next();
                 return Stmt::Break;
             },
+            T![endstmt] => {
+                state.next();
+                continue
+            },
             _ => {
                 let item = parse_expr(state);
                 return Stmt::Expr(item);
@@ -212,7 +216,7 @@ fn parse_return(state: &mut State) -> Return {
 
     loop {
         match state.peek() {
-            T![newline] => {
+            T![endstmt] => {
                 state.next();
                 break;
             },
@@ -423,5 +427,5 @@ fn token_is_literal(token: Token) -> bool {
 }
 
 // TODO: use location specifiers instead of exprs where applicable
-// TODO: handle newline and semicolon
+// TODO: handle newline and semicolon and eof
 // TODO: error handling

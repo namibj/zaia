@@ -12,8 +12,9 @@ pub enum Token {
 
     EOF,
 
+    #[token(";")]
     #[regex(r"(\n|\r\n)+")]
-    Newline,
+    EndStatement,
 
     #[regex(r"[a-zA-Z][a-zA-Z0-9]*")]
     Ident,
@@ -200,9 +201,6 @@ pub enum Token {
     #[token("::")]
     DColon,
 
-    #[token(";")]
-    Semicolon,
-
     #[token(",")]
     Comma,
 
@@ -260,7 +258,7 @@ fn is_long_delimiter(slice: &str, delim: char) -> bool {
 macro_rules! T {
     [invalid] => { $crate::parser::token::Token::Invalid };
     [eof] => { $crate::parser::token::Token::EOF };
-    [newline] => { $crate::parser::token::Token::Newline };
+    [endstmt] => { $crate::parser::token::Token::EndStatement };
     [ident] => { $crate::parser::token::Token::Ident };
     [+] => { $crate::parser::token::Token::Plus };
     [-] => { $crate::parser::token::Token::Minus };
@@ -319,7 +317,6 @@ macro_rules! T {
     [']'] => { $crate::parser::token::Token::RBracket };
     [:] => { $crate::parser::token::Token::Colon };
     [::] => { $crate::parser::token::Token::DColon };
-    [;] => { $crate::parser::token::Token::Semicolon };
     [,] => { $crate::parser::token::Token::Comma };
     [.] => { $crate::parser::token::Token::Dot };
     [..] => { $crate::parser::token::Token::DDot };
@@ -334,7 +331,7 @@ impl Display for Token {
             match self {
                 T![invalid] => "INVALID",
                 T![eof] => "EOF",
-                T![newline] => "NEWLINE",
+                T![endstmt] => "END_STATEMENT",
                 T![ident] => "IDENTIFIER",
                 T![+] => "PLUS",
                 T![-] => "MINUS",
@@ -393,7 +390,6 @@ impl Display for Token {
                 T![']'] => "RBRACKET",
                 T![:] => "COLON",
                 T![::] => "DCOLON",
-                T![;] => "SEMICOLON",
                 T![,] => "COMMA",
                 T![.] => "DOT",
                 T![..] => "DDOT",
