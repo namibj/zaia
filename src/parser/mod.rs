@@ -120,7 +120,13 @@ fn parse_expr(state: &mut State) -> Expr {
 }
 
 fn parse_label(state: &mut State) -> Label {
-    todo!()
+    state.next();
+
+    if !state.at(T![ident]) {
+        todo!()
+    }
+
+    Label { ident: parse_ident(state) }
 }
 
 fn parse_do(state: &mut State) -> Do {
