@@ -36,19 +36,19 @@ use crate::T;
 
 pub fn parse(source: &str) -> (SyntaxTree, Vec<ariadne::Report>) {
     let mut state = State::new(source);
-    let mut tree = SyntaxTree { block: Vec::new() };
+    let mut block = Vec::new();
 
     loop {
         match state.peek() {
             T![eof] => break,
             _ => {
                 let stmt = parse_stmt(&mut state);
-                tree.block.push(stmt);
+                block.push(stmt);
             },
         }
     }
 
-    (tree, state.result())
+    (SyntaxTree { block }, state.result())
 }
 
 fn parse_stmt(state: &mut State) -> Stmt {
@@ -127,7 +127,23 @@ fn parse_label(state: &mut State) -> Label {
 }
 
 fn parse_do(state: &mut State) -> Do {
-    todo!()
+    state.eat(T![do]);
+    let mut block = Vec::new();
+
+    loop {
+        match state.peek() {
+            T![end] => {
+                state.eat(T![end]);
+                break;
+            },
+            _ => {
+                let stmt = parse_stmt(state);
+                block.push(stmt)
+            },
+        }
+    }
+
+    Do { block }
 }
 
 fn parse_while(state: &mut State) -> While {
@@ -164,7 +180,9 @@ fn parse_break(state: &mut State) {
 
 fn parse_ident(state: &mut State) -> Ident {
     state.eat(T![ident]);
-    Ident { name: state.slice().to_string() }
+    Ident {
+        name: state.slice().to_string(),
+    }
 }
 
 fn parse_unary_expr(state: &mut State) -> UnaryExpr {
