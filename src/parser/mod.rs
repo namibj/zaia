@@ -98,15 +98,21 @@ fn parse_expr(state: &mut State) -> Expr {
         T![ident] => {
             let item = parse_ident(state);
             return Expr::Variable(item);
-        }
+        },
         // TODO: handle ops
-        T![function] => {
-            match parse_function(state) {
-                Either::Left(assign) => return Expr::Assign(Box::new(assign)),
-                Either::Right(function) => return Expr::Function(function),
-            }
-        }
-        T![nil] | T![false] | T![true] | T![int] | T![hex_int] | T![float] | T![hex_float] | T![string] | T![long_string] => {
+        T![function] => match parse_function(state) {
+            Either::Left(assign) => return Expr::Assign(Box::new(assign)),
+            Either::Right(function) => return Expr::Function(function),
+        },
+        T![nil]
+        | T![false]
+        | T![true]
+        | T![int]
+        | T![hex_int]
+        | T![float]
+        | T![hex_float]
+        | T![string]
+        | T![long_string] => {
             let item = parse_literal(state);
             return Expr::Literal(item);
         },
@@ -116,7 +122,7 @@ fn parse_expr(state: &mut State) -> Expr {
         },
         // TODO: handle function calls
         // TODO: handle assign
-        _ => todo!()
+        _ => todo!(),
     }
 }
 
