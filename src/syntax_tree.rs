@@ -44,11 +44,13 @@ pub struct ForNumeric {
     pub variable: Ident,
     pub start: Expr,
     pub end: Expr,
-    pub step: Expr,
+    pub step: Option<Expr>,
+    pub block: Vec<Stmt>,
 }
 
 pub struct ForGeneric {
-    pub assign: Assign,
+    pub targets: Vec<Ident>,
+    pub yielder: Expr,
     pub block: Vec<Stmt>,
 }
 

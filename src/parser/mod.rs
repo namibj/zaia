@@ -52,6 +52,26 @@ pub fn parse(source: &str) -> (SyntaxTree, Vec<ariadne::Report>) {
     (SyntaxTree { block }, state.result())
 }
 
+fn parse_block(state: &mut State) -> Vec<Stmt> {
+    let mut block = Vec::new();
+
+    loop {
+        match state.peek() {
+            T![eof] => break,
+            T![end] => {
+                state.eat(T![end]);
+                break;
+            },
+            _ => {
+                let stmt = parse_stmt(state);
+                block.push(stmt);
+            },
+        }
+    }
+
+    block
+}
+
 fn parse_stmt(state: &mut State) -> Stmt {
     loop {
         match state.peek() {
@@ -255,19 +275,105 @@ fn parse_repeat(state: &mut State) -> Repeat {
 }
 
 fn parse_if(state: &mut State) -> If {
-    todo!()
+    state.next();
+    let condition = parse_expr(state);
+    state.eat(T![then]);
+    let mut chain = None;
+    let mut block = Vec::new();
+
+    loop {
+        match state.peek() {
+            T![else] => {
+                state.next();
+                let else_block = parse_block(state);
+                chain = Some(Box::new(IfChain::Else(else_block)))
+            },
+            T![elseif] => {
+                let elseif = parse_if(state);
+                chain = Some(Box::new(IfChain::ElseIf(elseif)));
+            },
+            T![end] => {
+                break;
+            },
+            _ => {
+                let stmt = parse_stmt(state);
+                block.push(stmt)
+            },
+        }
+    }
+
+    If {
+        condition,
+        block,
+        or: chain,
+    }
 }
 
 fn parse_for(state: &mut State) -> Either<ForNumeric, ForGeneric> {
-    todo!()
+    state.eat(T![for]);
+    let first_var = parse_ident(state);
+
+    if state.at(T![=]) {
+        let item = parse_for_numeric(state, first_var);
+        return Either::Left(item);
+    } else {
+        let item = parse_for_generic(state, first_var);
+        return Either::Right(item);
+    }
 }
 
-fn parse_for_numeric(state: &mut State) -> ForNumeric {
-    todo!()
+fn parse_for_numeric(state: &mut State, first_var: Ident) -> ForNumeric {
+    state.eat(T![=]);
+    let start = parse_expr(state);
+    state.eat(T![,]);
+    let end = parse_expr(state);
+
+    let step = if state.at(T![,]) {
+        state.next();
+        Some(parse_expr(state))
+    } else {
+        None
+    };
+
+    state.eat(T![do]);
+    let block = parse_block(state);
+
+    ForNumeric {
+        variable: first_var,
+        start,
+        end,
+        step,
+        block,
+    }
 }
 
-fn parse_for_generic(state: &mut State) -> ForGeneric {
-    todo!()
+fn parse_for_generic(state: &mut State, first_var: Ident) -> ForGeneric {
+    let mut args = vec![first_var];
+
+    loop {
+        match state.peek() {
+            T![,] => {
+                state.next();
+                args.push(parse_ident(state));
+            },
+            T![endstmt] => todo!(),
+            T![in] => {
+                state.next();
+                break;
+            },
+            _ => todo!(),
+        }
+    }
+
+    let yielder = parse_expr(state);
+    state.eat(T![do]);
+    let block = parse_block(state);
+
+    ForGeneric {
+        targets: args,
+        yielder,
+        block,
+    }
 }
 
 fn parse_return(state: &mut State) -> Return {
@@ -295,14 +401,6 @@ fn parse_ident(state: &mut State) -> Ident {
     Ident {
         name: state.slice().to_string(),
     }
-}
-
-fn parse_unary_expr(state: &mut State) -> UnaryExpr {
-    todo!()
-}
-
-fn parse_binary_expr(state: &mut State) -> BinaryExpr {
-    todo!()
 }
 
 fn parse_function(state: &mut State) -> Either<Assign, Function> {
