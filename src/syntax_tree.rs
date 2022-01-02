@@ -62,8 +62,8 @@ pub struct Label {
 
 pub enum Expr {
     Variable(Ident),
-    Unary(UnaryExpr),
-    Binary(BinaryExpr),
+    Unary(Box<UnaryExpr>),
+    Binary(Box<BinaryExpr>),
     Function(Function),
     Literal(Literal),
     FunctionCall(Box<FunctionCall>),
@@ -94,6 +94,7 @@ pub struct FunctionCall {
 
 pub struct Function {
     pub args: Vec<Ident>,
+    // FIXME
 }
 
 pub struct Ident {
@@ -102,13 +103,13 @@ pub struct Ident {
 
 pub struct UnaryExpr {
     pub op: UnaryOp,
-    pub expr: Box<Expr>,
+    pub expr: Expr,
 }
 
 pub struct BinaryExpr {
     pub op: BinaryOp,
-    pub left: Box<Expr>,
-    pub right: Box<Expr>,
+    pub left: Expr,
+    pub right: Expr,
 }
 
 pub enum UnaryOp {

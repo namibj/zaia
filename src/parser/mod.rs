@@ -2,15 +2,36 @@ mod binding_power;
 mod state;
 mod token;
 
+use either::Either;
+use hexf_parse::parse_hexf64;
+use state::State;
+
 use super::syntax_tree::{
-    Assign, BinaryExpr, BinaryOp, Do, Expr, ForGeneric, ForNumeric, Function, FunctionCall, Ident,
-    If, IfChain, Label, Literal, NumLiteral, Repeat, Return, Stmt, SyntaxTree, Table, UnaryExpr,
-    UnaryOp, While,
+    Assign,
+    BinaryExpr,
+    BinaryOp,
+    Do,
+    Expr,
+    ForGeneric,
+    ForNumeric,
+    Function,
+    FunctionCall,
+    Ident,
+    If,
+    IfChain,
+    Label,
+    Literal,
+    NumLiteral,
+    Repeat,
+    Return,
+    Stmt,
+    SyntaxTree,
+    Table,
+    UnaryExpr,
+    UnaryOp,
+    While,
 };
 use crate::T;
-use logos::Source;
-use state::State;
-use either::Either;
 
 pub fn parse(source: &str) -> (SyntaxTree, Vec<ariadne::Report>) {
     let mut state = State::new(source);
@@ -22,7 +43,7 @@ pub fn parse(source: &str) -> (SyntaxTree, Vec<ariadne::Report>) {
             _ => {
                 let stmt = parse_stmt(&mut state);
                 tree.block.push(stmt);
-            }
+            },
         }
     }
 
@@ -35,50 +56,39 @@ fn parse_stmt(state: &mut State) -> Stmt {
             T![invalid] => {
                 let item = parse_expr(state);
                 return Stmt::Expr(item);
-            }
-
+            },
             T![::] => {
                 let item = parse_label(state);
                 return Stmt::Label(item);
-            }
-
+            },
             T![do] => {
                 let item = parse_do(state);
                 return Stmt::Do(item);
-            }
-
+            },
             T![while] => {
                 let item = parse_while(state);
                 return Stmt::While(item);
-            }
-
+            },
             T![repeat] => {
                 let item = parse_repeat(state);
                 return Stmt::Repeat(item);
-            }
-
+            },
             T![if] => {
                 let item = parse_if(state);
                 return Stmt::If(item);
-            }
-
-            T![for] => {
-                match parse_for(state) {
-                    Either::Left(numeric) => return Stmt::ForNumeric(numeric),
-                    Either::Right(generic) => return Stmt::ForGeneric(generic),
-                }
-            }
-
+            },
+            T![for] => match parse_for(state) {
+                Either::Left(numeric) => return Stmt::ForNumeric(numeric),
+                Either::Right(generic) => return Stmt::ForGeneric(generic),
+            },
             T![return] => {
                 let item = parse_return(state);
                 return Stmt::Return(item);
-            }
-
+            },
             T![break] => {
                 parse_break(state);
                 return Stmt::Break;
-            }
-
+            },
             _ => todo!(),
         }
     }
@@ -149,18 +159,15 @@ fn parse_literal(state: &mut State) -> Literal {
         T![nil] => {
             state.next();
             Literal::Nil
-        }
-
+        },
         T![true] => {
             state.next();
             Literal::Boolean(true)
-        }
-
+        },
         T![false] => {
             state.next();
             Literal::Boolean(false)
-        }
-
+        },
         T![string] => Literal::String(parse_string(state)),
         T![long_string] => Literal::String(parse_long_string(state)),
         T![int] => Literal::Num(NumLiteral::Int(parse_int(state))),
@@ -171,6 +178,7 @@ fn parse_literal(state: &mut State) -> Literal {
     }
 }
 
+// TODO: Support strings using single quotes.
 fn parse_string(state: &mut State) -> String {
     state.eat(T![string]);
     let mut value = String::new();
@@ -185,13 +193,12 @@ fn parse_string(state: &mut State) -> String {
             '\\' if escaped => {
                 escaped = false;
                 value.push(char);
-            }
+            },
             _ => {
                 escaped = false;
                 value.push(char);
-            }
+            },
         }
-
     }
 
     value
@@ -202,19 +209,37 @@ fn parse_long_string(state: &mut State) -> String {
 }
 
 fn parse_int(state: &mut State) -> i64 {
-    todo!()
+    state.next();
+    state.slice().parse().unwrap()
 }
 
 fn parse_hex_int(state: &mut State) -> i64 {
-    todo!()
+    state.next();
+    let raw = &state.slice()[2..];
+    i64::from_str_radix(raw, 16).unwrap()
 }
 
 fn parse_float(state: &mut State) -> f64 {
-    todo!()
+    state.next();
+    state.slice().parse().unwrap()
 }
 
 fn parse_hex_float(state: &mut State) -> f64 {
-    todo!()
+    state.next();
+
+    if let Ok(value) = parse_hexf64(state.slice(), true) {
+        value
+    } else {
+        let span = state.span();
+
+        let report = ariadne::Report::build(ariadne::ReportKind::Error, (), span.start)
+            .with_message("Invalid hexadecimal float literal")
+            .with_label(ariadne::Label::new(span).with_message("Invalid literal found here"))
+            .finish();
+
+        state.report(report);
+        return 0.0;
+    }
 }
 
 fn parse_function_call(state: &mut State) -> FunctionCall {

@@ -1,5 +1,6 @@
-use logos::{Lexer, Logos};
 use std::fmt::{self, Display};
+
+use logos::{Lexer, Logos};
 
 #[derive(Logos, Debug, PartialEq, Clone, Copy)]
 pub enum Token {
@@ -154,6 +155,7 @@ pub enum Token {
     False,
 
     #[regex(r#""((\\"|\\\\)|[^\\"])*""#)]
+    #[regex(r#"'((\\'|\\\\)|[^\\'])*'"#)]
     String,
 
     #[regex(r"\[=*\[", long_string)]
@@ -212,12 +214,11 @@ fn long_string(lex: &mut Lexer<Token>) -> bool {
 
     for (i, _) in rem.char_indices() {
         match rem.get(i..i + count) {
-            Some(slice) => {
+            Some(slice) =>
                 if is_long_delimiter(slice, ']') {
                     lex.bump(i + 1);
                     return true;
-                }
-            }
+                },
 
             None => break,
         }
@@ -232,12 +233,11 @@ fn skip_long_comment(lexer: &mut Lexer<Token>) -> logos::Skip {
 
     for (i, _) in rem.char_indices() {
         match rem.get(i..i + count) {
-            Some(slice) => {
+            Some(slice) =>
                 if is_long_delimiter(slice, ']') {
                     lexer.bump(i + 1);
                     break;
-                }
-            }
+                },
 
             None => break,
         }

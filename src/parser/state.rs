@@ -1,7 +1,9 @@
+use std::ops::{Deref, DerefMut};
+
+use logos::{Lexer, Logos};
+
 use super::token::Token;
 use crate::T;
-use logos::{Logos, Lexer};
-use std::ops::{Deref, DerefMut};
 
 pub struct State<'source> {
     lexer: Lexer<'source, Token>,
