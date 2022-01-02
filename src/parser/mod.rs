@@ -53,11 +53,6 @@ pub fn parse(source: &str) -> (SyntaxTree, Vec<ariadne::Report>) {
 fn parse_stmt(state: &mut State) -> Stmt {
     loop {
         match state.peek() {
-            // TODO: dispatch correct tokens here
-            T![invalid] => {
-                let item = parse_expr(state);
-                return Stmt::Expr(item);
-            },
             T![::] => {
                 let item = parse_label(state);
                 return Stmt::Label(item);
@@ -90,13 +85,39 @@ fn parse_stmt(state: &mut State) -> Stmt {
                 parse_break(state);
                 return Stmt::Break;
             },
-            _ => todo!(),
+            _ => {
+                let item = parse_expr(state);
+                return Stmt::Expr(item);
+            },
         }
     }
 }
 
 fn parse_expr(state: &mut State) -> Expr {
-    todo!()
+    match state.peek() {
+        T![ident] => {
+            let item = parse_ident(state);
+            return Expr::Variable(item);
+        }
+        // TODO: handle ops
+        T![function] => {
+            match parse_function(state) {
+                Either::Left(assign) => return Expr::Assign(Box::new(assign)),
+                Either::Right(function) => return Expr::Function(function),
+            }
+        }
+        T![nil] | T![false] | T![true] | T![int] | T![hex_int] | T![float] | T![hex_float] | T![string] | T![long_string] => {
+            let item = parse_literal(state);
+            return Expr::Literal(item);
+        },
+        T!['{'] => {
+            let item = parse_table(state);
+            return Expr::Table(item);
+        },
+        // TODO: handle function calls
+        // TODO: handle assign
+        _ => todo!()
+    }
 }
 
 fn parse_label(state: &mut State) -> Label {
@@ -151,7 +172,7 @@ fn parse_binary_expr(state: &mut State) -> BinaryExpr {
     todo!()
 }
 
-fn parse_function(state: &mut State) -> Function {
+fn parse_function(state: &mut State) -> Either<Assign, Function> {
     todo!()
 }
 
