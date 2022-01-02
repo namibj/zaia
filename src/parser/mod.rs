@@ -126,3 +126,35 @@ fn parse_return(state: &mut State) -> Return {
 fn parse_break(state: &mut State) {
     todo!()
 }
+
+fn parse_ident(state: &mut State) -> Ident {
+    todo!()
+}
+
+fn parse_unary_expr(state: &mut State) -> UnaryExpr {
+    todo!()
+}
+
+fn parse_binary_expr(state: &mut State) -> BinaryExpr {
+    todo!()
+}
+
+fn parse_function(state: &mut State) -> Function {
+    todo!()
+}
+
+fn parse_literal(state: &mut State) -> Literal {
+    todo!()
+}
+
+fn parse_function_call(state: &mut State) -> FunctionCall {
+    todo!()
+}
+
+fn parse_table(state: &mut State) -> Table {
+    todo!()
+}
+
+fn parse_assign(state: &mut State) -> Assign {
+    todo!()
+}
