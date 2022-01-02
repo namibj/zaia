@@ -204,7 +204,6 @@ fn parse_function(state: &mut State) -> Either<Assign, Function> {
     };
 
     state.eat(T![function]);
-
     if state.at(T![ident]) {
         let target = parse_expr(state);
         let item = Assign {
