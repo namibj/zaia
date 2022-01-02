@@ -120,22 +120,10 @@ fn parse_expr(state: &mut State) -> Expr {
 }
 
 fn parse_label(state: &mut State) -> Label {
-    state.next();
-
-    if !state.at(T![ident]) {
-        let span = state.span();
-
-        let report = ariadne::Report::build(ariadne::ReportKind::Error, (), span.start)
-            .with_message("Invalid hexadecimal float literal")
-            .with_label(ariadne::Label::new(span).with_message("Invalid literal found here"))
-            .finish();
-
-        state.report(report);
-
-        return Label { ident: Ident { name: "".to_string() } };
-    }
-
-    Label { ident: parse_ident(state) }
+    state.eat(T![::]);
+    let name = parse_ident(state);
+    state.eat(T![::]);
+    Label { ident: name }
 }
 
 fn parse_do(state: &mut State) -> Do {
