@@ -180,6 +180,7 @@ fn parse_literal(state: &mut State) -> Literal {
 }
 
 // TODO: Support strings using single quotes.
+// TODO: Support various escape sequences.
 fn parse_string(state: &mut State) -> String {
     state.eat(T![string]);
     let mut value = String::new();
@@ -205,6 +206,7 @@ fn parse_string(state: &mut State) -> String {
     value
 }
 
+// TODO: Support long strings.
 fn parse_long_string(state: &mut State) -> String {
     todo!()
 }
