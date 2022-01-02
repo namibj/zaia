@@ -159,11 +159,12 @@ fn parse_return(state: &mut State) -> Return {
 }
 
 fn parse_break(state: &mut State) {
-    todo!()
+    state.eat(T![break]);
 }
 
 fn parse_ident(state: &mut State) -> Ident {
-    todo!()
+    state.eat(T![ident]);
+    Ident { name: state.slice().to_string() }
 }
 
 fn parse_unary_expr(state: &mut State) -> UnaryExpr {
