@@ -4,7 +4,6 @@ pub struct SyntaxTree {
 
 pub enum Stmt {
     Expr(Expr),
-    Assign(Assign),
     Label(Label),
     Do(Do),
     While(While),
@@ -61,13 +60,6 @@ pub struct Label {
     pub ident: Ident,
 }
 
-pub struct Assign {
-    pub is_local: bool,
-    pub is_const: bool,
-    pub target: Vec<Expr>,
-    pub value: Expr,
-}
-
 pub enum Expr {
     Variable(Ident),
     Unary(UnaryExpr),
@@ -76,6 +68,14 @@ pub enum Expr {
     Literal(Literal),
     FunctionCall(Box<FunctionCall>),
     Table(Table),
+    Assign(Box<Assign>),
+}
+
+pub struct Assign {
+    pub is_local: bool,
+    pub is_const: bool,
+    pub target: Vec<Expr>,
+    pub value: Expr,
 }
 
 pub struct Table {

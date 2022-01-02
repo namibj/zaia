@@ -8,8 +8,8 @@ pub fn prefix_binding_power(op: Token) -> ((), u8) {
     }
 }
 
-pub fn infix_binding_power(op: Token) -> (u8, u8) {
-    match op {
+pub fn infix_binding_power(op: Token) -> Option<(u8, u8)> {
+    Some(match op {
         T![or] => (1, 2),
         T![and] => (3, 4),
         T![<] | T![>] | T![<=] | T![>=] | T![~=] | T![==] => (5, 6),
@@ -21,6 +21,6 @@ pub fn infix_binding_power(op: Token) -> (u8, u8) {
         T![+] | T![-] => (17, 18),
         T![*] | T![/] | T![D/] | T![%] => (19, 20),
         T![^] => (22, 21),
-        _ => panic!("bad infix op: {}", op),
-    }
+        _ => return None,
+    })
 }
