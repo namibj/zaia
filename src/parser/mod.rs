@@ -5,6 +5,7 @@ mod token;
 use either::Either;
 use hexf_parse::parse_hexf64;
 use state::State;
+use token::Token;
 
 use super::syntax_tree::{
     Assign,
@@ -104,15 +105,7 @@ fn parse_expr(state: &mut State) -> Expr {
             Either::Left(assign) => return Expr::Assign(Box::new(assign)),
             Either::Right(function) => return Expr::Function(function),
         },
-        T![nil]
-        | T![false]
-        | T![true]
-        | T![int]
-        | T![hex_int]
-        | T![float]
-        | T![hex_float]
-        | T![string]
-        | T![long_string] => {
+        t if token_is_literal(t) => {
             let item = parse_literal(state);
             return Expr::Literal(item);
         },
@@ -282,4 +275,19 @@ fn parse_table(state: &mut State) -> Table {
 
 fn parse_assign(state: &mut State) -> Assign {
     todo!()
+}
+
+fn token_is_literal(token: Token) -> bool {
+    matches!(
+        token,
+        T![nil]
+            | T![false]
+            | T![true]
+            | T![int]
+            | T![hex_int]
+            | T![float]
+            | T![hex_float]
+            | T![string]
+            | T![long_string]
+    )
 }
