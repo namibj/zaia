@@ -143,9 +143,60 @@ fn parse_function(state: &mut State) -> Function {
     todo!()
 }
 
+// Literals
+
 fn parse_literal(state: &mut State) -> Literal {
+    match state.peek() {
+        T![nil] => {
+            state.next();
+            Literal::Nil
+        }
+
+        T![true] => {
+            state.next();
+            Literal::Boolean(true)
+        }
+
+        T![false] => {
+            state.next();
+            Literal::Boolean(false)
+        }
+
+        T![string] => Literal::String(parse_string(state)),
+        T![long_string] => Literal::String(parse_long_string(state)),
+        T![int] => Literal::Num(NumLiteral::Int(parse_int(state))),
+        T![hex_int] => Literal::Num(NumLiteral::Int(parse_hex_int(state))),
+        T![float] => Literal::Num(NumLiteral::Float(parse_float(state))),
+        T![hex_float] => Literal::Num(NumLiteral::Float(parse_hex_float(state))),
+        _ => todo!(),
+    }
+}
+
+fn parse_string(state: &mut State) -> String {
     todo!()
 }
+
+fn parse_long_string(state: &mut State) -> String {
+    todo!()
+}
+
+fn parse_int(state: &mut State) -> i64 {
+    todo!()
+}
+
+fn parse_hex_int(state: &mut State) -> i64 {
+    todo!()
+}
+
+fn parse_float(state: &mut State) -> f64 {
+    todo!()
+}
+
+fn parse_hex_float(state: &mut State) -> f64 {
+    todo!()
+}
+
+// --------
 
 fn parse_function_call(state: &mut State) -> FunctionCall {
     todo!()

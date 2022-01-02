@@ -153,6 +153,6 @@ pub enum Literal {
 }
 
 pub enum NumLiteral {
-    Integer(i64),
+    Int(i64),
     Float(f64),
 }
