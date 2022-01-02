@@ -2,6 +2,7 @@ mod binding_power;
 mod state;
 mod token;
 
+use binding_power::{infix_binding_power, prefix_binding_power, INDEX_BINDING_POWER};
 use either::Either;
 use hexf_parse::parse_hexf64;
 use state::State;
@@ -88,7 +89,7 @@ fn parse_stmt(state: &mut State) -> Stmt {
             },
             T![endstmt] => {
                 state.next();
-                continue
+                continue;
             },
             _ => {
                 let item = parse_expr(state);
@@ -99,30 +100,88 @@ fn parse_stmt(state: &mut State) -> Stmt {
 }
 
 fn parse_expr(state: &mut State) -> Expr {
-    match state.peek() {
-        T![ident] => {
-            let item = parse_ident(state);
-            return Expr::Variable(item);
-        },
-        // TODO: handle ops
-        // TODO: handle paren
-        // TODO: handle index
-        T![function] => match parse_function(state) {
-            Either::Left(assign) => return Expr::Assign(Box::new(assign)),
-            Either::Right(function) => return Expr::Function(function),
-        },
-        t if token_is_literal(t) => {
-            let item = parse_literal(state);
-            return Expr::Literal(item);
-        },
-        T!['{'] => {
-            let item = parse_table(state);
-            return Expr::Table(item);
-        },
-        // TODO: handle function calls
-        // TODO: handle assign
-        _ => todo!(),
+    expr_bp(state, 0)
+}
+
+// TODO: handle assign
+// TODO: handle function calls
+fn expr_bp(state: &mut State, min_bp: i32) -> Expr {
+    let mut lhs = expr_bp_lhs(state);
+
+    loop {
+        let t = match state.peek() {
+            T![eof] => break,
+            T![function] => match parse_function(state) {
+                Either::Left(assign) => return Expr::Assign(Box::new(assign)),
+                Either::Right(function) => return Expr::Function(function),
+            },
+            t if token_is_literal(t) => {
+                let item = parse_literal(state);
+                return Expr::Literal(item);
+            },
+            T!['{'] => {
+                let item = parse_table(state);
+                return Expr::Table(item);
+            },
+            t if token_is_other_op(t) => t,
+            _ => todo!(),
+        };
+
+        if t == T!['['] && INDEX_BINDING_POWER >= min_bp {
+            state.next();
+            let rhs = expr_bp(state, 0);
+            state.eat(T![']']);
+
+            lhs = Expr::Binary(Box::new(BinaryExpr {
+                op: BinaryOp::Index,
+                lhs,
+                rhs,
+            }));
+
+            continue;
+        }
+
+        if let Some((l_bp, r_bp)) = infix_binding_power(t) {
+            if l_bp < min_bp {
+                break;
+            }
+
+            state.next();
+            let rhs = expr_bp(state, r_bp);
+            lhs = Expr::Binary(Box::new(BinaryExpr {
+                op: token_to_binary_op(t),
+                lhs,
+                rhs,
+            }));
+
+            continue;
+        }
+
+        break;
     }
+
+    lhs
+}
+
+fn expr_bp_lhs(state: &mut State) -> Expr {
+    let t = state.next();
+    if T![ident] == t {
+        return Expr::Variable(parse_ident(state));
+    }
+
+    if T!['('] == t {
+        let lhs = expr_bp(state, 0);
+        state.eat(T![')']);
+        return lhs;
+    }
+
+    if let Some(op) = token_to_unary_op(t) {
+        let ((), r_bp) = prefix_binding_power(t);
+        let rhs = expr_bp(state, r_bp);
+        return Expr::Unary(Box::new(UnaryExpr { op, expr: rhs }));
+    }
+
+    todo!()
 }
 
 fn parse_label(state: &mut State) -> Label {
@@ -426,6 +485,78 @@ fn token_is_literal(token: Token) -> bool {
     )
 }
 
+fn token_to_unary_op(token: Token) -> Option<UnaryOp> {
+    match token {
+        T![not] => Some(UnaryOp::Not),
+        T![#] => Some(UnaryOp::Len),
+        T![+] => Some(UnaryOp::Pos),
+        T![-] => Some(UnaryOp::Neg),
+        T![~] => Some(UnaryOp::BitNot),
+        _ => None,
+    }
+}
+
+fn token_to_binary_op(token: Token) -> BinaryOp {
+    match token {
+        T![or] => BinaryOp::Or,
+        T![and] => BinaryOp::And,
+        T![+] => BinaryOp::Add,
+        T![-] => BinaryOp::Sub,
+        T![*] => BinaryOp::Mul,
+        T![/] => BinaryOp::Div,
+        T![D/] => BinaryOp::FloorDiv,
+        T![^] => BinaryOp::Exp,
+        T![%] => BinaryOp::Mod,
+        T![&] => BinaryOp::BitAnd,
+        T![|] => BinaryOp::BitOr,
+        T![<<] => BinaryOp::LeftShift,
+        T![>>] => BinaryOp::RightShift,
+        T![==] => BinaryOp::Equals,
+        T![~] => BinaryOp::Xor,
+        T![~=] => BinaryOp::NotEquals,
+        T![<=] => BinaryOp::LesserEquals,
+        T![>=] => BinaryOp::GreaterEquals,
+        T![<] => BinaryOp::Greater,
+        T![>] => BinaryOp::Lesser,
+        T![:] => BinaryOp::AssocFunction,
+        T![.] => BinaryOp::Method,
+        T![..] => BinaryOp::Concat,
+        _ => todo!(),
+    }
+}
+
+fn token_is_other_op(token: Token) -> bool {
+    matches!(
+        token,
+        T![or]
+            | T![and]
+            | T![+]
+            | T![-]
+            | T![*]
+            | T![/]
+            | T![D/]
+            | T![^]
+            | T![%]
+            | T![&]
+            | T![|]
+            | T![<<]
+            | T![>>]
+            | T![==]
+            | T![~]
+            | T![~=]
+            | T![<=]
+            | T![>=]
+            | T![<]
+            | T![>]
+            | T![:]
+            | T![.]
+            | T![..]
+            | T!['[']
+    )
+}
+
 // TODO: use location specifiers instead of exprs where applicable
 // TODO: handle newline and semicolon and eof
 // TODO: error handling
+// TODO: use peek instead of next?
+// TODO: eat/next?

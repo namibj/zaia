@@ -1,14 +1,16 @@
 use super::token::Token;
 use crate::T;
 
-pub fn prefix_binding_power(op: Token) -> ((), u8) {
+pub const INDEX_BINDING_POWER: i32 = 22;
+
+pub fn prefix_binding_power(op: Token) -> ((), i32) {
     match op {
         T![not] | T![+] | T![-] | T![#] | T![~] => ((), 21),
         _ => panic!("bad prefix op: {}", op),
     }
 }
 
-pub fn infix_binding_power(op: Token) -> Option<(u8, u8)> {
+pub fn infix_binding_power(op: Token) -> Option<(i32, i32)> {
     Some(match op {
         T![or] => (1, 2),
         T![and] => (3, 4),

@@ -39,8 +39,8 @@ impl<'source> State<'source> {
     pub fn eat(&mut self, token: Token) {
         let found = self.next();
 
-        if found != Some(token) {
-            let found_name = if let Some(token) = found {
+        if found != token {
+            let found_name = if token == found {
                 token.to_string()
             } else {
                 "NONE".to_string()
@@ -60,26 +60,22 @@ impl<'source> State<'source> {
         }
     }
 
+    pub fn next(&mut self) -> Token {
+        if self.peeked.0 != T![eof] {
+            let token = self.peeked.0;
+            self.peeked.0 = T![eof];
+            token
+        } else {
+            self.lexer.next().unwrap_or(T![eof])
+        }
+    }
+
     pub fn report(&mut self, report: ariadne::Report) {
         self.reports.push(report);
     }
 
     pub fn result(self) -> Vec<ariadne::Report> {
         self.reports
-    }
-}
-
-impl<'source> Iterator for State<'source> {
-    type Item = Token;
-
-    fn next(&mut self) -> Option<Self::Item> {
-        if self.peeked.0 != T![eof] {
-            let token = self.peeked.0;
-            self.peeked.0 = T![eof];
-            Some(token)
-        } else {
-            self.lexer.next()
-        }
     }
 }
 

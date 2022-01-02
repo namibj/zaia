@@ -108,8 +108,8 @@ pub struct UnaryExpr {
 
 pub struct BinaryExpr {
     pub op: BinaryOp,
-    pub left: Expr,
-    pub right: Expr,
+    pub lhs: Expr,
+    pub rhs: Expr,
 }
 
 pub enum UnaryOp {
@@ -129,7 +129,7 @@ pub enum BinaryOp {
     Div,
     FloorDiv,
     Exp,
-    Rem,
+    Mod,
     BitAnd,
     BitOr,
     LeftShift,
@@ -144,6 +144,7 @@ pub enum BinaryOp {
     AssocFunction,
     Method,
     Concat,
+    Index,
 }
 
 pub enum Literal {
