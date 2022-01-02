@@ -83,7 +83,7 @@ fn parse_stmt(state: &mut State) -> Stmt {
                 return Stmt::Return(item);
             },
             T![break] => {
-                parse_break(state);
+                state.next();
                 return Stmt::Break;
             },
             _ => {
@@ -101,6 +101,8 @@ fn parse_expr(state: &mut State) -> Expr {
             return Expr::Variable(item);
         },
         // TODO: handle ops
+        // TODO: handle paren
+        // TODO: handle index
         T![function] => match parse_function(state) {
             Either::Left(assign) => return Expr::Assign(Box::new(assign)),
             Either::Right(function) => return Expr::Function(function),
@@ -147,11 +149,46 @@ fn parse_do(state: &mut State) -> Do {
 }
 
 fn parse_while(state: &mut State) -> While {
-    todo!()
+    state.next();
+    let condition = parse_expr(state);
+    state.eat(T![do]);
+    let mut block = Vec::new();
+
+    loop {
+        match state.peek() {
+            T![end] => {
+                state.eat(T![end]);
+                break;
+            },
+            _ => {
+                let stmt = parse_stmt(state);
+                block.push(stmt)
+            },
+        }
+    }
+
+    While { condition, block }
 }
 
 fn parse_repeat(state: &mut State) -> Repeat {
-    todo!()
+    state.next();
+    let mut block = Vec::new();
+
+    loop {
+        match state.peek() {
+            T![until] => {
+                state.eat(T![until]);
+                break;
+            },
+            _ => {
+                let stmt = parse_stmt(state);
+                block.push(stmt)
+            },
+        }
+    }
+
+    let condition = parse_expr(state);
+    Repeat { condition, block }
 }
 
 fn parse_if(state: &mut State) -> If {
@@ -172,10 +209,6 @@ fn parse_for_generic(state: &mut State) -> ForGeneric {
 
 fn parse_return(state: &mut State) -> Return {
     todo!()
-}
-
-fn parse_break(state: &mut State) {
-    state.eat(T![break]);
 }
 
 fn parse_ident(state: &mut State) -> Ident {
