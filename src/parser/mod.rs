@@ -29,6 +29,7 @@ use super::syntax_tree::{
     Stmt,
     SyntaxTree,
     Table,
+    TableElement,
     UnaryExpr,
     UnaryOp,
     While,
@@ -123,8 +124,6 @@ fn parse_expr(state: &mut State) -> Expr {
     expr_bp(state, 0)
 }
 
-// TODO: handle assign
-// TODO: handle function calls
 fn expr_bp(state: &mut State, min_bp: i32) -> Expr {
     let mut lhs = expr_bp_lhs(state);
 
@@ -562,7 +561,51 @@ fn parse_function_call(state: &mut State) -> FunctionCall {
 }
 
 fn parse_table(state: &mut State) -> Table {
-    todo!()
+    state.next();
+    let mut elements = Vec::new();
+
+    loop {
+        match state.peek() {
+            T!['}'] => {
+                state.next();
+                break;
+            },
+            T!['['] => elements.push(parse_table_element_expr(state)),
+            T![,] => continue,
+            _ => {
+                let first = parse_expr(state);
+
+                if matches!(first, Expr::Variable(_)) && state.at(T![=]) {
+                    state.next();
+                    let value = parse_expr(state);
+                    elements.push(TableElement {
+                        key: Some(first),
+                        value,
+                    });
+                } else {
+                    elements.push(TableElement {
+                        key: None,
+                        value: first,
+                    });
+                }
+            },
+        }
+    }
+
+    Table { elements }
+}
+
+fn parse_table_element_expr(state: &mut State) -> TableElement {
+    state.next();
+    let key = parse_expr(state);
+    state.eat(T![']']);
+    state.eat(T![=]);
+    let value = parse_expr(state);
+
+    TableElement {
+        key: Some(key),
+        value,
+    }
 }
 
 fn parse_assign(state: &mut State) -> Assign {
@@ -659,3 +702,4 @@ fn token_is_other_op(token: Token) -> bool {
 // TODO: error handling
 // TODO: use peek instead of next?
 // TODO: eat/next?
+// TODO: force comma in lists

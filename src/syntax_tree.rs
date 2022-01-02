@@ -81,7 +81,7 @@ pub struct Assign {
 }
 
 pub struct Table {
-    elements: Vec<TableElement>,
+    pub elements: Vec<TableElement>,
 }
 
 pub struct TableElement {
