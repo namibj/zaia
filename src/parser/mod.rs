@@ -276,7 +276,7 @@ fn parse_literal(state: &mut State) -> Literal {
         T![hex_int] => Literal::Num(NumLiteral::Int(parse_hex_int(state))),
         T![float] => Literal::Num(NumLiteral::Float(parse_float(state))),
         T![hex_float] => Literal::Num(NumLiteral::Float(parse_hex_float(state))),
-        _ => unreachable!(),
+        _ => todo!(),
     }
 }
 
