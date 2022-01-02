@@ -517,9 +517,16 @@ fn parse_string(state: &mut State) -> String {
     value
 }
 
-// TODO: Support long strings.
 fn parse_long_string(state: &mut State) -> String {
-    todo!()
+    let mut chars = state.slice().chars();
+    let mut delim_len = 1;
+    chars.next();
+
+    while chars.next() != Some('[') {
+        delim_len += 1;
+    }
+
+    chars.skip(delim_len).take(state.slice().len()-delim_len*2).collect()
 }
 
 fn parse_int(state: &mut State) -> i64 {
