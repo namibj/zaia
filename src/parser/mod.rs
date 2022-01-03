@@ -207,7 +207,7 @@ fn parse_assign_trail(state: &mut State, is_local: bool, first_target: AssignTar
     }
 
     Assign {
-        is_local: false,
+        is_local,
         target: targets,
         value: values,
     }
