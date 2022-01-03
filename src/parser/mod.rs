@@ -489,7 +489,6 @@ fn parse_literal(state: &mut State) -> Literal {
     }
 }
 
-// TODO: Support various escape sequences.
 fn parse_string(state: &mut State) -> String {
     state.eat(T![string]);
     let mut value = String::new();
@@ -699,37 +698,13 @@ fn token_is_other_op(token: Token) -> bool {
 // TODO: use peek instead of next?
 // TODO: eat/next?
 // TODO: force comma in lists
+// TODO: Support various string escape sequences.
 
 #[cfg(test)]
 mod tests {
-    use super::parse;
-    use std::fs::{read_to_string, read_dir};
-    use super::super::syntax_tree::{
-        Assign,
-        BinaryExpr,
-        BinaryOp,
-        Do,
-        Expr,
-        ForGeneric,
-        ForNumeric,
-        Function,
-        FunctionCall,
-        Ident,
-        If,
-        IfChain,
-        Label,
-        Literal,
-        NumLiteral,
-        Repeat,
-        Return,
-        Stmt,
-        SyntaxTree,
-        Table,
-        TableElement,
-        UnaryExpr,
-        UnaryOp,
-        While,
-    };
+    use std::fs::{read_dir, read_to_string};
+
+    use super::{super::syntax_tree::SyntaxTree, parse};
 
     #[test]
     fn parse_check_tests() {
@@ -747,7 +722,7 @@ mod tests {
         let source = read_to_string("test-files/simple/calc.lua").unwrap();
         let (syntax_tree, reports) = parse(&source);
         assert!(reports.is_empty());
-        let expected = SyntaxTree{block:Vec::new()};
+        let expected = SyntaxTree { block: Vec::new() };
         assert_eq!(expected, syntax_tree);
     }
 }
