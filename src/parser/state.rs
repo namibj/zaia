@@ -1,35 +1,29 @@
-use std::ops::{Deref, DerefMut};
+use std::ops::Range;
 
-use logos::{Lexer, Logos};
+use logos::Logos;
 
 use super::token::Token;
 use crate::T;
 
 pub struct State<'source> {
-    lexer: Lexer<'source, Token>,
-    peeked: (Token, logos::Span),
+    tokens: Vec<(Token, Range<usize>)>,
+    cursor: usize,
+    source: &'source str,
     reports: Vec<ariadne::Report>,
 }
 
 impl<'source> State<'source> {
     pub fn new(source: &'source str) -> Self {
         State {
-            lexer: Token::lexer(source),
-            peeked: (T![eof], logos::Span::default()),
+            tokens: Token::lexer(source).spanned().collect(),
+            cursor: 0,
+            source,
             reports: Vec::new(),
         }
     }
 
     pub fn peek(&mut self) -> Token {
-        if self.peeked.0 == T![eof] {
-            if let Some(token) = self.lexer.next() {
-                self.peeked = (token, self.lexer.span());
-            } else {
-                return T![eof];
-            }
-        }
-
-        self.peeked.0
+        self.tokens.get(self.cursor+1).map(|(token, _)| *token).unwrap_or(T![eof])
     }
 
     pub fn at(&mut self, token: Token) -> bool {
@@ -47,12 +41,13 @@ impl<'source> State<'source> {
             };
 
             let found_message = format!("Expected {} but found {}", token, found_name);
+            let span = self.span();
 
             let report =
-                ariadne::Report::build(ariadne::ReportKind::Error, (), self.peeked.1.start)
+                ariadne::Report::build(ariadne::ReportKind::Error, (), span.start)
                     .with_message("Unexpected token")
                     .with_label(
-                        ariadne::Label::new(self.peeked.1.clone()).with_message(found_message),
+                        ariadne::Label::new(span).with_message(found_message),
                     )
                     .finish();
 
@@ -61,13 +56,17 @@ impl<'source> State<'source> {
     }
 
     pub fn next(&mut self) -> Token {
-        if self.peeked.0 != T![eof] {
-            let token = self.peeked.0;
-            self.peeked.0 = T![eof];
-            token
-        } else {
-            self.lexer.next().unwrap_or(T![eof])
-        }
+        self.cursor += 1;
+        self.tokens.get(self.cursor).map(|(token, _)| *token).unwrap_or(T![eof])
+    }
+
+    pub fn span(&self) -> Range<usize> {
+        self.tokens[self.cursor].1.clone()
+    }
+
+    pub fn slice(&self) -> &str {
+        let span = self.span();
+        &self.source[span.start..span.end]
     }
 
     pub fn report(&mut self, report: ariadne::Report) {
@@ -76,19 +75,5 @@ impl<'source> State<'source> {
 
     pub fn result(self) -> Vec<ariadne::Report> {
         self.reports
-    }
-}
-
-impl<'source> Deref for State<'source> {
-    type Target = Lexer<'source, Token>;
-
-    fn deref(&self) -> &Self::Target {
-        &self.lexer
-    }
-}
-
-impl<'source> DerefMut for State<'source> {
-    fn deref_mut(&mut self) -> &mut Self::Target {
-        &mut self.lexer
     }
 }
