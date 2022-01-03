@@ -23,6 +23,7 @@ pub fn infix_binding_power(op: Token) -> Option<(i32, i32)> {
         T![+] | T![-] => (17, 18),
         T![*] | T![/] | T![D/] | T![%] => (19, 20),
         T![^] => (22, 21),
+        T![.] | T![:] => (24, 23),
         _ => return None,
     })
 }

@@ -193,6 +193,7 @@ pub enum BinaryOp {
     Lesser,
     Greater,
     Property,
+    Method,
     Concat,
 }
 

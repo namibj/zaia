@@ -748,10 +748,6 @@ fn parse_table_element_expr(state: &mut State) -> TableElement {
     }
 }
 
-fn parse_assign(state: &mut State) -> Assign {
-    todo!()
-}
-
 fn token_is_literal(token: Token) -> bool {
     matches!(
         token,
@@ -801,6 +797,7 @@ fn token_to_binary_op(token: Token) -> BinaryOp {
         T![<] => BinaryOp::Greater,
         T![>] => BinaryOp::Lesser,
         T![.] => BinaryOp::Property,
+        T![:] => BinaryOp::Method,
         T![..] => BinaryOp::Concat,
         _ => todo!(),
     }
@@ -829,6 +826,7 @@ fn token_is_other_op(token: Token) -> bool {
             | T![>=]
             | T![<]
             | T![>]
+            | T![:]
             | T![.]
             | T![..]
             | T!['[']
@@ -836,7 +834,6 @@ fn token_is_other_op(token: Token) -> bool {
 }
 
 // TODO: parse function calls
-// TODO: parse dot and colon
 // TODO: handle newline and semicolon and eof
 // TODO: error handling
 // TODO: use peek instead of next?
