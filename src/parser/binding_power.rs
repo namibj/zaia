@@ -2,6 +2,7 @@ use super::token::Token;
 use crate::T;
 
 pub const INDEX_BINDING_POWER: i32 = 22;
+pub const CALL_BINDING_POWER: i32 = 22;
 
 pub fn prefix_binding_power(op: Token) -> ((), i32) {
     match op {

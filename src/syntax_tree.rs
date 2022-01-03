@@ -78,6 +78,7 @@ pub struct Label {
 pub enum SimpleExpr {
     Ident(Ident),
     Property(Box<Self>, Expr),
+    Method(Box<Self>, Ident),
     FunctionCall(FunctionCall),
 }
 
@@ -100,6 +101,11 @@ impl From<SimpleExpr> for Expr {
                 lhs: Expr::from(*simple_expr),
                 op: BinaryOp::Property,
                 rhs: index,
+            })),
+            SimpleExpr::Method(simple_expr, method) => Expr::Binary(Box::new(BinaryExpr {
+                lhs: Expr::from(*simple_expr),
+                op: BinaryOp::Method,
+                rhs: Expr::Ident(method),
             })),
             SimpleExpr::FunctionCall(function_call) => Expr::FunctionCall(Box::new(function_call)),
         }
@@ -132,7 +138,6 @@ pub struct TableElement {
 
 #[derive(Debug, PartialEq)]
 pub struct FunctionCall {
-    pub this: Option<Expr>,
     pub func: Expr,
     pub args: Vec<Expr>,
 }

@@ -2,7 +2,12 @@ mod binding_power;
 mod state;
 mod token;
 
-use binding_power::{infix_binding_power, prefix_binding_power, INDEX_BINDING_POWER};
+use binding_power::{
+    infix_binding_power,
+    prefix_binding_power,
+    CALL_BINDING_POWER,
+    INDEX_BINDING_POWER,
+};
 use either::Either;
 use hexf_parse::parse_hexf64;
 use state::State;
@@ -226,7 +231,6 @@ fn parse_simple_expr(state: &mut State) -> SimpleExpr {
             },
             T!['('] => {
                 expr = SimpleExpr::FunctionCall(FunctionCall {
-                    this: None,
                     func: expr.into(),
                     args: parse_function_call(state),
                 });
@@ -234,12 +238,7 @@ fn parse_simple_expr(state: &mut State) -> SimpleExpr {
             T![:] => {
                 state.next();
                 let ident = parse_ident(state);
-
-                expr = SimpleExpr::FunctionCall(FunctionCall {
-                    this: Some(expr.into()),
-                    func: Expr::Ident(ident),
-                    args: parse_function_call(state),
-                });
+                expr = SimpleExpr::Method(Box::new(expr), ident);
             },
             T!['['] => {
                 state.next();
@@ -279,6 +278,12 @@ fn expr_bp(state: &mut State, min_bp: i32) -> Expr {
             t if token_is_other_op(t) => t,
             _ => todo!(),
         };
+
+        if t == T!['('] && INDEX_BINDING_POWER >= min_bp {
+            let args = parse_function_call(state);
+            lhs = Expr::FunctionCall(Box::new(FunctionCall { func: lhs, args }));
+            continue;
+        }
 
         if t == T!['['] && INDEX_BINDING_POWER >= min_bp {
             state.next();
@@ -833,7 +838,6 @@ fn token_is_other_op(token: Token) -> bool {
     )
 }
 
-// TODO: parse function calls
 // TODO: handle newline and semicolon and eof
 // TODO: error handling
 // TODO: use peek instead of next?
