@@ -5,7 +5,7 @@ promoting integration and extensibility within modern software.
 
 ## Ethos
 
-Zaia's goal is first and foremost to be easy to use. This means providing additional tools that
+Zaia's goal is first and foremost to be easy to use and deploy. This means providing additional tools that
 other Lua implementations does not provide such as convenient language functionality and specialized libraries
 providing datastructures and algorithms.
 
