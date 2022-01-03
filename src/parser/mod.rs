@@ -699,3 +699,20 @@ fn token_is_other_op(token: Token) -> bool {
 // TODO: use peek instead of next?
 // TODO: eat/next?
 // TODO: force comma in lists
+
+#[cfg(test)]
+mod tests {
+    #[test]
+    fn parse_run_tests() {
+        use super::parse;
+        use std::fs::{read_to_string, read_dir};
+        
+        for entry in read_dir("test-files/run").unwrap() {
+            let entry = entry.unwrap();
+            let path = entry.path();
+            let contents = read_to_string(path).unwrap();
+            let (_syntax_tree, reports) = parse(&contents);
+            assert!(reports.is_empty());
+        }
+    }
+}
