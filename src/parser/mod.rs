@@ -279,7 +279,7 @@ fn expr_bp(state: &mut State, min_bp: i32) -> Expr {
             _ => todo!(),
         };
 
-        if t == T!['('] && INDEX_BINDING_POWER >= min_bp {
+        if t == T!['('] && CALL_BINDING_POWER >= min_bp {
             let args = parse_function_call(state);
             lhs = Expr::FunctionCall(Box::new(FunctionCall { func: lhs, args }));
             continue;
