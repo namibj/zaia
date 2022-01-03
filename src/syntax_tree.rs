@@ -165,7 +165,7 @@ pub enum BinaryOp {
     GreaterEquals,
     Lesser,
     Greater,
-    AssocFunction,
+    Property,
     Method,
     Concat,
     Index,

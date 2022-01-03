@@ -656,8 +656,8 @@ fn token_to_binary_op(token: Token) -> BinaryOp {
         T![>=] => BinaryOp::GreaterEquals,
         T![<] => BinaryOp::Greater,
         T![>] => BinaryOp::Lesser,
-        T![:] => BinaryOp::AssocFunction,
-        T![.] => BinaryOp::Method,
+        T![.] => BinaryOp::Property,
+        T![:] => BinaryOp::Method,
         T![..] => BinaryOp::Concat,
         _ => todo!(),
     }
