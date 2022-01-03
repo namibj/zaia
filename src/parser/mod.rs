@@ -10,6 +10,7 @@ use token::Token;
 
 use super::syntax_tree::{
     Assign,
+    AssignTarget,
     BinaryExpr,
     BinaryOp,
     Do,
@@ -26,6 +27,7 @@ use super::syntax_tree::{
     NumLiteral,
     Repeat,
     Return,
+    SimpleExpr,
     Stmt,
     SyntaxTree,
     Table,
@@ -112,12 +114,144 @@ fn parse_stmt(state: &mut State) -> Stmt {
                 state.next();
                 continue;
             },
+            T![function] => {
+                let item = parse_named_function(state, false);
+                return Stmt::Assign(item);
+            },
+            T![local] => {
+                state.next();
+
+                if state.at(T![function]) {
+                    let item = parse_named_function(state, true);
+                    return Stmt::Assign(item);
+                }
+
+                let item = parse_simple_expr(state);
+                let is_const = if state.at(T![const]) {
+                    state.next();
+                    true
+                } else {
+                    false
+                };
+
+                let target = AssignTarget {
+                    target: item,
+                    is_const,
+                };
+
+                return Stmt::Assign(parse_assign_trail(state, true, target));
+            },
             _ => {
-                let item = parse_expr(state);
-                return Stmt::Expr(item);
+                let item = parse_simple_expr(state);
+                let is_const = if state.at(T![const]) {
+                    state.next();
+                    true
+                } else {
+                    false
+                };
+
+                if matches!(state.peek(), T![=] | T![,]) {
+                    let target = AssignTarget {
+                        target: item,
+                        is_const,
+                    };
+
+                    return Stmt::Assign(parse_assign_trail(state, false, target));
+                }
+
+                return Stmt::SimpleExpr(item);
             },
         }
     }
+}
+
+fn parse_assign_trail(state: &mut State, is_local: bool, first_target: AssignTarget) -> Assign {
+    let mut targets = vec![first_target];
+
+    loop {
+        match state.peek() {
+            T![,] => {
+                state.next();
+                let item = parse_simple_expr(state);
+                let is_const = if state.at(T![const]) {
+                    state.next();
+                    true
+                } else {
+                    false
+                };
+
+                let target = AssignTarget {
+                    target: item,
+                    is_const,
+                };
+
+                targets.push(target);
+            },
+            _ => break,
+        }
+    }
+
+    state.eat(T![=]);
+    let first_value = parse_expr(state);
+    let mut values = vec![first_value];
+
+    loop {
+        match state.peek() {
+            T![,] => {
+                state.next();
+                let value = parse_expr(state);
+                values.push(value);
+            },
+            _ => break,
+        }
+    }
+
+    Assign {
+        is_local: false,
+        target: targets,
+        value: values,
+    }
+}
+
+fn parse_simple_expr(state: &mut State) -> SimpleExpr {
+    let first = parse_ident(state);
+    let mut expr = SimpleExpr::Ident(first);
+
+    loop {
+        match state.peek() {
+            T![.] => {
+                state.next();
+                let ident = parse_ident(state);
+                expr = SimpleExpr::Property(Box::new(expr), Expr::Ident(ident));
+            },
+            T!['('] => {
+                expr = SimpleExpr::FunctionCall(FunctionCall {
+                    this: None,
+                    func: expr.into(),
+                    args: parse_function_call(state),
+                });
+            },
+            T![:] => {
+                state.next();
+                let ident = parse_ident(state);
+
+                expr = SimpleExpr::FunctionCall(FunctionCall {
+                    this: Some(expr.into()),
+                    func: Expr::Ident(ident),
+                    args: parse_function_call(state),
+                });
+            },
+            T!['['] => {
+                state.next();
+                let index = parse_expr(state);
+                state.eat(T![']']);
+                expr = SimpleExpr::Property(Box::new(expr), index);
+            },
+            _ => break,
+        }
+    }
+
+    expr
 }
 
 fn parse_expr(state: &mut State) -> Expr {
@@ -130,9 +264,9 @@ fn expr_bp(state: &mut State, min_bp: i32) -> Expr {
     loop {
         let t = match state.peek() {
             T![eof] => break,
-            T![function] => match parse_function(state) {
-                Either::Left(assign) => return Expr::Assign(Box::new(assign)),
-                Either::Right(function) => return Expr::Function(function),
+            T![function] => {
+                let item = parse_anon_function(state);
+                return Expr::Function(item);
             },
             t if token_is_literal(t) => {
                 let item = parse_literal(state);
@@ -152,7 +286,7 @@ fn expr_bp(state: &mut State, min_bp: i32) -> Expr {
             state.eat(T![']']);
 
             lhs = Expr::Binary(Box::new(BinaryExpr {
-                op: BinaryOp::Index,
+                op: BinaryOp::Property,
                 lhs,
                 rhs,
             }));
@@ -185,7 +319,7 @@ fn expr_bp(state: &mut State, min_bp: i32) -> Expr {
 fn expr_bp_lhs(state: &mut State) -> Expr {
     let t = state.next();
     if T![ident] == t {
-        return Expr::Variable(parse_ident(state));
+        return Expr::Ident(parse_ident(state));
     }
 
     if T!['('] == t {
@@ -402,31 +536,25 @@ fn parse_ident(state: &mut State) -> Ident {
     }
 }
 
-fn parse_function(state: &mut State) -> Either<Assign, Function> {
-    let is_local = {
-        if state.at(T![local]) {
-            state.next();
-            true
-        } else {
-            false
-        }
+fn parse_named_function(state: &mut State, is_local: bool) -> Assign {
+    state.eat(T![function]);
+    let name = parse_ident(state);
+    let function = parse_function_trail(state);
+    let target = AssignTarget {
+        target: SimpleExpr::Ident(name),
+        is_const: false,
     };
 
-    state.eat(T![function]);
-    if state.at(T![ident]) {
-        let target = parse_expr(state);
-        let item = Assign {
-            is_local,
-            is_const: false,
-            target: vec![target],
-            value: vec![Expr::Function(parse_function_trail(state))],
-        };
-
-        return Either::Left(item);
-    } else {
-        let item = parse_function_trail(state);
-        return Either::Right(item);
+    Assign {
+        is_local,
+        target: vec![target],
+        value: vec![Expr::Function(function)],
     }
+}
+
+fn parse_anon_function(state: &mut State) -> Function {
+    state.eat(T![function]);
+    parse_function_trail(state)
 }
 
 fn parse_function_trail(state: &mut State) -> Function {
@@ -551,8 +679,25 @@ fn parse_hex_float(state: &mut State) -> f64 {
     }
 }
 
-fn parse_function_call(state: &mut State) -> FunctionCall {
-    todo!()
+fn parse_function_call(state: &mut State) -> Vec<Expr> {
+    state.next();
+    let mut args = Vec::new();
+
+    loop {
+        match state.peek() {
+            T![')'] => {
+                state.next();
+                break;
+            },
+            T![,] => continue,
+            _ => {
+                let arg = parse_expr(state);
+                args.push(arg);
+            },
+        }
+    }
+
+    args
 }
 
 fn parse_table(state: &mut State) -> Table {
@@ -570,7 +715,7 @@ fn parse_table(state: &mut State) -> Table {
             _ => {
                 let first = parse_expr(state);
 
-                if matches!(first, Expr::Variable(_)) && state.at(T![=]) {
+                if matches!(first, Expr::Ident(_)) && state.at(T![=]) {
                     state.next();
                     let value = parse_expr(state);
                     elements.push(TableElement {
@@ -656,7 +801,6 @@ fn token_to_binary_op(token: Token) -> BinaryOp {
         T![<] => BinaryOp::Greater,
         T![>] => BinaryOp::Lesser,
         T![.] => BinaryOp::Property,
-        T![:] => BinaryOp::Method,
         T![..] => BinaryOp::Concat,
         _ => todo!(),
     }
@@ -685,20 +829,20 @@ fn token_is_other_op(token: Token) -> bool {
             | T![>=]
             | T![<]
             | T![>]
-            | T![:]
             | T![.]
             | T![..]
             | T!['[']
     )
 }
 
-// TODO: use location specifiers instead of exprs where applicable
+// TODO: parse function calls
+// TODO: parse dot and colon
 // TODO: handle newline and semicolon and eof
 // TODO: error handling
 // TODO: use peek instead of next?
 // TODO: eat/next?
 // TODO: force comma in lists
-// TODO: Support various string escape sequences.
+// TODO: support various string escape sequences
 
 #[cfg(test)]
 mod tests {

@@ -4,7 +4,7 @@ use logos::{Lexer, Logos};
 
 #[derive(Logos, Debug, PartialEq, Clone, Copy)]
 pub enum Token {
-    // General
+    // Miscellaneous
     #[token("--", logos::skip)]
     #[regex(r"--\[=*\[", skip_long_comment)]
     #[error]
@@ -16,7 +16,7 @@ pub enum Token {
     #[regex(r"(\n|\r\n)+")]
     EndStatement,
 
-    #[regex(r"[a-zA-Z][a-zA-Z0-9]*")]
+    #[regex(r"[a-zA-Z][a-zA-Z0-9]+", priority = 3)]
     Ident,
 
     // Character operators

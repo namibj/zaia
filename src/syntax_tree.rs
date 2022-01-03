@@ -5,7 +5,7 @@ pub struct SyntaxTree {
 
 #[derive(Debug, PartialEq)]
 pub enum Stmt {
-    Expr(Expr),
+    SimpleExpr(SimpleExpr),
     Label(Label),
     Do(Do),
     While(While),
@@ -14,6 +14,7 @@ pub enum Stmt {
     ForNumeric(ForNumeric),
     ForGeneric(ForGeneric),
     Return(Return),
+    Assign(Assign),
     Break,
 }
 
@@ -74,23 +75,48 @@ pub struct Label {
 }
 
 #[derive(Debug, PartialEq)]
+pub enum SimpleExpr {
+    Ident(Ident),
+    Property(Box<Self>, Expr),
+    FunctionCall(FunctionCall),
+}
+
+#[derive(Debug, PartialEq)]
 pub enum Expr {
-    Variable(Ident),
+    Ident(Ident),
     Unary(Box<UnaryExpr>),
     Binary(Box<BinaryExpr>),
     Function(Function),
     Literal(Literal),
     FunctionCall(Box<FunctionCall>),
     Table(Table),
-    Assign(Box<Assign>),
+}
+
+impl From<SimpleExpr> for Expr {
+    fn from(simple_expr: SimpleExpr) -> Self {
+        match simple_expr {
+            SimpleExpr::Ident(ident) => Expr::Ident(ident),
+            SimpleExpr::Property(simple_expr, index) => Expr::Binary(Box::new(BinaryExpr {
+                lhs: Expr::from(*simple_expr),
+                op: BinaryOp::Property,
+                rhs: index,
+            })),
+            SimpleExpr::FunctionCall(function_call) => Expr::FunctionCall(Box::new(function_call)),
+        }
+    }
 }
 
 #[derive(Debug, PartialEq)]
 pub struct Assign {
     pub is_local: bool,
-    pub is_const: bool,
-    pub target: Vec<Expr>,
+    pub target: Vec<AssignTarget>,
     pub value: Vec<Expr>,
+}
+
+#[derive(Debug, PartialEq)]
+pub struct AssignTarget {
+    pub target: SimpleExpr,
+    pub is_const: bool,
 }
 
 #[derive(Debug, PartialEq)]
@@ -106,6 +132,7 @@ pub struct TableElement {
 
 #[derive(Debug, PartialEq)]
 pub struct FunctionCall {
+    pub this: Option<Expr>,
     pub func: Expr,
     pub args: Vec<Expr>,
 }
@@ -166,9 +193,7 @@ pub enum BinaryOp {
     Lesser,
     Greater,
     Property,
-    Method,
     Concat,
-    Index,
 }
 
 #[derive(Debug, PartialEq)]
