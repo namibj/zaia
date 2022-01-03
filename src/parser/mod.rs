@@ -702,17 +702,52 @@ fn token_is_other_op(token: Token) -> bool {
 
 #[cfg(test)]
 mod tests {
+    use super::parse;
+    use std::fs::{read_to_string, read_dir};
+    use super::super::syntax_tree::{
+        Assign,
+        BinaryExpr,
+        BinaryOp,
+        Do,
+        Expr,
+        ForGeneric,
+        ForNumeric,
+        Function,
+        FunctionCall,
+        Ident,
+        If,
+        IfChain,
+        Label,
+        Literal,
+        NumLiteral,
+        Repeat,
+        Return,
+        Stmt,
+        SyntaxTree,
+        Table,
+        TableElement,
+        UnaryExpr,
+        UnaryOp,
+        While,
+    };
+
     #[test]
-    fn parse_run_tests() {
-        use super::parse;
-        use std::fs::{read_to_string, read_dir};
-        
-        for entry in read_dir("test-files/run").unwrap() {
+    fn parse_check_tests() {
+        for entry in read_dir("test-files/check").unwrap() {
             let entry = entry.unwrap();
             let path = entry.path();
-            let contents = read_to_string(path).unwrap();
-            let (_syntax_tree, reports) = parse(&contents);
+            let source = read_to_string(path).unwrap();
+            let (_syntax_tree, reports) = parse(&source);
             assert!(reports.is_empty());
         }
+    }
+
+    #[test]
+    fn parse_and_verify_simple_calc() {
+        let source = read_to_string("test-files/simple/calc.lua").unwrap();
+        let (syntax_tree, reports) = parse(&source);
+        assert!(reports.is_empty());
+        let expected = SyntaxTree{block:Vec::new()};
+        assert_eq!(expected, syntax_tree);
     }
 }
