@@ -489,27 +489,23 @@ fn parse_literal(state: &mut State) -> Literal {
     }
 }
 
-// TODO: Support strings using single quotes.
 // TODO: Support various escape sequences.
 fn parse_string(state: &mut State) -> String {
     state.eat(T![string]);
     let mut value = String::new();
     let mut chars = state.slice().chars();
     let mut escaped = false;
-    chars.next();
+    let delim = chars.next().unwrap();
 
-    for char in state.slice().chars() {
+    for char in chars {
         match char {
-            '"' if !escaped => break,
-            '\\' if !escaped => escaped = true,
-            '\\' if escaped => {
-                escaped = false;
+            _ if escaped => {
                 value.push(char);
-            },
-            _ => {
                 escaped = false;
-                value.push(char);
             },
+            '\\' => escaped = true,
+            _ if char == delim => break,
+            _ => value.push(char),
         }
     }
 
