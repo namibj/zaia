@@ -12,6 +12,20 @@ providing datastructures and algorithms.
 Performance does matter, but it is of secondary priority in contrast to the above goals as they are often
 the limiting factors in adoption and widespread use.
 
+## Where are we today?
+
+Zaia currently provides a mostly compliant Lua 5.4 implementation that will run the majority of scripts.
+It provides an intuitive and easy to use API that is easy to extend and integrate into existing Rust projects
+and there is also a CLI tool available for running standalone Lua scripts from the terminal.
+
+## Long term goals
+
+- Provide a widely accepted source code formatter.
+- Provide a widely accepted source code linter.
+- Provide bindings to C and C++.
+- Extend the Lua language in meaningful ways with new features and built-in libraries.
+- Provide acceptable performance for the majority of use cases with a bytecode virtual machine.
+
 ## Conformance
 
 Zaia currently targets Lua 5.4. We expect to support newer versions as they come out
