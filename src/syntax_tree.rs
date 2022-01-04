@@ -14,6 +14,7 @@ pub enum Stmt {
     ForNumeric(ForNumeric),
     ForGeneric(ForGeneric),
     Return(Return),
+    Declare(Declare),
     Assign(Assign),
     Break,
 }
@@ -114,14 +115,19 @@ impl From<SimpleExpr> for Expr {
 
 #[derive(Debug, PartialEq)]
 pub struct Assign {
-    pub is_local: bool,
-    pub target: Vec<AssignTarget>,
+    pub target: Vec<SimpleExpr>,
     pub value: Vec<Expr>,
 }
 
 #[derive(Debug, PartialEq)]
-pub struct AssignTarget {
-    pub target: SimpleExpr,
+pub struct Declare {
+    pub declarations: Vec<Declaration>,
+    pub assign: Option<Assign>,
+}
+
+#[derive(Debug, PartialEq)]
+pub struct Declaration {
+    pub name: Ident,
     pub is_const: bool,
 }
 
@@ -148,7 +154,7 @@ pub struct Function {
     pub block: Vec<Stmt>,
 }
 
-#[derive(Debug, PartialEq)]
+#[derive(Debug, PartialEq, Clone)]
 pub struct Ident {
     pub name: String,
 }

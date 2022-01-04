@@ -23,7 +23,10 @@ impl<'source> State<'source> {
     }
 
     pub fn peek(&mut self) -> Token {
-        self.tokens.get(self.cursor+1).map(|(token, _)| *token).unwrap_or(T![eof])
+        self.tokens
+            .get(self.cursor + 1)
+            .map(|(token, _)| *token)
+            .unwrap_or(T![eof])
     }
 
     pub fn at(&mut self, token: Token) -> bool {
@@ -43,13 +46,10 @@ impl<'source> State<'source> {
             let found_message = format!("Expected {:?} but found {:?}", token, found_name);
             let span = self.span();
 
-            let report =
-                ariadne::Report::build(ariadne::ReportKind::Error, (), span.start)
-                    .with_message("Unexpected token")
-                    .with_label(
-                        ariadne::Label::new(span).with_message(found_message),
-                    )
-                    .finish();
+            let report = ariadne::Report::build(ariadne::ReportKind::Error, (), span.start)
+                .with_message("Unexpected token")
+                .with_label(ariadne::Label::new(span).with_message(found_message))
+                .finish();
 
             self.reports.push(report);
         }
@@ -57,7 +57,10 @@ impl<'source> State<'source> {
 
     pub fn next(&mut self) -> Token {
         self.cursor += 1;
-        self.tokens.get(self.cursor).map(|(token, _)| *token).unwrap_or(T![eof])
+        self.tokens
+            .get(self.cursor)
+            .map(|(token, _)| *token)
+            .unwrap_or(T![eof])
     }
 
     pub fn span(&self) -> Range<usize> {
