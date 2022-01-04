@@ -276,7 +276,7 @@ fn expr_bp(state: &mut State, min_bp: i32) -> Expr {
                 return Expr::Table(item);
             },
             t if token_is_other_op(t) => t,
-            _ => todo!(),
+            t => panic!("invalid token {:?}", t),
         };
 
         if t == T!['('] && CALL_BINDING_POWER >= min_bp {
@@ -339,7 +339,7 @@ fn expr_bp_lhs(state: &mut State) -> Expr {
         return Expr::Unary(Box::new(UnaryExpr { op, expr: rhs }));
     }
 
-    todo!()
+    panic!("invalid token {:?}", t);
 }
 
 fn parse_label(state: &mut State) -> Label {
@@ -499,7 +499,7 @@ fn parse_for_generic(state: &mut State, first_var: Ident) -> ForGeneric {
                 state.next();
                 break;
             },
-            _ => todo!(),
+            t => panic!("invalid token {:?}", t),
         }
     }
 
@@ -578,7 +578,7 @@ fn parse_function_trail(state: &mut State) -> Function {
                 break;
             },
             T![,] => continue,
-            _ => todo!(),
+            t => panic!("invalid token {:?}", t),
         }
     }
 
@@ -618,7 +618,7 @@ fn parse_literal(state: &mut State) -> Literal {
         T![hex_int] => Literal::Num(NumLiteral::Int(parse_hex_int(state))),
         T![float] => Literal::Num(NumLiteral::Float(parse_float(state))),
         T![hex_float] => Literal::Num(NumLiteral::Float(parse_hex_float(state))),
-        _ => todo!(),
+        t => panic!("invalid token {:?}", t),
     }
 }
 
@@ -804,7 +804,7 @@ fn token_to_binary_op(token: Token) -> BinaryOp {
         T![.] => BinaryOp::Property,
         T![:] => BinaryOp::Method,
         T![..] => BinaryOp::Concat,
-        _ => todo!(),
+        t => panic!("invalid token {:?}", t),
     }
 }
 
@@ -839,7 +839,6 @@ fn token_is_other_op(token: Token) -> bool {
 }
 
 // TODO: handle newline and semicolon and eof
-// TODO: error handling
 // TODO: use peek instead of next?
 // TODO: eat/next?
 // TODO: force comma in lists

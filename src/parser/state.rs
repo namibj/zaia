@@ -35,12 +35,12 @@ impl<'source> State<'source> {
 
         if found != token {
             let found_name = if token == found {
-                token.to_string()
+                format!("{:?}", found)
             } else {
                 "NONE".to_string()
             };
 
-            let found_message = format!("Expected {} but found {}", token, found_name);
+            let found_message = format!("Expected {:?} but found {:?}", token, found_name);
             let span = self.span();
 
             let report =
