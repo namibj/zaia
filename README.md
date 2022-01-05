@@ -15,7 +15,7 @@ the limiting factors in adoption and widespread use.
 ## Where are we today?
 
 Zaia currently provides a mostly compliant Lua 5.4 implementation that will run the majority of scripts.
-It provides an intuitive and easy to use API that is easy to extend and integrate into existing Rust projects
+It provides an intuitive and easy to use API makes extending the language and integrating it into Rust projects a breeze
 and there is also a CLI tool available for running standalone Lua scripts from the terminal.
 
 ## Long term goals
