@@ -658,33 +658,43 @@ fn parse_literal(state: &mut State) -> Literal {
     }
 }
 
-fn parse_string(state: &mut State) -> String {
+fn parse_string(state: &mut State) -> Vec<u8> {
     state.eat(T![string]);
-    let mut value = String::new();
+    let mut value = Vec::new();
     let mut chars = state.slice().chars();
     let mut escaped = false;
     let delim = chars.next().unwrap();
 
+    let mut add = |ch: char| {
+        let mut buf = [0; 4];
+        let len = ch.encode_utf8(&mut buf).len();
+        value.extend_from_slice(&buf[..len]);
+    };
+
     for ch in chars {
         match ch {
             _ if escaped => {
-                value.push(ch);
+                add(ch);
                 escaped = false;
             },
             '\\' => escaped = true,
             _ if ch == delim => (),
-            _ => value.push(ch),
+            _ => add(ch),
         }
     }
 
     value
 }
 
-fn parse_long_string(state: &mut State) -> String {
+fn parse_long_string(state: &mut State) -> Vec<u8> {
     let mut chars = state.slice().chars();
     chars.next();
     let delim_len = chars.by_ref().take_while(|c| *c != '[').count() + 1;
-    chars.take(state.slice().len() - delim_len * 2).collect()
+
+    chars
+        .take(state.slice().len() - delim_len * 2)
+        .collect::<String>()
+        .into_bytes()
 }
 
 fn parse_int(state: &mut State) -> i64 {

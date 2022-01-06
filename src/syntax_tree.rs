@@ -213,7 +213,7 @@ pub enum Literal {
     Nil,
     Boolean(bool),
     Num(NumLiteral),
-    String(String),
+    String(Vec<u8>),
 }
 
 #[derive(Debug, PartialEq)]
