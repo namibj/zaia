@@ -157,8 +157,8 @@ pub enum Token {
     #[token("false")]
     False,
 
-    #[regex(r#""((\\"|\\\\)|[^\\"])*""#)]
-    #[regex(r#"'((\\'|\\\\)|[^\\'])*'"#)]
+    #[regex(r#""(\\[\\"]|[^"])*""#)]
+    #[regex(r#"'(\\[\\']|[^'])*'"#)]
     String,
 
     #[regex(r"\[=*\[", long_string)]

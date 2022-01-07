@@ -2,6 +2,8 @@ mod binding_power;
 mod state;
 mod token;
 
+use std::str;
+
 use binding_power::{
     infix_binding_power,
     prefix_binding_power,
@@ -42,7 +44,7 @@ use super::syntax_tree::{
     UnaryOp,
     While,
 };
-use crate::T;
+use crate::{utf8, T};
 
 pub fn parse(source: &str) -> (SyntaxTree, Vec<ariadne::Report>) {
     let mut state = State::new(source);
@@ -661,25 +663,105 @@ fn parse_literal(state: &mut State) -> Literal {
 fn parse_string(state: &mut State) -> Vec<u8> {
     state.eat(T![string]);
     let mut value = Vec::new();
-    let mut chars = state.slice().chars();
-    let mut escaped = false;
-    let delim = chars.next().unwrap();
+    let chars = state.slice().chars().collect::<Vec<char>>();
+    let delim = chars[0];
+    let mut i = 0;
 
-    let mut add = |ch: char| {
-        let mut buf = [0; 4];
-        let len = ch.encode_utf8(&mut buf).len();
-        value.extend_from_slice(&buf[..len]);
-    };
+    macro_rules! add {
+        (byte $b:expr) => {{
+            value.push($b);
+        }};
 
-    for ch in chars {
-        match ch {
-            _ if escaped => {
-                add(ch);
-                escaped = false;
+        (bytes $s:expr) => {{
+            value.extend_from_slice(&$s);
+        }};
+
+        (char $c:expr) => {{
+            let mut buf = [0; 4];
+            value.extend_from_slice($c.encode_utf8(&mut buf).as_bytes());
+        }};
+    }
+
+    macro_rules! peek {
+        () => {{
+            let i = i + 1;
+
+            if i >= chars.len() {
+                panic!("unterminated string");
+            }
+
+            chars[i]
+        }};
+    }
+
+    macro_rules! eat {
+        () => {{
+            i += 1;
+
+            if i >= chars.len() {
+                panic!("unterminated string");
+            }
+
+            chars[i]
+        }};
+    }
+
+    loop {
+        match eat!() {
+            '\\' => match eat!() {
+                'a' => add!(byte b'\x07'),
+                'b' => add!(byte b'\x08'),
+                'f' => add!(byte b'\x0c'),
+                'n' => add!(byte b'\n'),
+                'r' => add!(byte b'\r'),
+                't' => add!(byte b'\t'),
+                'v' => add!(byte b'\x0b'),
+                'z' => todo!(),
+                'x' => {
+                    let mut buf = [0; 2];
+                    let mut grab_hex = || {
+                        let char = eat!();
+                        assert!(char.is_ascii_hexdigit());
+                        char as u8
+                    };
+
+                    buf[0] = grab_hex();
+                    buf[1] = grab_hex();
+                    let str = str::from_utf8(&buf).unwrap();
+                    let num = u8::from_str_radix(str, 16).unwrap();
+                    add!(byte num);
+                },
+                'u' => {
+                    assert!(eat!() == '{');
+                    let mut digits = String::new();
+
+                    while peek!().is_ascii_hexdigit() {
+                        digits.push(eat!());
+                    }
+
+                    assert!(eat!() == '}');
+                    let num = u32::from_str_radix(&digits, 16).unwrap();
+                    assert!(num < 2 << 31);
+                    let seq = utf8::encode_codepoint(num);
+                    add!(bytes seq);
+                },
+                ch if ch.is_ascii_digit() => {
+                    let mut digits = ch.to_string();
+
+                    for _ in 0..3 {
+                        match peek!() {
+                            ch if ch.is_ascii_digit() => {
+                                eat!();
+                                digits.push(ch);
+                            },
+                            _ => break,
+                        }
+                    }
+                },
+                ch => add!(char ch),
             },
-            '\\' => escaped = true,
-            _ if ch == delim => (),
-            _ => add(ch),
+            ch if ch == delim => break,
+            ch => add!(char ch),
         }
     }
 
@@ -897,7 +979,6 @@ fn token_is_other_op(token: Token) -> bool {
     )
 }
 
-// TODO: support various string escape sequences
 // TODO: error handling
 // TODO: handle newline and semicolon and eof
 
