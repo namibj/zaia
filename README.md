@@ -20,11 +20,11 @@ and there is also a CLI tool available for running standalone Lua scripts from t
 
 ## Long term goals
 
-- Provide bindings to C and C++.
 - Extend the Lua language in meaningful ways with new features and built-in libraries.
 - Provide acceptable performance for the majority of use cases with a bytecode virtual machine.
 - Provide a widely accepted source code formatter.
 - Provide a widely accepted source code linter.
+- Provide bindings to C and C++.
 
 ## Conformance
 

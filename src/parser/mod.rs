@@ -1,4 +1,5 @@
 mod binding_power;
+mod classifiers;
 mod state;
 mod token;
 
@@ -10,41 +11,43 @@ use binding_power::{
     CALL_BINDING_POWER,
     INDEX_BINDING_POWER,
 };
+use classifiers::{token_is_literal, token_is_other_op, token_to_binary_op, token_to_unary_op};
 use either::Either;
 use hexf_parse::parse_hexf64;
 use state::State;
-use token::Token;
 
-use super::syntax_tree::{
-    Assign,
-    BinaryExpr,
-    BinaryOp,
-    Declaration,
-    Declare,
-    Do,
-    Expr,
-    ForGeneric,
-    ForNumeric,
-    Function,
-    FunctionCall,
-    Ident,
-    If,
-    IfChain,
-    Label,
-    Literal,
-    NumLiteral,
-    Repeat,
-    Return,
-    SimpleExpr,
-    Stmt,
-    SyntaxTree,
-    Table,
-    TableElement,
-    UnaryExpr,
-    UnaryOp,
-    While,
+use crate::{
+    syntax_tree::{
+        Assign,
+        BinaryExpr,
+        BinaryOp,
+        Declaration,
+        Declare,
+        Do,
+        Expr,
+        ForGeneric,
+        ForNumeric,
+        Function,
+        FunctionCall,
+        Ident,
+        If,
+        IfChain,
+        Label,
+        Literal,
+        NumLiteral,
+        Repeat,
+        Return,
+        SimpleExpr,
+        Stmt,
+        SyntaxTree,
+        Table,
+        TableElement,
+        UnaryExpr,
+        While,
+    },
+    utf8,
+    T,
 };
-use crate::{utf8, T};
 
 pub fn parse(source: &str) -> (SyntaxTree, Vec<ariadne::Report>) {
     let mut state = State::new(source);
@@ -58,6 +61,12 @@ pub fn parse(source: &str) -> (SyntaxTree, Vec<ariadne::Report>) {
                 block.push(stmt);
             },
         }
+
+        if state.at(T![endstmt]) {
+            continue;
+        }
+
+        break;
     }
 
     (SyntaxTree { block }, state.result())
@@ -68,7 +77,7 @@ fn parse_block(state: &mut State) -> Vec<Stmt> {
 
     loop {
         match state.peek() {
-            T![eof] => break,
+            T![eof] => panic!("unexpected eof"),
             T![end] => {
                 state.eat(T![end]);
                 break;
@@ -78,6 +87,12 @@ fn parse_block(state: &mut State) -> Vec<Stmt> {
                 block.push(stmt);
             },
         }
+
+        if state.at(T![endstmt]) {
+            continue;
+        }
+
+        break;
     }
 
     block
@@ -892,91 +907,6 @@ fn parse_table_element_expr(state: &mut State) -> TableElement {
         key: Some(key),
         value,
     }
-}
-
-fn token_is_literal(token: Token) -> bool {
-    matches!(
-        token,
-        T![nil]
-            | T![false]
-            | T![true]
-            | T![int]
-            | T![hex_int]
-            | T![float]
-            | T![hex_float]
-            | T![string]
-            | T![long_string]
-    )
-}
-
-fn token_to_unary_op(token: Token) -> Option<UnaryOp> {
-    match token {
-        T![not] => Some(UnaryOp::Not),
-        T![#] => Some(UnaryOp::Len),
-        T![+] => Some(UnaryOp::Pos),
-        T![-] => Some(UnaryOp::Neg),
-        T![~] => Some(UnaryOp::BitNot),
-        _ => None,
-    }
-}
-
-fn token_to_binary_op(token: Token) -> BinaryOp {
-    match token {
-        T![or] => BinaryOp::Or,
-        T![and] => BinaryOp::And,
-        T![+] => BinaryOp::Add,
-        T![-] => BinaryOp::Sub,
-        T![*] => BinaryOp::Mul,
-        T![/] => BinaryOp::Div,
-        T![D/] => BinaryOp::FloorDiv,
-        T![^] => BinaryOp::Exp,
-        T![%] => BinaryOp::Mod,
-        T![&] => BinaryOp::BitAnd,
-        T![|] => BinaryOp::BitOr,
-        T![<<] => BinaryOp::LeftShift,
-        T![>>] => BinaryOp::RightShift,
-        T![==] => BinaryOp::Equals,
-        T![~] => BinaryOp::Xor,
-        T![~=] => BinaryOp::NotEquals,
-        T![<=] => BinaryOp::LesserEquals,
-        T![>=] => BinaryOp::GreaterEquals,
-        T![<] => BinaryOp::Greater,
-        T![>] => BinaryOp::Lesser,
-        T![.] => BinaryOp::Property,
-        T![:] => BinaryOp::Method,
-        T![..] => BinaryOp::Concat,
-        t => panic!("invalid token {:?}", t),
-    }
-}
-
-fn token_is_other_op(token: Token) -> bool {
-    matches!(
-        token,
-        T![or]
-            | T![and]
-            | T![+]
-            | T![-]
-            | T![*]
-            | T![/]
-            | T![D/]
-            | T![^]
-            | T![%]
-            | T![&]
-            | T![|]
-            | T![<<]
-            | T![>>]
-            | T![==]
-            | T![~]
-            | T![~=]
-            | T![<=]
-            | T![>=]
-            | T![<]
-            | T![>]
-            | T![:]
-            | T![.]
-            | T![..]
-            | T!['[']
-    )
 }
 
 // TODO: error handling
