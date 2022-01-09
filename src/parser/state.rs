@@ -32,10 +32,11 @@ impl<'source> State<'source> {
     }
 
     pub fn eat(&mut self, token: Token) {
+        let span = self.span();
         let found = self.next();
 
         if found != token {
-            panic!("found unexpected token {}", found);
+            panic!("found unexpected token {} at {:?}", found, span);
         }
     }
 
@@ -50,7 +51,10 @@ impl<'source> State<'source> {
     }
 
     pub fn current(&self) -> Token {
-        self.tokens[self.cursor].0
+        self.tokens
+            .get(self.cursor)
+            .map(|(token, _)| *token)
+            .unwrap_or(T![eof])
     }
 
     pub fn span(&self) -> Range<usize> {

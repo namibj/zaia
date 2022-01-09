@@ -14,4 +14,4 @@ function div(a, b)
     return a / b
 end
 
-print(add(mul(3, 4), div(6, sub(3, 1))))
+--print(add(mul(3, 4), div(6, sub(3, 1))))

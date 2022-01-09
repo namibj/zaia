@@ -5,7 +5,7 @@ use logos::{Lexer, Logos};
 #[derive(Logos, Debug, PartialEq, Clone, Copy)]
 pub enum Token {
     // Miscellaneous
-    #[token("--", logos::skip)]
+    #[regex("--.*(\n|\r\n)?", logos::skip)]
     #[regex(r"--\[=*\[", skip_long_comment)]
     #[token(";", logos::skip)]
     #[regex(r"(\t|\n|\r\n)+", logos::skip)]

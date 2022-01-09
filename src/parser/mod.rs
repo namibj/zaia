@@ -80,6 +80,7 @@ fn parse_block(state: &mut State) -> Vec<Stmt> {
                 state.eat(T![end]);
                 break;
             },
+            T![eof] => panic!("unexpected token {}", T![eof]),
             _ => {
                 let stmt = parse_stmt(state);
                 block.push(stmt);
@@ -142,7 +143,7 @@ fn parse_stmt(state: &mut State) -> Stmt {
                 Stmt::SimpleExpr(target)
             }
         },
-        t => panic!("found unexpected token {}", t),
+        t => panic!("found unexpected token {} at {:?}", t, state.span()),
     }
 }
 
@@ -295,7 +296,6 @@ fn expr_bp(state: &mut State, min_bp: i32) -> Expr {
 
     loop {
         let t = match state.current() {
-            T![eof] => break,
             T![function] => {
                 let item = parse_anon_function(state);
                 return Expr::Function(item);
@@ -309,7 +309,7 @@ fn expr_bp(state: &mut State, min_bp: i32) -> Expr {
                 return Expr::Table(item);
             },
             t if token_is_other_op(t) => t,
-            t => panic!("found unexpected token {} at {:?}", t, state.span()),
+            _ => break,
         };
 
         if t == T!['('] && CALL_BINDING_POWER >= min_bp {
@@ -519,6 +519,7 @@ fn parse_for_generic(state: &mut State, first_var: Ident) -> ForGeneric {
 }
 
 fn parse_return(state: &mut State) -> Return {
+    state.eat(T![return]);
     let mut values = Vec::new();
 
     loop {
@@ -843,24 +844,13 @@ fn parse_table_element_expr(state: &mut State) -> TableElement {
 
 #[cfg(test)]
 mod tests {
-    use std::fs::{read_dir, read_to_string};
+    use std::fs::read_to_string;
 
     use super::{super::syntax_tree::SyntaxTree, parse};
 
-    //#[test]
-    // fn parse_check_tests() {
-    //    for entry in read_dir("test-files/check").unwrap() {
-    //        let entry = entry.unwrap();
-    //        let path = entry.path();
-    //        let source = read_to_string(path).unwrap();
-    //        let (_syntax_tree, reports) = parse(&source);
-    //        assert!(reports.is_empty());
-    //    }
-    //}
-
     #[test]
-    fn parse_and_verify_simple_calc() {
-        let source = read_to_string("test-files/simple/calc.lua").unwrap();
+    fn parse_and_verify_function() {
+        let source = read_to_string("test-files/function.lua").unwrap();
         let (syntax_tree, reports) = parse(&source);
         assert!(reports.is_empty());
         let expected = SyntaxTree { block: Vec::new() };
