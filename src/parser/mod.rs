@@ -143,24 +143,17 @@ fn parse_stmt(state: &mut State) -> Stmt {
 }
 
 fn parse_declaration_modifiers(state: &mut State) -> (bool, bool) {
-    let mut is_const = false;
-    let mut has_finalizer = false;
-
-    loop {
-        match state.peek() {
-            T![const] => {
-                state.eat(T![const]);
-                is_const = true;
-            },
-            T![close] => {
-                state.eat(T![close]);
-                has_finalizer = true;
-            },
-            _ => break,
-        }
+    match state.peek() {
+        T![const] => {
+            state.eat(T![const]);
+            (true, false)
+        },
+        T![close] => {
+            state.eat(T![close]);
+            (false, true)
+        },
+        _ => (false, false),
     }
-
-    (is_const, has_finalizer)
 }
 
 fn parse_declare(state: &mut State) -> Declare {
@@ -203,7 +196,7 @@ fn parse_declare(state: &mut State) -> Declare {
             has_finalizer,
         });
         match state.peek() {
-            T![,] => continue,
+            T![,] => state.eat(T![,]),
             _ => break,
         }
     }
@@ -881,4 +874,5 @@ mod tests {
     parse_and_verify!(function, "test-files/function.lua");
     parse_and_verify!(op_prec, "test-files/op_prec.lua");
     parse_and_verify!(if, "test-files/if.lua");
+    parse_and_verify!(declare, "test-files/declare.lua");
 }

@@ -1,0 +1,372 @@
+---
+source: src/parser/mod.rs
+assertion_line: 877
+expression: syntax_tree
+
+---
+SyntaxTree {
+    block: [
+        Assign(
+            Assign {
+                target: [
+                    Ident(
+                        Ident {
+                            name: "x",
+                        },
+                    ),
+                ],
+                value: [
+                    Literal(
+                        Num(
+                            Int(
+                                5,
+                            ),
+                        ),
+                    ),
+                ],
+            },
+        ),
+        Declare(
+            Declare {
+                declarations: [
+                    Declaration {
+                        name: Ident {
+                            name: "y",
+                        },
+                        is_const: false,
+                        has_finalizer: false,
+                    },
+                ],
+                assign: Some(
+                    Assign {
+                        target: [
+                            Ident(
+                                Ident {
+                                    name: "y",
+                                },
+                            ),
+                        ],
+                        value: [
+                            Literal(
+                                Num(
+                                    Int(
+                                        10,
+                                    ),
+                                ),
+                            ),
+                        ],
+                    },
+                ),
+            },
+        ),
+        Declare(
+            Declare {
+                declarations: [
+                    Declaration {
+                        name: Ident {
+                            name: "aq",
+                        },
+                        is_const: false,
+                        has_finalizer: false,
+                    },
+                    Declaration {
+                        name: Ident {
+                            name: "bf",
+                        },
+                        is_const: false,
+                        has_finalizer: false,
+                    },
+                ],
+                assign: None,
+            },
+        ),
+        Declare(
+            Declare {
+                declarations: [
+                    Declaration {
+                        name: Ident {
+                            name: "z",
+                        },
+                        is_const: true,
+                        has_finalizer: false,
+                    },
+                ],
+                assign: Some(
+                    Assign {
+                        target: [
+                            Ident(
+                                Ident {
+                                    name: "z",
+                                },
+                            ),
+                        ],
+                        value: [
+                            Literal(
+                                Num(
+                                    Int(
+                                        15,
+                                    ),
+                                ),
+                            ),
+                        ],
+                    },
+                ),
+            },
+        ),
+        Declare(
+            Declare {
+                declarations: [
+                    Declaration {
+                        name: Ident {
+                            name: "w",
+                        },
+                        is_const: false,
+                        has_finalizer: true,
+                    },
+                ],
+                assign: Some(
+                    Assign {
+                        target: [
+                            Ident(
+                                Ident {
+                                    name: "w",
+                                },
+                            ),
+                        ],
+                        value: [
+                            Literal(
+                                String(
+                                    [
+                                        97,
+                                        98,
+                                        115,
+                                    ],
+                                ),
+                            ),
+                        ],
+                    },
+                ),
+            },
+        ),
+        Assign(
+            Assign {
+                target: [
+                    Ident(
+                        Ident {
+                            name: "i",
+                        },
+                    ),
+                    Ident(
+                        Ident {
+                            name: "k",
+                        },
+                    ),
+                ],
+                value: [
+                    FunctionCall(
+                        FunctionCall {
+                            func: Ident(
+                                Ident {
+                                    name: "get",
+                                },
+                            ),
+                            args: [],
+                        },
+                    ),
+                    Literal(
+                        String(
+                            [
+                                111,
+                                116,
+                                104,
+                                101,
+                                114,
+                                49,
+                            ],
+                        ),
+                    ),
+                ],
+            },
+        ),
+        Declare(
+            Declare {
+                declarations: [
+                    Declaration {
+                        name: Ident {
+                            name: "r",
+                        },
+                        is_const: false,
+                        has_finalizer: false,
+                    },
+                    Declaration {
+                        name: Ident {
+                            name: "g",
+                        },
+                        is_const: false,
+                        has_finalizer: false,
+                    },
+                ],
+                assign: Some(
+                    Assign {
+                        target: [
+                            Ident(
+                                Ident {
+                                    name: "r",
+                                },
+                            ),
+                            Ident(
+                                Ident {
+                                    name: "g",
+                                },
+                            ),
+                        ],
+                        value: [
+                            FunctionCall(
+                                FunctionCall {
+                                    func: Ident(
+                                        Ident {
+                                            name: "getf",
+                                        },
+                                    ),
+                                    args: [],
+                                },
+                            ),
+                            Literal(
+                                String(
+                                    [
+                                        111,
+                                        116,
+                                        104,
+                                        101,
+                                        114,
+                                        50,
+                                    ],
+                                ),
+                            ),
+                        ],
+                    },
+                ),
+            },
+        ),
+        Declare(
+            Declare {
+                declarations: [
+                    Declaration {
+                        name: Ident {
+                            name: "f",
+                        },
+                        is_const: true,
+                        has_finalizer: false,
+                    },
+                    Declaration {
+                        name: Ident {
+                            name: "v",
+                        },
+                        is_const: true,
+                        has_finalizer: false,
+                    },
+                ],
+                assign: Some(
+                    Assign {
+                        target: [
+                            Ident(
+                                Ident {
+                                    name: "f",
+                                },
+                            ),
+                            Ident(
+                                Ident {
+                                    name: "v",
+                                },
+                            ),
+                        ],
+                        value: [
+                            FunctionCall(
+                                FunctionCall {
+                                    func: Ident(
+                                        Ident {
+                                            name: "getw",
+                                        },
+                                    ),
+                                    args: [],
+                                },
+                            ),
+                            Literal(
+                                String(
+                                    [
+                                        111,
+                                        116,
+                                        104,
+                                        101,
+                                        114,
+                                        51,
+                                    ],
+                                ),
+                            ),
+                        ],
+                    },
+                ),
+            },
+        ),
+        Declare(
+            Declare {
+                declarations: [
+                    Declaration {
+                        name: Ident {
+                            name: "p",
+                        },
+                        is_const: false,
+                        has_finalizer: true,
+                    },
+                    Declaration {
+                        name: Ident {
+                            name: "o",
+                        },
+                        is_const: false,
+                        has_finalizer: true,
+                    },
+                ],
+                assign: Some(
+                    Assign {
+                        target: [
+                            Ident(
+                                Ident {
+                                    name: "p",
+                                },
+                            ),
+                            Ident(
+                                Ident {
+                                    name: "o",
+                                },
+                            ),
+                        ],
+                        value: [
+                            FunctionCall(
+                                FunctionCall {
+                                    func: Ident(
+                                        Ident {
+                                            name: "getq",
+                                        },
+                                    ),
+                                    args: [],
+                                },
+                            ),
+                            Literal(
+                                String(
+                                    [
+                                        111,
+                                        116,
+                                        104,
+                                        101,
+                                        114,
+                                        52,
+                                    ],
+                                ),
+                            ),
+                        ],
+                    },
+                ),
+            },
+        ),
+    ],
+}
