@@ -859,15 +859,13 @@ fn parse_table_element_expr(state: &mut State) -> TableElement {
 #[cfg(test)]
 mod tests {
     use std::fs::read_to_string;
-
-    use super::{super::syntax_tree::SyntaxTree, parse};
+    use super::parse;
 
     #[test]
     fn parse_and_verify_function() {
         let source = read_to_string("test-files/function.lua").unwrap();
         let (syntax_tree, reports) = parse(&source);
         assert!(reports.is_empty());
-        let expected = SyntaxTree { block: Vec::new() };
-        assert_eq!(expected, syntax_tree);
+        insta::assert_debug_snapshot!(syntax_tree);
     }
 }
