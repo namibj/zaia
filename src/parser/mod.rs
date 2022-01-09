@@ -859,6 +859,7 @@ fn parse_table_element_expr(state: &mut State) -> TableElement {
 #[cfg(test)]
 mod tests {
     use std::fs::read_to_string;
+
     use super::parse;
 
     #[test]
