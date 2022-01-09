@@ -1,6 +1,6 @@
 # Zaia
 
-Zaia is an implementation of the Lua language that is designed to be easy and flexible,
+Zaia is a dialect of the Lua language that is designed to be easy and flexible,
 promoting integration and extensibility within modern software.
 
 ## Ethos
