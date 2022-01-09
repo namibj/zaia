@@ -46,6 +46,7 @@ pub fn token_is_other_op(token: Token) -> bool {
             | T![.]
             | T![..]
             | T!['[']
+            | T!['(']
     )
 }
 

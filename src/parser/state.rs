@@ -14,7 +14,8 @@ pub struct State<'source> {
 
 impl<'source> State<'source> {
     pub fn new(source: &'source str) -> Self {
-        let tokens = Token::lexer(source).spanned().collect();
+        let mut tokens = vec![(T![eof], 0..0)];
+        tokens.extend(Token::lexer(source).spanned());
 
         State {
             tokens,
@@ -32,29 +33,21 @@ impl<'source> State<'source> {
     }
 
     pub fn eat(&mut self, token: Token) {
+        self.bump();
         let span = self.span();
-        let found = self.next();
+        let found = self
+            .tokens
+            .get(self.cursor)
+            .map(|(token, _)| *token)
+            .unwrap_or(T![eof]);
 
         if found != token {
             panic!("found unexpected token {} at {:?}", found, span);
         }
     }
 
-    pub fn next(&mut self) -> Token {
-        let position = self.cursor;
+    pub fn bump(&mut self) {
         self.cursor += 1;
-
-        self.tokens
-            .get(position)
-            .map(|(token, _)| *token)
-            .unwrap_or(T![eof])
-    }
-
-    pub fn current(&self) -> Token {
-        self.tokens
-            .get(self.cursor)
-            .map(|(token, _)| *token)
-            .unwrap_or(T![eof])
     }
 
     pub fn span(&self) -> Range<usize> {
