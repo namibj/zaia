@@ -92,6 +92,6 @@ pub fn token_to_binary_op(token: Token) -> BinaryOp {
         T![.] => BinaryOp::Property,
         T![:] => BinaryOp::Method,
         T![..] => BinaryOp::Concat,
-        t => panic!("invalid token {:?}", t),
+        t => unreachable!(),
     }
 }
