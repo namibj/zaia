@@ -3,7 +3,7 @@ mod classifiers;
 mod state;
 mod token;
 
-use std::str;
+use std::{str, str::FromStr};
 
 use binding_power::{
     infix_binding_power,
@@ -13,7 +13,6 @@ use binding_power::{
 };
 use classifiers::{token_is_expr_start, token_is_literal, token_to_binary_op, token_to_unary_op};
 use either::Either;
-use hexf_parse::parse_hexf64;
 use state::State;
 
 use crate::{
@@ -143,24 +142,17 @@ fn parse_stmt(state: &mut State) -> Stmt {
 }
 
 fn parse_declaration_modifiers(state: &mut State) -> (bool, bool) {
-    let mut is_const = false;
-    let mut has_finalizer = false;
-
-    loop {
-        match state.peek() {
-            T![const] => {
-                state.eat(T![const]);
-                is_const = true;
-            },
-            T![close] => {
-                state.eat(T![close]);
-                has_finalizer = true;
-            },
-            _ => break,
-        }
+    match state.peek() {
+        T![const] => {
+            state.eat(T![const]);
+            (true, false)
+        },
+        T![close] => {
+            state.eat(T![close]);
+            (false, true)
+        },
+        _ => (false, false),
     }
-
-    (is_const, has_finalizer)
 }
 
 fn parse_declare(state: &mut State) -> Declare {
@@ -203,7 +195,7 @@ fn parse_declare(state: &mut State) -> Declare {
             has_finalizer,
         });
         match state.peek() {
-            T![,] => continue,
+            T![,] => state.eat(T![,]),
             _ => break,
         }
     }
@@ -371,6 +363,11 @@ fn expr_bp_lhs(state: &mut State) -> Expr {
         return Expr::Ident(parse_ident(state));
     }
 
+    if T!['{'] == t {
+        let item = parse_table(state);
+        return Expr::Table(item);
+    }
+
     if T!['('] == t {
         state.eat(T!['(']);
         let lhs = expr_bp(state, 0);
@@ -440,11 +437,13 @@ fn parse_if(state: &mut State) -> If {
             T![else] => {
                 state.eat(T![else]);
                 let else_block = parse_block(state);
-                chain = Some(Box::new(IfChain::Else(else_block)))
+                chain = Some(Box::new(IfChain::Else(else_block)));
+                break;
             },
             T![elseif] => {
                 let elseif = parse_if(state);
                 chain = Some(Box::new(IfChain::ElseIf(elseif)));
+                break;
             },
             T![end] => {
                 state.eat(T![end]);
@@ -732,9 +731,10 @@ fn parse_string(state: &mut State) -> Vec<u8> {
 }
 
 fn parse_long_string(state: &mut State) -> Vec<u8> {
+    state.eat(T![long_string]);
     let mut chars = state.slice().chars();
     chars.next();
-    let delim_len = chars.by_ref().take_while(|c| *c != '[').count() + 1;
+    let delim_len = chars.by_ref().take_while(|c| *c != '[').count() + 2;
 
     chars
         .take(state.slice().len() - delim_len * 2)
@@ -761,11 +761,11 @@ fn parse_float(state: &mut State) -> f64 {
 fn parse_hex_float(state: &mut State) -> f64 {
     state.eat(T![hex_float]);
 
-    if let Ok(value) = parse_hexf64(state.slice(), true) {
-        value
-    } else {
-        panic!("invalid hex float literal");
-    }
+    let raw = state.slice();
+    hexponent::FloatLiteral::from_str(raw)
+        .unwrap()
+        .convert()
+        .inner()
 }
 
 fn parse_function_call(state: &mut State) -> Vec<Expr> {
@@ -878,4 +878,7 @@ mod tests {
 
     parse_and_verify!(function, "test-files/function.lua");
     parse_and_verify!(op_prec, "test-files/op_prec.lua");
+    parse_and_verify!(if, "test-files/if.lua");
+    parse_and_verify!(declare, "test-files/declare.lua");
+    parse_and_verify!(literal, "test-files/literal.lua");
 }

@@ -15,7 +15,7 @@ pub enum Token {
 
     Eof,
 
-    #[regex(r"[a-zA-Z][a-zA-Z0-9]*", priority = 3)]
+    #[regex(r"[a-zA-Z_][a-zA-Z0-9_]*", priority = 3)]
     Ident,
 
     // Character operators
@@ -169,7 +169,7 @@ pub enum Token {
     #[regex(r"0x[0-9a-fA-F]+")]
     HexInt,
 
-    #[regex(r"[0-9]*\.[0-9]+([eE][+-][0-9]+)?")]
+    #[regex(r"[0-9]+\.[0-9]+([eE][+-]?[0-9]+)?")]
     Float,
 
     #[regex(r"0x[0-9a-fA-F]*\.[0-9a-fA-F]+([pP][+-][0-9a-fA-F]+)?")]
@@ -207,50 +207,48 @@ pub enum Token {
     TDot,
 }
 
-fn long_string(lex: &mut Lexer<Token>) -> bool {
-    let count = lex.slice().len() - 1;
-    let rem = lex.remainder();
-
-    for (i, _) in rem.char_indices() {
-        match rem.get(i..i + count) {
-            Some(slice) =>
-                if is_long_delimiter(slice, ']') {
-                    lex.bump(i + 1);
-                    return true;
-                },
-
-            None => break,
+fn long_string(lexer: &mut Lexer<Token>) -> bool {
+    fn is_long_delimiter(slice: &str) -> bool {
+        if slice.len() < 2 || !slice.starts_with(']') || !slice.ends_with(']') {
+            return false;
         }
+
+        slice.chars().filter(|c| *c == '=').count() + 2 == slice.len()
     }
 
-    false
-}
-
-fn skip_long_comment(lexer: &mut Lexer<Token>) -> logos::Skip {
-    let count = lexer.slice().len() - 2;
+    let delim_len = lexer.slice().len();
     let rem = lexer.remainder();
 
     for (i, _) in rem.char_indices() {
-        match rem.get(i..i + count) {
-            Some(slice) =>
-                if is_long_delimiter(slice, ']') {
-                    lexer.bump(i + 1);
-                    break;
-                },
+        if is_long_delimiter(&rem[i..i + delim_len]) {
+            lexer.bump(i + delim_len);
+            return true;
+        }
+    }
 
-            None => break,
+    unreachable!()
+}
+
+fn skip_long_comment(lexer: &mut Lexer<Token>) -> logos::Skip {
+    fn is_long_delimiter(slice: &str) -> bool {
+        if slice.len() < 4 || !slice.starts_with("--]") || !slice.ends_with(']') {
+            return false;
+        }
+
+        slice.chars().filter(|c| *c == '=').count() + 4 == slice.len()
+    }
+
+    let delim_len = lexer.slice().len();
+    let rem = lexer.remainder();
+
+    for (i, _) in rem.char_indices() {
+        if is_long_delimiter(&rem[i..i + delim_len]) {
+            lexer.bump(i + delim_len);
+            break;
         }
     }
 
     logos::Skip
-}
-
-fn is_long_delimiter(slice: &str, delim: char) -> bool {
-    if !slice.starts_with(delim) || !slice.ends_with(delim) {
-        return false;
-    }
-
-    slice.chars().filter(|c| *c == '=').count() == slice.len() - 2
 }
 
 #[macro_export]
@@ -379,12 +377,12 @@ impl Display for Token {
                 T![hex_int] => "HEX_INT",
                 T![float] => "FLOAT",
                 T![hex_float] => "HEX_FLOAT",
-                T!['('] => "LPAREN",
-                T![')'] => "RPAREN",
-                T!['{'] => "LCURLY",
-                T!['}'] => "RCURLY",
-                T!['['] => "LBRACKET",
-                T![']'] => "RBRACKET",
+                T!['('] => "RPAREN",
+                T![')'] => "LPAREN",
+                T!['{'] => "RCURLY",
+                T!['}'] => "LCURLY",
+                T!['['] => "RBRACKET",
+                T![']'] => "LBRACKET",
                 T![:] => "COLON",
                 T![::] => "DCOLON",
                 T![,] => "COMMA",
