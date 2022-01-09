@@ -1,0 +1,294 @@
+---
+source: src/parser/mod.rs
+assertion_line: 869
+expression: syntax_tree
+
+---
+SyntaxTree {
+    block: [
+        Assign(
+            Assign {
+                target: [
+                    Ident(
+                        Ident {
+                            name: "add",
+                        },
+                    ),
+                ],
+                value: [
+                    Function(
+                        Function {
+                            args: [
+                                Ident {
+                                    name: "a",
+                                },
+                                Ident {
+                                    name: "b",
+                                },
+                            ],
+                            block: [
+                                Return(
+                                    Return {
+                                        values: [
+                                            Binary(
+                                                BinaryExpr {
+                                                    op: Add,
+                                                    lhs: Ident(
+                                                        Ident {
+                                                            name: "a",
+                                                        },
+                                                    ),
+                                                    rhs: Ident(
+                                                        Ident {
+                                                            name: "b",
+                                                        },
+                                                    ),
+                                                },
+                                            ),
+                                        ],
+                                    },
+                                ),
+                            ],
+                        },
+                    ),
+                ],
+            },
+        ),
+        Assign(
+            Assign {
+                target: [
+                    Ident(
+                        Ident {
+                            name: "sub",
+                        },
+                    ),
+                ],
+                value: [
+                    Function(
+                        Function {
+                            args: [
+                                Ident {
+                                    name: "a",
+                                },
+                                Ident {
+                                    name: "b",
+                                },
+                            ],
+                            block: [
+                                Return(
+                                    Return {
+                                        values: [
+                                            Binary(
+                                                BinaryExpr {
+                                                    op: Sub,
+                                                    lhs: Ident(
+                                                        Ident {
+                                                            name: "a",
+                                                        },
+                                                    ),
+                                                    rhs: Ident(
+                                                        Ident {
+                                                            name: "b",
+                                                        },
+                                                    ),
+                                                },
+                                            ),
+                                        ],
+                                    },
+                                ),
+                            ],
+                        },
+                    ),
+                ],
+            },
+        ),
+        Assign(
+            Assign {
+                target: [
+                    Ident(
+                        Ident {
+                            name: "mul",
+                        },
+                    ),
+                ],
+                value: [
+                    Function(
+                        Function {
+                            args: [
+                                Ident {
+                                    name: "a",
+                                },
+                                Ident {
+                                    name: "b",
+                                },
+                            ],
+                            block: [
+                                Return(
+                                    Return {
+                                        values: [
+                                            Binary(
+                                                BinaryExpr {
+                                                    op: Mul,
+                                                    lhs: Ident(
+                                                        Ident {
+                                                            name: "a",
+                                                        },
+                                                    ),
+                                                    rhs: Ident(
+                                                        Ident {
+                                                            name: "b",
+                                                        },
+                                                    ),
+                                                },
+                                            ),
+                                        ],
+                                    },
+                                ),
+                            ],
+                        },
+                    ),
+                ],
+            },
+        ),
+        Assign(
+            Assign {
+                target: [
+                    Ident(
+                        Ident {
+                            name: "div",
+                        },
+                    ),
+                ],
+                value: [
+                    Function(
+                        Function {
+                            args: [
+                                Ident {
+                                    name: "a",
+                                },
+                                Ident {
+                                    name: "b",
+                                },
+                            ],
+                            block: [
+                                Return(
+                                    Return {
+                                        values: [
+                                            Binary(
+                                                BinaryExpr {
+                                                    op: Div,
+                                                    lhs: Ident(
+                                                        Ident {
+                                                            name: "a",
+                                                        },
+                                                    ),
+                                                    rhs: Ident(
+                                                        Ident {
+                                                            name: "b",
+                                                        },
+                                                    ),
+                                                },
+                                            ),
+                                        ],
+                                    },
+                                ),
+                            ],
+                        },
+                    ),
+                ],
+            },
+        ),
+        SimpleExpr(
+            FunctionCall(
+                FunctionCall {
+                    func: Ident(
+                        Ident {
+                            name: "print",
+                        },
+                    ),
+                    args: [
+                        FunctionCall(
+                            FunctionCall {
+                                func: Ident(
+                                    Ident {
+                                        name: "add",
+                                    },
+                                ),
+                                args: [
+                                    FunctionCall(
+                                        FunctionCall {
+                                            func: Ident(
+                                                Ident {
+                                                    name: "mul",
+                                                },
+                                            ),
+                                            args: [
+                                                Literal(
+                                                    Num(
+                                                        Int(
+                                                            3,
+                                                        ),
+                                                    ),
+                                                ),
+                                                Literal(
+                                                    Num(
+                                                        Int(
+                                                            4,
+                                                        ),
+                                                    ),
+                                                ),
+                                            ],
+                                        },
+                                    ),
+                                    FunctionCall(
+                                        FunctionCall {
+                                            func: Ident(
+                                                Ident {
+                                                    name: "div",
+                                                },
+                                            ),
+                                            args: [
+                                                Literal(
+                                                    Num(
+                                                        Int(
+                                                            6,
+                                                        ),
+                                                    ),
+                                                ),
+                                                FunctionCall(
+                                                    FunctionCall {
+                                                        func: Ident(
+                                                            Ident {
+                                                                name: "sub",
+                                                            },
+                                                        ),
+                                                        args: [
+                                                            Literal(
+                                                                Num(
+                                                                    Int(
+                                                                        3,
+                                                                    ),
+                                                                ),
+                                                            ),
+                                                            Literal(
+                                                                Num(
+                                                                    Int(
+                                                                        1,
+                                                                    ),
+                                                                ),
+                                                            ),
+                                                        ],
+                                                    },
+                                                ),
+                                            ],
+                                        },
+                                    ),
+                                ],
+                            },
+                        ),
+                    ],
+                },
+            ),
+        ),
+    ],
+}
