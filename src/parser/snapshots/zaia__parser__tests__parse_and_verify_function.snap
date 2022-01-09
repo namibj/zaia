@@ -1,6 +1,6 @@
 ---
 source: src/parser/mod.rs
-assertion_line: 869
+assertion_line: 879
 expression: syntax_tree
 
 ---
