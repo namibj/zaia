@@ -60,7 +60,7 @@ pub fn parse(source: &str) -> (SyntaxTree, Vec<ariadne::Report>) {
     let mut block = Vec::new();
 
     loop {
-        match state.peek() {
+        match state.current() {
             T![eof] => break,
             _ => {
                 let stmt = parse_stmt(&mut state);
@@ -76,7 +76,7 @@ fn parse_block(state: &mut State) -> Vec<Stmt> {
     let mut block = Vec::new();
 
     loop {
-        match state.peek() {
+        match state.current() {
             T![end] => {
                 state.eat(T![end]);
                 break;
@@ -92,7 +92,7 @@ fn parse_block(state: &mut State) -> Vec<Stmt> {
 }
 
 fn parse_stmt(state: &mut State) -> Stmt {
-    match state.peek() {
+    match state.current() {
         T![::] => {
             let item = parse_label(state);
             Stmt::Label(item)
@@ -139,8 +139,8 @@ fn parse_stmt(state: &mut State) -> Stmt {
             Stmt::Declare(item)
         },
         T![ident] => {
-            let target = parse_simple_expr(state);
-            if matches!(state.peek(), T![=] | T![,]) {
+            let target = parse_simple_expr(state, true);
+            if matches!(state.current(), T![=] | T![,]) {
                 let item = parse_assign(state, target);
                 return Stmt::Assign(item);
             } else {
@@ -153,7 +153,7 @@ fn parse_stmt(state: &mut State) -> Stmt {
 
 fn parse_declare(state: &mut State) -> Declare {
     state.eat(T![local]);
-    if state.at(T![function]) {
+    if state.current() == T![function] {
         let (target, function) = parse_named_function(state);
         let name = if let SimpleExpr::Ident(name) = target {
             name
@@ -182,7 +182,7 @@ fn parse_declare(state: &mut State) -> Declare {
 
     loop {
         let name = parse_ident(state);
-        let is_const = if state.at(T![const]) {
+        let is_const = if state.current() == T![const] {
             state.eat(T![const]);
             true
         } else {
@@ -190,13 +190,13 @@ fn parse_declare(state: &mut State) -> Declare {
         };
 
         declarations.push(Declaration { name, is_const });
-        match state.peek() {
+        match state.current() {
             T![,] => continue,
             _ => break,
         }
     }
 
-    if state.at(T![=]) {
+    if state.current() == T![=] {
         let values = parse_assign_values(state);
         let targets = declarations
             .iter()
@@ -219,10 +219,10 @@ fn parse_assign(state: &mut State, first_target: SimpleExpr) -> Assign {
     let mut targets = vec![first_target];
 
     loop {
-        match state.peek() {
+        match state.current() {
             T![,] => {
                 state.eat(T![,]);
-                let item = parse_simple_expr(state);
+                let item = parse_simple_expr(state, true);
                 targets.push(item);
             },
             T![=] => break,
@@ -243,7 +243,7 @@ fn parse_assign_values(state: &mut State) -> Vec<Expr> {
     let first_value = parse_expr(state);
     let mut values = vec![first_value];
     loop {
-        match state.peek() {
+        match state.current() {
             T![,] => {
                 state.eat(T![,]);
                 let value = parse_expr(state);
@@ -256,18 +256,18 @@ fn parse_assign_values(state: &mut State) -> Vec<Expr> {
     values
 }
 
-fn parse_simple_expr(state: &mut State) -> SimpleExpr {
+fn parse_simple_expr(state: &mut State, fncall_allowed: bool) -> SimpleExpr {
     let first = parse_ident(state);
     let mut expr = SimpleExpr::Ident(first);
 
     loop {
-        match state.peek() {
+        match state.current() {
             T![.] => {
                 state.eat(T![.]);
                 let ident = parse_ident(state);
                 expr = SimpleExpr::Property(Box::new(expr), Expr::Ident(ident));
             },
-            T!['('] => {
+            T!['('] if fncall_allowed => {
                 expr = SimpleExpr::FunctionCall(FunctionCall {
                     func: expr.into(),
                     args: parse_function_call(state),
@@ -299,7 +299,7 @@ fn expr_bp(state: &mut State, min_bp: i32) -> Expr {
     let mut lhs = expr_bp_lhs(state);
 
     loop {
-        let t = match state.peek() {
+        let t = match state.current() {
             T![eof] => break,
             T![function] => {
                 let item = parse_anon_function(state);
@@ -314,7 +314,7 @@ fn expr_bp(state: &mut State, min_bp: i32) -> Expr {
                 return Expr::Table(item);
             },
             t if token_is_other_op(t) => t,
-            t => panic!("found unexpected token {}", t),
+            t => panic!("found unexpected token {} at {:?}", t, state.span()),
         };
 
         if t == T!['('] && CALL_BINDING_POWER >= min_bp {
@@ -360,7 +360,7 @@ fn expr_bp(state: &mut State, min_bp: i32) -> Expr {
 }
 
 fn expr_bp_lhs(state: &mut State) -> Expr {
-    let t = state.peek();
+    let t = state.current();
     if T![ident] == t {
         return Expr::Ident(parse_ident(state));
     }
@@ -413,7 +413,7 @@ fn parse_repeat(state: &mut State) -> Repeat {
     let mut block = Vec::new();
 
     loop {
-        match state.peek() {
+        match state.current() {
             T![until] => {
                 state.eat(T![until]);
                 break;
@@ -437,7 +437,7 @@ fn parse_if(state: &mut State) -> If {
     let mut block = Vec::new();
 
     loop {
-        match state.peek() {
+        match state.current() {
             T![else] => {
                 state.eat(T![else]);
                 let else_block = parse_block(state);
@@ -469,7 +469,7 @@ fn parse_for(state: &mut State) -> Either<ForNumeric, ForGeneric> {
     state.eat(T![for]);
     let first_var = parse_ident(state);
 
-    if state.at(T![=]) {
+    if state.current() == T![=] {
         let item = parse_for_numeric(state, first_var);
         return Either::Left(item);
     } else {
@@ -484,7 +484,7 @@ fn parse_for_numeric(state: &mut State, first_var: Ident) -> ForNumeric {
     state.eat(T![,]);
     let end = parse_expr(state);
 
-    let step = if state.at(T![,]) {
+    let step = if state.current() == T![,] {
         state.eat(T![,]);
         Some(parse_expr(state))
     } else {
@@ -507,7 +507,7 @@ fn parse_for_generic(state: &mut State, first_var: Ident) -> ForGeneric {
     let mut args = vec![first_var];
 
     loop {
-        match state.peek() {
+        match state.current() {
             T![,] => {
                 state.eat(T![,]);
                 args.push(parse_ident(state));
@@ -534,7 +534,7 @@ fn parse_return(state: &mut State) -> Return {
     let mut values = Vec::new();
 
     loop {
-        match state.peek() {
+        match state.current() {
             t if token_is_expr_start(t) => {
                 let arg = parse_expr(state);
                 values.push(arg);
@@ -542,7 +542,7 @@ fn parse_return(state: &mut State) -> Return {
             _ => break,
         }
 
-        if state.at(T![,]) {
+        if state.current() == T![,] {
             state.eat(T![,]);
         } else {
             break;
@@ -561,7 +561,7 @@ fn parse_ident(state: &mut State) -> Ident {
 
 fn parse_named_function(state: &mut State) -> (SimpleExpr, Function) {
     state.eat(T![function]);
-    let name = parse_simple_expr(state);
+    let name = parse_simple_expr(state, false);
     let function = parse_function_trail(state);
     (name, function)
 }
@@ -576,7 +576,7 @@ fn parse_function_trail(state: &mut State) -> Function {
     let mut args = Vec::new();
 
     loop {
-        match state.peek() {
+        match state.current() {
             T![ident] => {
                 let arg = parse_ident(state);
                 args.push(arg);
@@ -588,7 +588,7 @@ fn parse_function_trail(state: &mut State) -> Function {
             t => panic!("found unexpected token {}", t),
         }
 
-        if state.at(T![,]) {
+        if state.current() == T![,] {
             state.eat(T![,]);
         } else {
             state.eat(T![')']);
@@ -601,7 +601,7 @@ fn parse_function_trail(state: &mut State) -> Function {
 }
 
 fn parse_literal(state: &mut State) -> Literal {
-    match state.peek() {
+    match state.current() {
         T![nil] => {
             state.eat(T![nil]);
             Literal::Nil
@@ -646,7 +646,7 @@ fn parse_string(state: &mut State) -> Vec<u8> {
         }};
     }
 
-    macro_rules! peek {
+    macro_rules! current {
         () => {{
             let i = i + 1;
 
@@ -699,7 +699,7 @@ fn parse_string(state: &mut State) -> Vec<u8> {
                     assert!(eat!() == '{');
                     let mut digits = String::new();
 
-                    while peek!().is_ascii_hexdigit() {
+                    while current!().is_ascii_hexdigit() {
                         digits.push(eat!());
                     }
 
@@ -713,7 +713,7 @@ fn parse_string(state: &mut State) -> Vec<u8> {
                     let mut digits = ch.to_string();
 
                     for _ in 0..3 {
-                        match peek!() {
+                        match current!() {
                             ch if ch.is_ascii_digit() => {
                                 eat!();
                                 digits.push(ch);
@@ -774,7 +774,7 @@ fn parse_function_call(state: &mut State) -> Vec<Expr> {
     let mut args = Vec::new();
 
     loop {
-        match state.peek() {
+        match state.current() {
             T![')'] => {
                 state.eat(T![')']);
                 break;
@@ -785,7 +785,7 @@ fn parse_function_call(state: &mut State) -> Vec<Expr> {
             },
         }
 
-        if state.at(T![,]) {
+        if state.current() != T![,] {
             state.eat(T![,]);
         } else {
             state.eat(T![')']);
@@ -801,7 +801,7 @@ fn parse_table(state: &mut State) -> Table {
     let mut elements = Vec::new();
 
     loop {
-        match state.peek() {
+        match state.current() {
             T!['['] => elements.push(parse_table_element_expr(state)),
             T!['}'] => {
                 state.eat(T!['}']);
@@ -810,7 +810,7 @@ fn parse_table(state: &mut State) -> Table {
             _ => {
                 let first = parse_expr(state);
 
-                if state.at(T![=]) {
+                if state.current() == T![=] {
                     if matches!(first, Expr::Ident(_)) {
                         state.eat(T![=]);
                         let value = parse_expr(state);
@@ -830,7 +830,7 @@ fn parse_table(state: &mut State) -> Table {
             },
         }
 
-        if state.at(T![,]) {
+        if state.current() == T![,] {
             state.eat(T![,]);
         } else {
             state.eat(T!['}']);

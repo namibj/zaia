@@ -14,8 +14,10 @@ pub struct State<'source> {
 
 impl<'source> State<'source> {
     pub fn new(source: &'source str) -> Self {
+        let tokens = Token::lexer(source).spanned().collect();
+
         State {
-            tokens: Token::lexer(source).spanned().collect(),
+            tokens,
             cursor: 0,
             source,
             reports: Vec::new(),
@@ -29,10 +31,6 @@ impl<'source> State<'source> {
             .unwrap_or(T![eof])
     }
 
-    pub fn at(&mut self, token: Token) -> bool {
-        self.peek() == token
-    }
-
     pub fn eat(&mut self, token: Token) {
         let found = self.next();
 
@@ -42,11 +40,17 @@ impl<'source> State<'source> {
     }
 
     pub fn next(&mut self) -> Token {
+        let position = self.cursor;
         self.cursor += 1;
+
         self.tokens
-            .get(self.cursor)
+            .get(position)
             .map(|(token, _)| *token)
             .unwrap_or(T![eof])
+    }
+
+    pub fn current(&self) -> Token {
+        self.tokens[self.cursor].0
     }
 
     pub fn span(&self) -> Range<usize> {
