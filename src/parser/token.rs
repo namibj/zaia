@@ -8,7 +8,7 @@ pub enum Token {
     #[token("--", logos::skip)]
     #[regex(r"--\[=*\[", skip_long_comment)]
     #[token(";", logos::skip)]
-    #[regex(r"(\n|\r\n)+", logos::skip)]
+    #[regex(r"(\t|\n|\r\n)+", logos::skip)]
     #[regex(r" +", logos::skip)]
     #[error]
     Invalid,
