@@ -857,13 +857,25 @@ fn parse_table_element_expr(state: &mut State) -> TableElement {
 mod tests {
     use std::fs::read_to_string;
 
+    use insta::assert_debug_snapshot;
+    use paste::paste;
+
     use super::parse;
 
-    #[test]
-    fn parse_and_verify_function() {
-        let source = read_to_string("test-files/function.lua").unwrap();
-        let (syntax_tree, reports) = parse(&source);
-        assert!(reports.is_empty());
-        insta::assert_debug_snapshot!(syntax_tree);
+    macro_rules! parse_and_verify {
+        ($name:ident, $path:literal) => {
+            paste! {
+                #[test]
+                fn [<parse_and_verify_ $name>]() {
+                    let source = read_to_string($path).unwrap();
+                    let (syntax_tree, reports) = parse(&source);
+                    assert!(reports.is_empty());
+                    assert_debug_snapshot!(syntax_tree);
+                }
+            }
+        };
     }
+
+    parse_and_verify!(function, "test-files/function.lua");
+    parse_and_verify!(op_prec, "test-files/op_prec.lua");
 }

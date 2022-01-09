@@ -11,3 +11,4 @@ hexf-parse = "0.2.1"
 
 [dev-dependencies]
 insta = "1.10.0"
+paste = "1.0.6"
