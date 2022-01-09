@@ -38,7 +38,6 @@ use crate::{
         Ident,
         If,
         IfChain,
-        Label,
         Literal,
         NumLiteral,
         Repeat,
@@ -93,10 +92,6 @@ fn parse_block(state: &mut State) -> Vec<Stmt> {
 
 fn parse_stmt(state: &mut State) -> Stmt {
     match state.current() {
-        T![::] => {
-            let item = parse_label(state);
-            Stmt::Label(item)
-        },
         T![do] => {
             let item = parse_do(state);
             Stmt::Do(item)
@@ -383,13 +378,6 @@ fn expr_bp_lhs(state: &mut State) -> Expr {
     }
 
     panic!("found unexpected token {}", t);
-}
-
-fn parse_label(state: &mut State) -> Label {
-    state.eat(T![::]);
-    let name = parse_ident(state);
-    state.eat(T![::]);
-    Label { ident: name }
 }
 
 fn parse_do(state: &mut State) -> Do {
@@ -680,7 +668,6 @@ fn parse_string(state: &mut State) -> Vec<u8> {
                 'r' => add!(byte b'\r'),
                 't' => add!(byte b'\t'),
                 'v' => add!(byte b'\x0b'),
-                'z' => unimplemented!("the z escape sequence currently not supported"),
                 'x' => {
                     let mut buf = [0; 2];
                     let mut grab_hex = || {

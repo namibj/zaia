@@ -6,7 +6,6 @@ pub struct SyntaxTree {
 #[derive(Debug, PartialEq)]
 pub enum Stmt {
     SimpleExpr(SimpleExpr),
-    Label(Label),
     Do(Do),
     While(While),
     Repeat(Repeat),

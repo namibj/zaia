@@ -18,20 +18,11 @@ Zaia currently provides a mostly compliant Lua 5.4 implementation that will run 
 It provides an intuitive and easy to use API makes extending the language and integrating it into Rust projects a breeze
 and there is also a CLI tool available for running standalone Lua scripts from the terminal.
 
-## Long term goals
-
-- Extend the Lua language in meaningful ways with new features and built-in libraries.
-- Provide acceptable performance for the majority of use cases with a bytecode virtual machine.
-- Provide a widely accepted source code formatter.
-- Provide a widely accepted source code linter.
-- Provide bindings to C and C++.
-
 ## Conformance
 
-Zaia currently targets Lua 5.4. We expect to support newer versions as they come out
-with possible support for older versions if breaking changes are made to the reference.
+Zaia currently targets Lua 5.4. We may support newer versions in the future.
 
-We always require parenthesis for function calls to promote consistent and readable code.
-We do not support the `goto` functionality included with PUC-Rio Lua for ethical reasons.
-
-We use parts of the PUC-Rio test suite in combination with custom tests to ensure that the implementation is correct.
+### Unsupported Lua 5.4 features
+- `goto` statements and labels
+- `\z` string literal escapes
+- function calls without parentheses
