@@ -363,6 +363,11 @@ fn expr_bp_lhs(state: &mut State) -> Expr {
         return Expr::Ident(parse_ident(state));
     }
 
+    if T!['{'] == t {
+        let item = parse_table(state);
+        return Expr::Table(item);
+    }
+
     if T!['('] == t {
         state.eat(T!['(']);
         let lhs = expr_bp(state, 0);

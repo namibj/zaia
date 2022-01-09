@@ -1,6 +1,6 @@
 ---
 source: src/parser/mod.rs
-assertion_line: 876
+assertion_line: 883
 expression: syntax_tree
 
 ---
@@ -250,6 +250,195 @@ SyntaxTree {
                                 0.1953125,
                             ),
                         ),
+                    ),
+                ],
+            },
+        ),
+        Assign(
+            Assign {
+                target: [
+                    Ident(
+                        Ident {
+                            name: "t",
+                        },
+                    ),
+                ],
+                value: [
+                    Table(
+                        Table {
+                            elements: [],
+                        },
+                    ),
+                ],
+            },
+        ),
+        Assign(
+            Assign {
+                target: [
+                    Ident(
+                        Ident {
+                            name: "tl",
+                        },
+                    ),
+                ],
+                value: [
+                    Table(
+                        Table {
+                            elements: [
+                                TableElement {
+                                    key: None,
+                                    value: Literal(
+                                        Num(
+                                            Int(
+                                                59,
+                                            ),
+                                        ),
+                                    ),
+                                },
+                                TableElement {
+                                    key: None,
+                                    value: Literal(
+                                        Num(
+                                            Int(
+                                                63,
+                                            ),
+                                        ),
+                                    ),
+                                },
+                            ],
+                        },
+                    ),
+                ],
+            },
+        ),
+        Assign(
+            Assign {
+                target: [
+                    Ident(
+                        Ident {
+                            name: "tr",
+                        },
+                    ),
+                ],
+                value: [
+                    Table(
+                        Table {
+                            elements: [
+                                TableElement {
+                                    key: Some(
+                                        Ident(
+                                            Ident {
+                                                name: "anna",
+                                            },
+                                        ),
+                                    ),
+                                    value: Literal(
+                                        Num(
+                                            Int(
+                                                15,
+                                            ),
+                                        ),
+                                    ),
+                                },
+                                TableElement {
+                                    key: Some(
+                                        Ident(
+                                            Ident {
+                                                name: "james",
+                                            },
+                                        ),
+                                    ),
+                                    value: Literal(
+                                        Num(
+                                            Int(
+                                                20,
+                                            ),
+                                        ),
+                                    ),
+                                },
+                            ],
+                        },
+                    ),
+                ],
+            },
+        ),
+        Assign(
+            Assign {
+                target: [
+                    Ident(
+                        Ident {
+                            name: "tg",
+                        },
+                    ),
+                ],
+                value: [
+                    Table(
+                        Table {
+                            elements: [
+                                TableElement {
+                                    key: Some(
+                                        Literal(
+                                            Num(
+                                                Int(
+                                                    0,
+                                                ),
+                                            ),
+                                        ),
+                                    ),
+                                    value: Literal(
+                                        Num(
+                                            Int(
+                                                10,
+                                            ),
+                                        ),
+                                    ),
+                                },
+                                TableElement {
+                                    key: Some(
+                                        Literal(
+                                            String(
+                                                [
+                                                    97,
+                                                    110,
+                                                    110,
+                                                    97,
+                                                ],
+                                            ),
+                                        ),
+                                    ),
+                                    value: Literal(
+                                        Num(
+                                            Int(
+                                                15,
+                                            ),
+                                        ),
+                                    ),
+                                },
+                                TableElement {
+                                    key: Some(
+                                        Literal(
+                                            String(
+                                                [
+                                                    106,
+                                                    97,
+                                                    109,
+                                                    101,
+                                                    115,
+                                                ],
+                                            ),
+                                        ),
+                                    ),
+                                    value: Literal(
+                                        String(
+                                            [
+                                                50,
+                                                48,
+                                            ],
+                                        ),
+                                    ),
+                                },
+                            ],
+                        },
                     ),
                 ],
             },
