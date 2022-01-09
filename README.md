@@ -20,7 +20,7 @@ and there is also a CLI tool available for running standalone Lua scripts from t
 
 ## Conformance
 
-Zaia currently targets Lua 5.4. We may support newer versions in the future.
+Zaia currently targets a base feature-set from Lua 5.4. We may support newer versions in the future.
 
 We do not support the following Lua 5.4 features:
 - `goto` statements and labels
