@@ -9,9 +9,6 @@ Zaia's goal is first and foremost to be easy to use and deploy. This means provi
 other Lua implementations does not provide such as convenient language functionality and specialized libraries
 providing datastructures and algorithms.
 
-Performance does matter, but it is of secondary priority in contrast to the above goals as they are often
-the limiting factors in adoption and widespread use.
-
 ## Where are we today?
 
 Zaia currently provides a mostly compliant Lua 5.4 implementation that will run the majority of scripts.
