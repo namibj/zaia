@@ -3,7 +3,7 @@ mod classifiers;
 mod state;
 mod token;
 
-use std::str;
+use std::{str, str::FromStr};
 
 use binding_power::{
     infix_binding_power,
@@ -13,7 +13,6 @@ use binding_power::{
 };
 use classifiers::{token_is_expr_start, token_is_literal, token_to_binary_op, token_to_unary_op};
 use either::Either;
-use hexf_parse::parse_hexf64;
 use state::State;
 
 use crate::{
@@ -727,9 +726,10 @@ fn parse_string(state: &mut State) -> Vec<u8> {
 }
 
 fn parse_long_string(state: &mut State) -> Vec<u8> {
+    state.eat(T![long_string]);
     let mut chars = state.slice().chars();
     chars.next();
-    let delim_len = chars.by_ref().take_while(|c| *c != '[').count() + 1;
+    let delim_len = chars.by_ref().take_while(|c| *c != '[').count() + 2;
 
     chars
         .take(state.slice().len() - delim_len * 2)
@@ -756,11 +756,11 @@ fn parse_float(state: &mut State) -> f64 {
 fn parse_hex_float(state: &mut State) -> f64 {
     state.eat(T![hex_float]);
 
-    if let Ok(value) = parse_hexf64(state.slice(), true) {
-        value
-    } else {
-        panic!("invalid hex float literal");
-    }
+    let raw = state.slice();
+    hexponent::FloatLiteral::from_str(raw)
+        .unwrap()
+        .convert()
+        .inner()
 }
 
 fn parse_function_call(state: &mut State) -> Vec<Expr> {
@@ -875,4 +875,5 @@ mod tests {
     parse_and_verify!(op_prec, "test-files/op_prec.lua");
     parse_and_verify!(if, "test-files/if.lua");
     parse_and_verify!(declare, "test-files/declare.lua");
+    parse_and_verify!(literal, "test-files/literal.lua");
 }
