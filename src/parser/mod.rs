@@ -440,11 +440,13 @@ fn parse_if(state: &mut State) -> If {
             T![else] => {
                 state.eat(T![else]);
                 let else_block = parse_block(state);
-                chain = Some(Box::new(IfChain::Else(else_block)))
+                chain = Some(Box::new(IfChain::Else(else_block)));
+                break;
             },
             T![elseif] => {
                 let elseif = parse_if(state);
                 chain = Some(Box::new(IfChain::ElseIf(elseif)));
+                break;
             },
             T![end] => {
                 state.eat(T![end]);
@@ -878,4 +880,5 @@ mod tests {
 
     parse_and_verify!(function, "test-files/function.lua");
     parse_and_verify!(op_prec, "test-files/op_prec.lua");
+    parse_and_verify!(if, "test-files/if.lua");
 }
