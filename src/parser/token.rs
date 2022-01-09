@@ -9,12 +9,13 @@ pub enum Token {
     #[regex(r"--\[=*\[", skip_long_comment)]
     #[token(";", logos::skip)]
     #[regex(r"(\n|\r\n)+", logos::skip)]
+    #[regex(r" +", logos::skip)]
     #[error]
     Invalid,
 
     EOF,
 
-    #[regex(r"[a-zA-Z][a-zA-Z0-9]+", priority = 3)]
+    #[regex(r"[a-zA-Z][a-zA-Z0-9]*", priority = 3)]
     Ident,
 
     // Character operators
