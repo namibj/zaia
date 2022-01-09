@@ -49,6 +49,13 @@ pub fn token_is_other_op(token: Token) -> bool {
     )
 }
 
+pub fn token_is_expr_start(token: Token) -> bool {
+    token == T![ident]
+        || token == T!['(']
+        || token_is_literal(token)
+        || token_to_unary_op(token).is_some()
+}
+
 pub fn token_to_unary_op(token: Token) -> Option<UnaryOp> {
     match token {
         T![not] => Some(UnaryOp::Not),

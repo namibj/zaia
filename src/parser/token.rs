@@ -7,14 +7,12 @@ pub enum Token {
     // Miscellaneous
     #[token("--", logos::skip)]
     #[regex(r"--\[=*\[", skip_long_comment)]
+    #[token(";", logos::skip)]
+    #[regex(r"(\n|\r\n)+", logos::skip)]
     #[error]
     Invalid,
 
     EOF,
-
-    #[token(";")]
-    #[regex(r"(\n|\r\n)+")]
-    EndStatement,
 
     #[regex(r"[a-zA-Z][a-zA-Z0-9]+", priority = 3)]
     Ident,
@@ -258,7 +256,6 @@ fn is_long_delimiter(slice: &str, delim: char) -> bool {
 macro_rules! T {
     [invalid] => { $crate::parser::token::Token::Invalid };
     [eof] => { $crate::parser::token::Token::EOF };
-    [endstmt] => { $crate::parser::token::Token::EndStatement };
     [ident] => { $crate::parser::token::Token::Ident };
     [+] => { $crate::parser::token::Token::Plus };
     [-] => { $crate::parser::token::Token::Minus };
@@ -331,7 +328,6 @@ impl Display for Token {
             match self {
                 T![invalid] => "INVALID",
                 T![eof] => "EOF",
-                T![endstmt] => "END_STATEMENT",
                 T![ident] => "IDENTIFIER",
                 T![+] => "PLUS",
                 T![-] => "MINUS",

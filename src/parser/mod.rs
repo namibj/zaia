@@ -11,7 +11,13 @@ use binding_power::{
     CALL_BINDING_POWER,
     INDEX_BINDING_POWER,
 };
-use classifiers::{token_is_literal, token_is_other_op, token_to_binary_op, token_to_unary_op};
+use classifiers::{
+    token_is_expr_start,
+    token_is_literal,
+    token_is_other_op,
+    token_to_binary_op,
+    token_to_unary_op,
+};
 use either::Either;
 use hexf_parse::parse_hexf64;
 use state::State;
@@ -55,7 +61,6 @@ pub fn parse(source: &str) -> (SyntaxTree, Vec<ariadne::Report>) {
 
     loop {
         match state.peek() {
-            T![endstmt] => continue,
             T![eof] => break,
             _ => {
                 let stmt = parse_stmt(&mut state);
@@ -76,7 +81,6 @@ fn parse_block(state: &mut State) -> Vec<Stmt> {
                 state.eat(T![end]);
                 break;
             },
-            T![endstmt] => state.eat(T![endstmt]),
             _ => {
                 let stmt = parse_stmt(state);
                 block.push(stmt);
@@ -88,7 +92,7 @@ fn parse_block(state: &mut State) -> Vec<Stmt> {
 }
 
 fn parse_stmt(state: &mut State) -> Stmt {
-    let stmt = match state.peek() {
+    match state.peek() {
         T![::] => {
             let item = parse_label(state);
             Stmt::Label(item)
@@ -103,7 +107,7 @@ fn parse_stmt(state: &mut State) -> Stmt {
         },
         T![repeat] => {
             let item = parse_repeat(state);
-           Stmt::Repeat(item)
+            Stmt::Repeat(item)
         },
         T![if] => {
             let item = parse_if(state);
@@ -134,20 +138,17 @@ fn parse_stmt(state: &mut State) -> Stmt {
             let item = parse_declare(state);
             Stmt::Declare(item)
         },
-        T![ident]=> {
+        T![ident] => {
             let target = parse_simple_expr(state);
             if matches!(state.peek(), T![=] | T![,]) {
                 let item = parse_assign(state, target);
-                return Stmt::Assign(item)
+                return Stmt::Assign(item);
             } else {
                 Stmt::SimpleExpr(target)
             }
         },
-        _ => panic!("unexpected token"),
-    };
-
-    state.eat(T![endstmt]);
-    stmt
+        t => panic!("found unexpected token {}", t),
+    }
 }
 
 fn parse_declare(state: &mut State) -> Declare {
@@ -225,7 +226,7 @@ fn parse_assign(state: &mut State, first_target: SimpleExpr) -> Assign {
                 targets.push(item);
             },
             T![=] => break,
-            _ => panic!("expected ',' or '='"),
+            t => panic!("found {} but expected {} or {}", t, T![,], T![=]),
         }
     }
 
@@ -248,8 +249,7 @@ fn parse_assign_values(state: &mut State) -> Vec<Expr> {
                 let value = parse_expr(state);
                 values.push(value);
             },
-            T![endstmt] => break,
-            _ => panic!("expected ',' or 'endstmt'"),
+            _ => break,
         }
     }
 
@@ -314,7 +314,7 @@ fn expr_bp(state: &mut State, min_bp: i32) -> Expr {
                 return Expr::Table(item);
             },
             t if token_is_other_op(t) => t,
-            t => panic!("invalid token {:?}", t),
+            t => panic!("found unexpected token {}", t),
         };
 
         if t == T!['('] && CALL_BINDING_POWER >= min_bp {
@@ -378,7 +378,11 @@ fn expr_bp_lhs(state: &mut State) -> Expr {
         return Expr::Unary(Box::new(UnaryExpr { op, expr: rhs }));
     }
 
-    panic!("invalid token {:?}", t);
+    if token_is_literal(t) {
+        return Expr::Literal(parse_literal(state));
+    }
+
+    panic!("found unexpected token {}", t);
 }
 
 fn parse_label(state: &mut State) -> Label {
@@ -390,18 +394,18 @@ fn parse_label(state: &mut State) -> Label {
 
 fn parse_do(state: &mut State) -> Do {
     state.eat(T![do]);
-    state.span_lines();
     let block = parse_block(state);
     Do { block }
 }
 
 fn parse_while(state: &mut State) -> While {
     state.eat(T![while]);
-    state.span_lines();
     let condition = parse_expr(state);
-    state.span_lines();
     let item = parse_do(state);
-    While { condition, block: item.block }
+    While {
+        condition,
+        block: item.block,
+    }
 }
 
 fn parse_repeat(state: &mut State) -> Repeat {
@@ -414,7 +418,6 @@ fn parse_repeat(state: &mut State) -> Repeat {
                 state.eat(T![until]);
                 break;
             },
-            T![endstmt] => state.eat(T![endstmt]),
             _ => {
                 let stmt = parse_stmt(state);
                 block.push(stmt)
@@ -422,16 +425,13 @@ fn parse_repeat(state: &mut State) -> Repeat {
         }
     }
 
-    state.span_lines(); 
     let condition = parse_expr(state);
     Repeat { condition, block }
 }
 
 fn parse_if(state: &mut State) -> If {
     state.next();
-    state.span_lines();
     let condition = parse_expr(state);
-    state.span_lines();
     state.eat(T![then]);
     let mut chain = None;
     let mut block = Vec::new();
@@ -451,7 +451,6 @@ fn parse_if(state: &mut State) -> If {
                 state.eat(T![end]);
                 break;
             },
-            T![endstmt] => state.eat(T![endstmt]),
             _ => {
                 let stmt = parse_stmt(state);
                 block.push(stmt)
@@ -468,7 +467,6 @@ fn parse_if(state: &mut State) -> If {
 
 fn parse_for(state: &mut State) -> Either<ForNumeric, ForGeneric> {
     state.eat(T![for]);
-    state.span_lines();
     let first_var = parse_ident(state);
 
     if state.at(T![=]) {
@@ -483,17 +481,12 @@ fn parse_for(state: &mut State) -> Either<ForNumeric, ForGeneric> {
 fn parse_for_numeric(state: &mut State, first_var: Ident) -> ForNumeric {
     state.eat(T![=]);
     let start = parse_expr(state);
-    state.span_lines();
     state.eat(T![,]);
-    state.span_lines();
     let end = parse_expr(state);
-    state.span_lines();
 
     let step = if state.at(T![,]) {
         state.eat(T![,]);
-        let expr = parse_expr(state);
-        state.span_lines();
-        Some(expr)
+        Some(parse_expr(state))
     } else {
         None
     };
@@ -519,18 +512,15 @@ fn parse_for_generic(state: &mut State, first_var: Ident) -> ForGeneric {
                 state.eat(T![,]);
                 args.push(parse_ident(state));
             },
-            T![endstmt] => state.eat(T![endstmt]),
             T![in] => {
                 state.eat(T![in]);
                 break;
             },
-            t => panic!("invalid token {:?}", t),
+            t => panic!("found unexpected token {}", t),
         }
     }
 
-    state.span_lines();
     let yielder = parse_expr(state);
-    state.span_lines();
     let item = parse_do(state);
 
     ForGeneric {
@@ -545,17 +535,16 @@ fn parse_return(state: &mut State) -> Return {
 
     loop {
         match state.peek() {
-            T![endstmt] => break,
-            _ => {
+            t if token_is_expr_start(t) => {
                 let arg = parse_expr(state);
                 values.push(arg);
             },
+            _ => break,
         }
 
         if state.at(T![,]) {
             state.eat(T![,]);
         } else {
-            assert!(state.at(T![endstmt]));
             break;
         }
     }
@@ -571,7 +560,6 @@ fn parse_ident(state: &mut State) -> Ident {
 }
 
 fn parse_named_function(state: &mut State) -> (SimpleExpr, Function) {
-    state.span_lines();
     state.eat(T![function]);
     let name = parse_simple_expr(state);
     let function = parse_function_trail(state);
@@ -597,7 +585,7 @@ fn parse_function_trail(state: &mut State) -> Function {
                 state.eat(T![')']);
                 break;
             },
-            t => panic!("invalid token {:?}", t),
+            t => panic!("found unexpected token {}", t),
         }
 
         if state.at(T![,]) {
@@ -608,7 +596,7 @@ fn parse_function_trail(state: &mut State) -> Function {
         }
     }
 
-    let block= parse_block(state);
+    let block = parse_block(state);
     Function { args, block }
 }
 
@@ -632,7 +620,7 @@ fn parse_literal(state: &mut State) -> Literal {
         T![hex_int] => Literal::Num(NumLiteral::Int(parse_hex_int(state))),
         T![float] => Literal::Num(NumLiteral::Float(parse_float(state))),
         T![hex_float] => Literal::Num(NumLiteral::Float(parse_hex_float(state))),
-        t => panic!("invalid token {:?}", t),
+        t => panic!("found unexpected token {}", t),
     }
 }
 
@@ -777,14 +765,7 @@ fn parse_hex_float(state: &mut State) -> f64 {
     if let Ok(value) = parse_hexf64(state.slice(), true) {
         value
     } else {
-        let span = state.span();
-        let report = ariadne::Report::build(ariadne::ReportKind::Error, (), span.start)
-            .with_message("Invalid hexadecimal float literal")
-            .with_label(ariadne::Label::new(span).with_message("Invalid literal found here"))
-            .finish();
-
-        state.report(report);
-        return 0.0;
+        panic!("invalid hex float literal");
     }
 }
 
@@ -838,7 +819,7 @@ fn parse_table(state: &mut State) -> Table {
                             value,
                         });
                     } else {
-                        panic!("invalid left expression")
+                        panic!("left expression not an identifier");
                     }
                 } else {
                     elements.push(TableElement {
@@ -872,8 +853,6 @@ fn parse_table_element_expr(state: &mut State) -> TableElement {
         value,
     }
 }
-
-// TODO: use display for error messages
 
 #[cfg(test)]
 mod tests {

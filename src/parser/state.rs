@@ -33,17 +33,11 @@ impl<'source> State<'source> {
         self.peek() == token
     }
 
-    pub fn span_lines(&mut self) {
-        while self.at(T![endstmt]) {
-            self.next();
-        }
-    }
-
     pub fn eat(&mut self, token: Token) {
         let found = self.next();
 
         if found != token {
-            panic!("unexpected token")
+            panic!("found unexpected token {}", found);
         }
     }
 
