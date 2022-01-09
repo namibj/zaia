@@ -33,25 +33,17 @@ impl<'source> State<'source> {
         self.peek() == token
     }
 
+    pub fn span_lines(&mut self) {
+        while self.at(T![endstmt]) {
+            self.next();
+        }
+    }
+
     pub fn eat(&mut self, token: Token) {
         let found = self.next();
 
         if found != token {
-            let found_name = if token == found {
-                format!("{:?}", found)
-            } else {
-                "NONE".to_string()
-            };
-
-            let found_message = format!("Expected {:?} but found {:?}", token, found_name);
-            let span = self.span();
-
-            let report = ariadne::Report::build(ariadne::ReportKind::Error, (), span.start)
-                .with_message("Unexpected token")
-                .with_label(ariadne::Label::new(span).with_message(found_message))
-                .finish();
-
-            self.reports.push(report);
+            panic!("unexpected token")
         }
     }
 
