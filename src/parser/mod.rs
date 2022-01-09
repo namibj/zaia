@@ -141,6 +141,27 @@ fn parse_stmt(state: &mut State) -> Stmt {
     }
 }
 
+fn parse_declaration_modifiers(state: &mut State) -> (bool, bool) {
+    let mut is_const = false;
+    let mut has_finalizer = false;
+
+    loop {
+        match state.peek() {
+            T![const] => {
+                state.eat(T![const]);
+                is_const = true;
+            },
+            T![close] => {
+                state.eat(T![close]);
+                has_finalizer = true;
+            },
+            _ => break,
+        }
+    }
+
+    (is_const, has_finalizer)
+}
+
 fn parse_declare(state: &mut State) -> Declare {
     state.eat(T![local]);
     if state.peek() == T![function] {
@@ -154,6 +175,7 @@ fn parse_declare(state: &mut State) -> Declare {
         let declaration = Declaration {
             name: name.clone(),
             is_const: false,
+            has_finalizer: false,
         };
 
         let assign = Assign {
@@ -172,14 +194,13 @@ fn parse_declare(state: &mut State) -> Declare {
 
     loop {
         let name = parse_ident(state);
-        let is_const = if state.peek() == T![const] {
-            state.eat(T![const]);
-            true
-        } else {
-            false
-        };
+        let (is_const, has_finalizer) = parse_declaration_modifiers(state);
 
-        declarations.push(Declaration { name, is_const });
+        declarations.push(Declaration {
+            name,
+            is_const,
+            has_finalizer,
+        });
         match state.peek() {
             T![,] => continue,
             _ => break,

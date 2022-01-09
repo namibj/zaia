@@ -128,6 +128,7 @@ pub struct Declare {
 pub struct Declaration {
     pub name: Ident,
     pub is_const: bool,
+    pub has_finalizer: bool,
 }
 
 #[derive(Debug, PartialEq)]

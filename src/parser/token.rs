@@ -143,7 +143,7 @@ pub enum Token {
     #[token("<const>")]
     Const,
 
-    #[token("close")]
+    #[token("<close>")]
     Close,
 
     // Literals
