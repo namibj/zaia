@@ -7,7 +7,7 @@ pub const CALL_BINDING_POWER: i32 = 22;
 pub fn prefix_binding_power(op: Token) -> ((), i32) {
     match op {
         T![not] | T![+] | T![-] | T![#] | T![~] => ((), 21),
-        _ => panic!("bad prefix op: {:?}", op),
+        _ => unreachable!(),
     }
 }
 
