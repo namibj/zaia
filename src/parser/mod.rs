@@ -11,13 +11,7 @@ use binding_power::{
     CALL_BINDING_POWER,
     INDEX_BINDING_POWER,
 };
-use classifiers::{
-    token_is_expr_start,
-    token_is_literal,
-    token_is_other_op,
-    token_to_binary_op,
-    token_to_unary_op,
-};
+use classifiers::{token_is_expr_start, token_is_literal, token_to_binary_op, token_to_unary_op};
 use either::Either;
 use hexf_parse::parse_hexf64;
 use state::State;
@@ -308,8 +302,7 @@ fn expr_bp(state: &mut State, min_bp: i32) -> Expr {
                 let item = parse_table(state);
                 return Expr::Table(item);
             },
-            t if token_is_other_op(t) => t,
-            _ => break,
+            t => t,
         };
 
         if t == T!['('] && CALL_BINDING_POWER >= min_bp {

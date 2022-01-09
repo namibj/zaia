@@ -19,37 +19,6 @@ pub fn token_is_literal(token: Token) -> bool {
     )
 }
 
-pub fn token_is_other_op(token: Token) -> bool {
-    matches!(
-        token,
-        T![or]
-            | T![and]
-            | T![+]
-            | T![-]
-            | T![*]
-            | T![/]
-            | T![D/]
-            | T![^]
-            | T![%]
-            | T![&]
-            | T![|]
-            | T![<<]
-            | T![>>]
-            | T![==]
-            | T![~]
-            | T![~=]
-            | T![<=]
-            | T![>=]
-            | T![<]
-            | T![>]
-            | T![:]
-            | T![.]
-            | T![..]
-            | T!['[']
-            | T!['(']
-    )
-}
-
 pub fn token_is_expr_start(token: Token) -> bool {
     token == T![ident]
         || token == T!['(']
