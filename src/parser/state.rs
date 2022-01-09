@@ -59,10 +59,6 @@ impl<'source> State<'source> {
         &self.source[span.start..span.end]
     }
 
-    pub fn report(&mut self, report: ariadne::Report) {
-        self.reports.push(report);
-    }
-
     pub fn result(self) -> Vec<ariadne::Report> {
         self.reports
     }

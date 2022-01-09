@@ -13,7 +13,7 @@ pub enum Token {
     #[error]
     Invalid,
 
-    EOF,
+    Eof,
 
     #[regex(r"[a-zA-Z][a-zA-Z0-9]*", priority = 3)]
     Ident,
@@ -256,7 +256,7 @@ fn is_long_delimiter(slice: &str, delim: char) -> bool {
 #[macro_export]
 macro_rules! T {
     [invalid] => { $crate::parser::token::Token::Invalid };
-    [eof] => { $crate::parser::token::Token::EOF };
+    [eof] => { $crate::parser::token::Token::Eof };
     [ident] => { $crate::parser::token::Token::Ident };
     [+] => { $crate::parser::token::Token::Plus };
     [-] => { $crate::parser::token::Token::Minus };

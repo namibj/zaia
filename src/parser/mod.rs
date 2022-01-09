@@ -48,6 +48,7 @@ use crate::{
     T,
 };
 
+#[allow(dead_code)]
 pub fn parse(source: &str) -> (SyntaxTree, Vec<ariadne::Report>) {
     let mut state = State::new(source);
     let mut block = Vec::new();
@@ -132,7 +133,7 @@ fn parse_stmt(state: &mut State) -> Stmt {
             let target = parse_simple_expr(state, true);
             if matches!(state.peek(), T![=] | T![,]) {
                 let item = parse_assign(state, target);
-                return Stmt::Assign(item);
+                Stmt::Assign(item)
             } else {
                 Stmt::SimpleExpr(target)
             }
@@ -253,15 +254,11 @@ fn parse_assign_values(state: &mut State) -> Vec<Expr> {
     state.eat(T![=]);
     let first_value = parse_expr(state);
     let mut values = vec![first_value];
-    loop {
-        match state.peek() {
-            T![,] => {
-                state.eat(T![,]);
-                let value = parse_expr(state);
-                values.push(value);
-            },
-            _ => break,
-        }
+
+    while let T![,] = state.peek() {
+        state.eat(T![,]);
+        let item = parse_expr(state);
+        values.push(item);
     }
 
     values
@@ -473,10 +470,10 @@ fn parse_for(state: &mut State) -> Either<ForNumeric, ForGeneric> {
 
     if state.peek() == T![=] {
         let item = parse_for_numeric(state, first_var);
-        return Either::Left(item);
+        Either::Left(item)
     } else {
         let item = parse_for_generic(state, first_var);
-        return Either::Right(item);
+        Either::Right(item)
     }
 }
 
