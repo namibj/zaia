@@ -22,7 +22,7 @@ and there is also a CLI tool available for running standalone Lua scripts from t
 
 Zaia currently targets Lua 5.4. We may support newer versions in the future.
 
-### Unsupported Lua 5.4 features
+We do not support the following Lua 5.4 features:
 - `goto` statements and labels
 - `\z` string literal escapes
 - function calls without parentheses
