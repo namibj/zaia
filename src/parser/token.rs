@@ -233,7 +233,7 @@ fn skip_comment(lexer: &mut Lexer<Token>) -> logos::Skip {
                 return logos::Skip;
             }
 
-            if curr.starts_with("\n") {
+            if curr.starts_with('\n') {
                 lexer.bump(i);
                 return logos::Skip;
             }
