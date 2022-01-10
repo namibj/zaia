@@ -91,6 +91,7 @@ pub enum Expr {
     Literal(Literal),
     FunctionCall(Box<FunctionCall>),
     Table(Table),
+    VarArg,
 }
 
 impl From<SimpleExpr> for Expr {
@@ -151,6 +152,7 @@ pub struct FunctionCall {
 #[derive(Debug, PartialEq)]
 pub struct Function {
     pub args: Vec<Ident>,
+    pub vararg: bool,
     pub block: Vec<Stmt>,
 }
 

@@ -344,6 +344,11 @@ fn expr_bp(state: &mut State, min_bp: i32) -> Expr {
 
 fn expr_bp_lhs(state: &mut State) -> Expr {
     let t = state.peek();
+    if T![...] == t {
+        state.eat(T![...]);
+        return Expr::VarArg;
+    }
+
     if T![ident] == t {
         return Expr::Ident(parse_ident(state));
     }
@@ -580,9 +585,16 @@ fn parse_anon_function(state: &mut State) -> Function {
 fn parse_function_trail(state: &mut State) -> Function {
     state.eat(T!['(']);
     let mut args = Vec::new();
+    let mut vararg = false;
 
     loop {
         match state.peek() {
+            T![...] => {
+                state.eat(T![...]);
+                vararg = true;
+                state.eat(T![')']);
+                break;
+            },
             T![ident] => {
                 let arg = parse_ident(state);
                 args.push(arg);
@@ -591,7 +603,7 @@ fn parse_function_trail(state: &mut State) -> Function {
                 state.eat(T![')']);
                 break;
             },
-            t => panic!("found unexpected token {}", t),
+            t => panic!("found unexpected token {} near {:?}", t, state.span()),
         }
 
         if state.peek() == T![,] {
@@ -603,7 +615,11 @@ fn parse_function_trail(state: &mut State) -> Function {
     }
 
     let block = parse_block(state);
-    Function { args, block }
+    Function {
+        args,
+        vararg,
+        block,
+    }
 }
 
 fn parse_literal(state: &mut State) -> Literal {
