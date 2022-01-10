@@ -375,6 +375,7 @@ fn expr_bp_lhs(state: &mut State) -> Expr {
     }
 
     if let Some(op) = token_to_unary_op(t) {
+        state.bump();
         let ((), r_bp) = prefix_binding_power(t);
         let rhs = expr_bp(state, r_bp);
         return Expr::Unary(Box::new(UnaryExpr { op, expr: rhs }));
