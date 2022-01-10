@@ -5,11 +5,8 @@ use logos::{Lexer, Logos};
 #[derive(Logos, Debug, PartialEq, Clone, Copy)]
 pub enum Token {
     // Miscellaneous
-    #[regex("--.*(\n|\r\n)?", logos::skip)]
-    #[regex(r"--\[=*\[", skip_long_comment)]
-    #[token(";", logos::skip)]
-    #[regex(r"(\t|\n|\r\n)+", logos::skip)]
-    #[regex(r" +", logos::skip)]
+    #[regex("--", skip_comment)]
+    #[regex(r"[ \n\t\f\r;]+", logos::skip)]
     #[error]
     Invalid,
 
@@ -163,13 +160,13 @@ pub enum Token {
     #[regex(r"\[=*\[", long_string)]
     LongString,
 
-    #[regex(r"[0-9]+")]
+    #[regex(r"[0-9]+", priority = 2)]
     Int,
 
     #[regex(r"0x[0-9a-fA-F]+")]
     HexInt,
 
-    #[regex(r"[0-9]+\.[0-9]+([eE][+-]?[0-9]+)?")]
+    #[regex(r"[0-9]+(\.[0-9]+)?([eE][+-]?[0-9]+)?")]
     Float,
 
     #[regex(r"0x[0-9a-fA-F]*\.[0-9a-fA-F]+([pP][+-][0-9a-fA-F]+)?")]
@@ -207,37 +204,70 @@ pub enum Token {
     TDot,
 }
 
-fn long_string(lexer: &mut Lexer<Token>) -> bool {
+fn long_string(lexer: &mut Lexer<Token>) {
     let delim_len = lexer.slice().len();
     let rem = lexer.remainder();
 
     for (i, _) in rem.char_indices() {
-        if is_long_delimiter(&rem[i..i + delim_len]) {
+        if is_long_delimiter(&rem[i..i + delim_len], ']') {
             lexer.bump(i + delim_len);
-            return true;
+            return;
         }
     }
 
     unreachable!()
 }
 
-fn skip_long_comment(lexer: &mut Lexer<Token>) -> bool {
-    let delim_len = lexer.slice().len();
+fn skip_comment(lexer: &mut Lexer<Token>) -> logos::Skip {
+    let rem = lexer.remainder();
+
+    if let Some(delim_len) = starts_with_long_delimiter(rem, '[') {
+        lexer.bump(delim_len);
+        skip_long_comment(lexer, delim_len);
+        logos::Skip
+    } else {
+        for (i, _) in rem.char_indices() {
+            let curr = &rem[i..];
+            if curr.starts_with("\r\n") {
+                lexer.bump(i - 1);
+                return logos::Skip;
+            }
+
+            if curr.starts_with("\n") {
+                lexer.bump(i);
+                return logos::Skip;
+            }
+        }
+
+        unreachable!();
+    }
+}
+
+fn skip_long_comment(lexer: &mut Lexer<Token>, delim_len: usize) {
     let rem = lexer.remainder();
 
     for (i, _) in rem.char_indices() {
-        if is_long_delimiter(&rem[i..i + delim_len]) {
+        if is_long_delimiter(&rem[i..i + delim_len], ']') {
             lexer.bump(i + delim_len);
-            return true;
+            return;
         }
     }
 
     unreachable!()
 }
 
-fn is_long_delimiter(slice: &str) -> bool {
-    eprintln!("{}", slice);
-    if slice.len() < 2 || !slice.starts_with(']') || !slice.ends_with(']') {
+fn starts_with_long_delimiter(slice: &str, delim: char) -> Option<usize> {
+    for (i, _) in slice.char_indices() {
+        if is_long_delimiter(&slice[..i], delim) {
+            return Some(i);
+        }
+    }
+
+    None
+}
+
+fn is_long_delimiter(slice: &str, delim: char) -> bool {
+    if slice.len() < 2 || !slice.starts_with(delim) || !slice.ends_with(delim) {
         return false;
     }
 

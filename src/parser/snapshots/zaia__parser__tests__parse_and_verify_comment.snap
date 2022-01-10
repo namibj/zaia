@@ -1,0 +1,88 @@
+---
+source: src/parser/mod.rs
+assertion_line: 900
+expression: syntax_tree
+
+---
+SyntaxTree {
+    block: [
+        Declare(
+            Declare {
+                declarations: [
+                    Declaration {
+                        name: Ident {
+                            name: "x",
+                        },
+                        is_const: false,
+                        has_finalizer: false,
+                    },
+                ],
+                assign: Some(
+                    Assign {
+                        target: [
+                            Ident(
+                                Ident {
+                                    name: "x",
+                                },
+                            ),
+                        ],
+                        value: [
+                            Literal(
+                                Num(
+                                    Int(
+                                        5,
+                                    ),
+                                ),
+                            ),
+                        ],
+                    },
+                ),
+            },
+        ),
+        Assign(
+            Assign {
+                target: [
+                    Ident(
+                        Ident {
+                            name: "y",
+                        },
+                    ),
+                ],
+                value: [
+                    Unary(
+                        UnaryExpr {
+                            op: Neg,
+                            expr: Literal(
+                                Num(
+                                    Int(
+                                        6,
+                                    ),
+                                ),
+                            ),
+                        },
+                    ),
+                ],
+            },
+        ),
+        Assign(
+            Assign {
+                target: [
+                    Ident(
+                        Ident {
+                            name: "z",
+                        },
+                    ),
+                ],
+                value: [
+                    Literal(
+                        Num(
+                            Float(
+                                20000000.0,
+                            ),
+                        ),
+                    ),
+                ],
+            },
+        ),
+    ],
+}
