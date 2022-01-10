@@ -208,14 +208,6 @@ pub enum Token {
 }
 
 fn long_string(lexer: &mut Lexer<Token>) -> bool {
-    fn is_long_delimiter(slice: &str) -> bool {
-        if slice.len() < 2 || !slice.starts_with(']') || !slice.ends_with(']') {
-            return false;
-        }
-
-        slice.chars().filter(|c| *c == '=').count() + 2 == slice.len()
-    }
-
     let delim_len = lexer.slice().len();
     let rem = lexer.remainder();
 
@@ -229,26 +221,28 @@ fn long_string(lexer: &mut Lexer<Token>) -> bool {
     unreachable!()
 }
 
-fn skip_long_comment(lexer: &mut Lexer<Token>) -> logos::Skip {
-    fn is_long_delimiter(slice: &str) -> bool {
-        if slice.len() < 4 || !slice.starts_with("--]") || !slice.ends_with(']') {
-            return false;
-        }
-
-        slice.chars().filter(|c| *c == '=').count() + 4 == slice.len()
-    }
-
+fn skip_long_comment(lexer: &mut Lexer<Token>) -> bool {
+    panic!("yo");
     let delim_len = lexer.slice().len();
     let rem = lexer.remainder();
 
     for (i, _) in rem.char_indices() {
         if is_long_delimiter(&rem[i..i + delim_len]) {
             lexer.bump(i + delim_len);
-            break;
+            return true;
         }
     }
 
-    logos::Skip
+    unreachable!()
+}
+
+fn is_long_delimiter(slice: &str) -> bool {
+    eprintln!("{}", slice);
+    if slice.len() < 2 || !slice.starts_with(']') || !slice.ends_with(']') {
+        return false;
+    }
+
+    slice.chars().filter(|c| *c == '=').count() + 2 == slice.len()
 }
 
 #[macro_export]
