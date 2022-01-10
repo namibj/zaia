@@ -298,21 +298,7 @@ fn expr_bp(state: &mut State, min_bp: i32) -> Expr {
     let mut lhs = expr_bp_lhs(state);
 
     loop {
-        let t = match state.peek() {
-            T![function] => {
-                let item = parse_anon_function(state);
-                return Expr::Function(item);
-            },
-            t if token_is_literal(t) => {
-                let item = parse_literal(state);
-                return Expr::Literal(item);
-            },
-            T!['{'] => {
-                let item = parse_table(state);
-                return Expr::Table(item);
-            },
-            t => t,
-        };
+        let t = state.peek();
 
         if t == T!['('] && CALL_BINDING_POWER >= min_bp {
             let args = parse_function_call(state);
@@ -383,6 +369,11 @@ fn expr_bp_lhs(state: &mut State) -> Expr {
 
     if token_is_literal(t) {
         return Expr::Literal(parse_literal(state));
+    }
+
+    if T![function] == t {
+        let item = parse_anon_function(state);
+        return Expr::Function(item);
     }
 
     panic!("found unexpected token {}", t);
