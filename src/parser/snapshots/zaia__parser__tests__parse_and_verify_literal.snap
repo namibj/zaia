@@ -1,6 +1,6 @@
 ---
 source: src/parser/mod.rs
-assertion_line: 883
+assertion_line: 899
 expression: syntax_tree
 
 ---
@@ -438,6 +438,31 @@ SyntaxTree {
                                     ),
                                 },
                             ],
+                        },
+                    ),
+                ],
+            },
+        ),
+        Assign(
+            Assign {
+                target: [
+                    Ident(
+                        Ident {
+                            name: "y",
+                        },
+                    ),
+                ],
+                value: [
+                    Unary(
+                        UnaryExpr {
+                            op: Neg,
+                            expr: Literal(
+                                Num(
+                                    Int(
+                                        18,
+                                    ),
+                                ),
+                            ),
                         },
                     ),
                 ],

@@ -298,21 +298,7 @@ fn expr_bp(state: &mut State, min_bp: i32) -> Expr {
     let mut lhs = expr_bp_lhs(state);
 
     loop {
-        let t = match state.peek() {
-            T![function] => {
-                let item = parse_anon_function(state);
-                return Expr::Function(item);
-            },
-            t if token_is_literal(t) => {
-                let item = parse_literal(state);
-                return Expr::Literal(item);
-            },
-            T!['{'] => {
-                let item = parse_table(state);
-                return Expr::Table(item);
-            },
-            t => t,
-        };
+        let t = state.peek();
 
         if t == T!['('] && CALL_BINDING_POWER >= min_bp {
             let args = parse_function_call(state);
@@ -358,6 +344,11 @@ fn expr_bp(state: &mut State, min_bp: i32) -> Expr {
 
 fn expr_bp_lhs(state: &mut State) -> Expr {
     let t = state.peek();
+    if T![...] == t {
+        state.eat(T![...]);
+        return Expr::VarArg;
+    }
+
     if T![ident] == t {
         return Expr::Ident(parse_ident(state));
     }
@@ -375,6 +366,7 @@ fn expr_bp_lhs(state: &mut State) -> Expr {
     }
 
     if let Some(op) = token_to_unary_op(t) {
+        state.bump();
         let ((), r_bp) = prefix_binding_power(t);
         let rhs = expr_bp(state, r_bp);
         return Expr::Unary(Box::new(UnaryExpr { op, expr: rhs }));
@@ -382,6 +374,11 @@ fn expr_bp_lhs(state: &mut State) -> Expr {
 
     if token_is_literal(t) {
         return Expr::Literal(parse_literal(state));
+    }
+
+    if T![function] == t {
+        let item = parse_anon_function(state);
+        return Expr::Function(item);
     }
 
     panic!("found unexpected token {}", t);
@@ -588,9 +585,16 @@ fn parse_anon_function(state: &mut State) -> Function {
 fn parse_function_trail(state: &mut State) -> Function {
     state.eat(T!['(']);
     let mut args = Vec::new();
+    let mut vararg = false;
 
     loop {
         match state.peek() {
+            T![...] => {
+                state.eat(T![...]);
+                vararg = true;
+                state.eat(T![')']);
+                break;
+            },
             T![ident] => {
                 let arg = parse_ident(state);
                 args.push(arg);
@@ -599,7 +603,7 @@ fn parse_function_trail(state: &mut State) -> Function {
                 state.eat(T![')']);
                 break;
             },
-            t => panic!("found unexpected token {}", t),
+            t => panic!("found unexpected token {} near {:?}", t, state.span()),
         }
 
         if state.peek() == T![,] {
@@ -611,7 +615,11 @@ fn parse_function_trail(state: &mut State) -> Function {
     }
 
     let block = parse_block(state);
-    Function { args, block }
+    Function {
+        args,
+        vararg,
+        block,
+    }
 }
 
 fn parse_literal(state: &mut State) -> Literal {
@@ -896,4 +904,6 @@ mod tests {
     parse_and_verify!(if, "test-files/if.lua");
     parse_and_verify!(declare, "test-files/declare.lua");
     parse_and_verify!(literal, "test-files/literal.lua");
+    parse_and_verify!(comment, "test-files/comment.lua");
+    parse_and_verify!(mixed, "test-files/mixed.lua");
 }

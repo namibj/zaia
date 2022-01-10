@@ -1,6 +1,6 @@
 ---
 source: src/parser/mod.rs
-assertion_line: 879
+assertion_line: 897
 expression: syntax_tree
 
 ---
@@ -26,6 +26,7 @@ SyntaxTree {
                                     name: "b",
                                 },
                             ],
+                            vararg: false,
                             block: [
                                 Return(
                                     Return {
@@ -74,6 +75,7 @@ SyntaxTree {
                                     name: "b",
                                 },
                             ],
+                            vararg: false,
                             block: [
                                 Return(
                                     Return {
@@ -122,6 +124,7 @@ SyntaxTree {
                                     name: "b",
                                 },
                             ],
+                            vararg: false,
                             block: [
                                 Return(
                                     Return {
@@ -170,6 +173,7 @@ SyntaxTree {
                                     name: "b",
                                 },
                             ],
+                            vararg: false,
                             block: [
                                 Return(
                                     Return {
