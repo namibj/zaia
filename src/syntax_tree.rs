@@ -60,7 +60,7 @@ pub struct ForNumeric {
 #[derive(Debug, PartialEq)]
 pub struct ForGeneric {
     pub targets: Vec<Ident>,
-    pub yielder: Expr,
+    pub yielders: Vec<Expr>,
     pub block: Vec<Stmt>,
 }
 

@@ -518,12 +518,28 @@ fn parse_for_generic(state: &mut State, first_var: Ident) -> ForGeneric {
         }
     }
 
-    let yielder = parse_expr(state);
-    let item = parse_do(state);
+    let mut values = Vec::new();
+    loop {
+        match state.peek() {
+            T![do] => break,
+            _ => {
+                let arg = parse_expr(state);
+                values.push(arg);
+            },
+        }
 
+        if state.peek() == T![,] {
+            state.eat(T![,]);
+        } else {
+            break;
+        }
+    }
+
+    let item = parse_do(state);
+    
     ForGeneric {
         targets: args,
-        yielder,
+        yielders: values,
         block: item.block,
     }
 }
