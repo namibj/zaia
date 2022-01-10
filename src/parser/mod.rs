@@ -47,7 +47,6 @@ use crate::{
     T,
 };
 
-#[allow(dead_code)]
 pub fn parse(source: &str) -> (SyntaxTree, Vec<ariadne::Report>) {
     let mut state = State::new(source);
     let mut block = Vec::new();
@@ -536,7 +535,7 @@ fn parse_for_generic(state: &mut State, first_var: Ident) -> ForGeneric {
     }
 
     let item = parse_do(state);
-    
+
     ForGeneric {
         targets: args,
         yielders: values,
@@ -871,7 +870,7 @@ fn parse_table_element_expr(state: &mut State) -> TableElement {
 
 #[cfg(test)]
 mod tests {
-    use std::fs::read_to_string;
+    use std::fs;
 
     use insta::assert_debug_snapshot;
     use paste::paste;
@@ -883,7 +882,7 @@ mod tests {
             paste! {
                 #[test]
                 fn [<parse_and_verify_ $name>]() {
-                    let source = read_to_string($path).unwrap();
+                    let source = fs::read_to_string($path).unwrap();
                     let (syntax_tree, reports) = parse(&source);
                     assert!(reports.is_empty());
                     assert_debug_snapshot!(syntax_tree);
