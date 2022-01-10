@@ -896,4 +896,5 @@ mod tests {
     parse_and_verify!(if, "test-files/if.lua");
     parse_and_verify!(declare, "test-files/declare.lua");
     parse_and_verify!(literal, "test-files/literal.lua");
+    parse_and_verify!(mixed, "test-files/mixed.lua");
 }
