@@ -222,7 +222,6 @@ fn long_string(lexer: &mut Lexer<Token>) -> bool {
 }
 
 fn skip_long_comment(lexer: &mut Lexer<Token>) -> bool {
-    panic!("yo");
     let delim_len = lexer.slice().len();
     let rem = lexer.remainder();
 
