@@ -1,8 +1,8 @@
-pub use broom::prelude::{Trace,Tracer,Handle,Rooted};
-use super::object::Object;
-use std::alloc;
-use std::cell::RefCell;
-use std::rc::Rc;
+use std::{alloc, cell::RefCell, rc::Rc};
+
+pub use broom::prelude::{Handle, Rooted, Trace, Tracer};
+
+use super::value::Value;
 
 const INITIAL_MAX: usize = 4 * 1024 * 1024;
 const HEAP_GROW_FACTOR: f32 = 1.5;
@@ -18,17 +18,14 @@ impl Heap {
         let garbage = Rc::new(RefCell::new(Vec::new()));
         let internal = RefCell::new(InternalHeap::new(Rc::clone(&garbage)));
 
-        Self {
-            internal,
-            garbage,
-        }
+        Self { internal, garbage }
     }
 
-    pub fn track(&self, object: Object) -> Rooted<Object> {
+    pub fn track(&self, object: Value) -> Rooted<Value> {
         self.internal.borrow_mut().track(object)
     }
 
-    pub fn track_temporary(&self, object: Object) -> Handle<Object> {
+    pub fn track_temporary(&self, object: Value) -> Handle<Value> {
         self.internal.borrow_mut().track_temporary(object)
     }
 
@@ -37,8 +34,8 @@ impl Heap {
     }
 
     pub unsafe fn free_block(&self, layout: alloc::Layout, ptr: *mut u8) {
-        let item = GarbageItem {layout, ptr };
-       self.garbage.borrow_mut().push(item);
+        let item = GarbageItem { layout, ptr };
+        self.garbage.borrow_mut().push(item);
     }
 
     pub unsafe fn collect(&self) {
@@ -52,7 +49,7 @@ struct GarbageItem {
 }
 
 struct InternalHeap {
-    graph: broom::Heap<Object>,
+    graph: broom::Heap<Value>,
     garbage: Rc<RefCell<Vec<GarbageItem>>>,
     used_size: usize,
     trigger_threshold: usize,
@@ -101,11 +98,11 @@ impl InternalHeap {
         alloc::alloc(layout)
     }
 
-    fn track(&mut self, object: Object) -> Rooted<Object> {
+    fn track(&mut self, object: Value) -> Rooted<Value> {
         self.graph.insert(object)
     }
 
-    fn track_temporary(&mut self, object: Object) -> Handle<Object> {
+    fn track_temporary(&mut self, object: Value) -> Handle<Value> {
         self.graph.insert_temp(object)
     }
 }

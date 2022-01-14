@@ -1,18 +1,15 @@
 mod gc;
-mod object;
+mod value;
 
-
-//use broom::Heap;
-//use object::Object;
+// use broom::Heap;
+// use object::Object;
 //
-//pub struct Engine {
+// pub struct Engine {
 //    heap: Heap<Object>,
 //}
+// struct Scope {
 //
-//struct Scope {
-//    
 //}
-//
-//trait Visit {
+// trait Visit {
 //    fn visit(&self, state: &mut Engine);
 //}
