@@ -765,23 +765,23 @@ fn parse_long_string(state: &mut State) -> Vec<u8> {
         .into_bytes()
 }
 
-fn parse_int(state: &mut State) -> i64 {
+fn parse_int(state: &mut State) -> i32 {
     state.eat(T![int]);
     state.slice().parse().unwrap()
 }
 
-fn parse_hex_int(state: &mut State) -> i64 {
+fn parse_hex_int(state: &mut State) -> i32 {
     state.eat(T![hex_int]);
     let raw = &state.slice()[2..];
-    i64::from_str_radix(raw, 16).unwrap()
+    i32::from_str_radix(raw, 16).unwrap()
 }
 
-fn parse_float(state: &mut State) -> f64 {
+fn parse_float(state: &mut State) -> f32 {
     state.eat(T![float]);
     state.slice().parse().unwrap()
 }
 
-fn parse_hex_float(state: &mut State) -> f64 {
+fn parse_hex_float(state: &mut State) -> f32 {
     state.eat(T![hex_float]);
 
     let raw = state.slice();
