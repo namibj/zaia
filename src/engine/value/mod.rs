@@ -1,9 +1,11 @@
 mod table;
+mod string;
 
 use table::Table;
 
 use super::gc::{Handle, Trace, Tracer};
 
+// TODO: string instances
 // TODO: table instances
 // TODO: function instances
 // TODO: userdata instances

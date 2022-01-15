@@ -2,7 +2,7 @@
 // represents data. Inspiration for the implementation has been taken from the
 // LuaJIT sources and the V8 Javacript engine. The specific V8 blogpost about this can be found here: https://v8.dev/blog/fast-properties.
 
-mod table;
+mod raw_table;
 
 use super::{
     super::gc::{Handle, Heap, Trace, Tracer},

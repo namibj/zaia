@@ -1,6 +1,10 @@
 use std::{alloc, cell::RefCell, rc::Rc};
+use std::hash::{Hash, Hasher};
+mod broom;
+mod trace;
 
-pub use broom::prelude::{Handle, Rooted, Trace, Tracer};
+pub use broom::prelude::{Handle, Rooted};
+pub use trace::{Trace,Tracer};
 
 use super::value::Value;
 
@@ -104,5 +108,24 @@ impl InternalHeap {
 
     fn track_temporary(&mut self, object: Value) -> Handle<Value> {
         self.graph.insert_temp(object)
+    }
+}
+
+pub struct Compare<T>(pub Handle<T>);
+
+impl<T> PartialEq for Compare<T> where
+T: Trace<Value> + PartialEq {
+    fn eq(&self, other: &Self) -> bool {
+        unsafe { self.0.get_unchecked() == other.0.get_unchecked() }
+    }
+}
+
+impl<T> Eq for Compare<T> where
+T: Trace<Value> + Eq {}
+
+impl<T> Hash for Compare<T> where
+T: Trace<Value> + Hash {
+    fn hash<H>(&self, state: &mut H) where H:Hasher {
+        unsafe { self.0.get_unchecked().hash(state); }
     }
 }
