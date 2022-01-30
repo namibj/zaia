@@ -4,41 +4,6 @@
 // Thanks to Julia Scheaffer for coming up with the code this is based on.
 // You will be remembered for your contribution to society.
 
-//! # Hexponent
-//!
-//! Hexponent is a hexadecimal literal parser for Rust based on the C11
-//! specification section [6.4.4.2](http://port70.net/~nsz/c/c11/n1570.html#6.4.4.2).
-//!
-//! ```rust
-//! use hexponent::FloatLiteral;
-//! let float_repr: FloatLiteral = "0x3.4".parse().unwrap();
-//! let value = float_repr.convert::<f32>().inner();
-//! assert_eq!(value, 3.25);
-//! ```
-//! Hexponent has a minimum supported rust version of 1.34.
-//!
-//! ## Features
-//! - No dependencies
-//! - Non-UTF-8 parser
-//! - Precision warnings
-//! - `no_std` support (MSRV 1.36.0)
-//!
-//! ## Differences from the specification
-//! There are two places where hexponent differs from the C11 specificaiton.
-//! - An exponent is not required. (`0x1.2` is allowed)
-//! - `floating-suffix` is *not* parsed. (`0x1p4l` is not allowed)
-//!
-//! ## `no_std` support
-//! `no_std` support can be enabled by disabling the default `std` feature for
-//! hexponent in your `Cargo.toml`.
-//! ```toml
-//! hexponent = {version = "0.2", default-features = false}
-//! ```
-//! `no_std` support is only possible in rustc version 1.36.0 and higher.
-//!
-//! Disabling the `std` feature currently only disables the `std::error::Error`
-//! implementation for `ParseError`.
-
 use core::fmt;
 
 #[derive(Debug)]
