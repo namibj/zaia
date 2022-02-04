@@ -17,6 +17,10 @@ impl<T> Handle<T> {
     pub unsafe fn get_unchecked_mut<'a>(self) -> &'a mut T {
         &mut *self.ptr
     }
+
+    pub unsafe fn destroy(self) {
+        Box::from_raw(self.ptr);
+    }
 }
 
 impl<T> Clone for Handle<T> {
