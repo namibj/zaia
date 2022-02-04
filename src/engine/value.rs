@@ -90,3 +90,27 @@ pub struct Function {
 pub struct Table {
     inner: HashMap<Value, Value>,
 }
+
+impl Table {
+    pub fn new() -> Self {
+        Table {
+            inner: HashMap::new(),
+        }
+    }
+
+    pub fn get(&self, key: &Value) -> Option<&Value> {
+        self.inner.get(key)
+    }
+
+    pub fn get_mut(&mut self, key: &Value) -> Option<&mut Value> {
+        self.inner.get_mut(key)
+    }
+
+    pub fn insert(&mut self, key: Value, value: Value) {
+        self.inner.insert(key, value);
+    }
+
+    pub fn remove(&mut self, key: &Value) -> Option<Value> {
+        self.inner.remove(key)
+    }
+}
