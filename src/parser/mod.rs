@@ -1,8 +1,8 @@
 mod binding_power;
 mod classifiers;
+mod hex_float;
 mod state;
 mod token;
-mod hex_float;
 
 use std::{str, str::FromStr};
 

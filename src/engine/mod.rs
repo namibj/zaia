@@ -1,5 +1,5 @@
-mod value;
 mod gc;
+mod value;
 
 use value::Table;
 

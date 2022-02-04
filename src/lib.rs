@@ -1,7 +1,8 @@
 #![feature(allocator_api)]
 #![feature(cell_update)]
+#![allow(dead_code)]
 
 mod engine;
-mod utf8;
 pub mod parser;
 pub mod syntax_tree;
+mod utf8;

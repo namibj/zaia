@@ -1,5 +1,6 @@
-// This module is a giant mess. Hexadecimal floats suck to parse and everyone seems to do it differently.
-// I'm not sure if this is the best way to do it, but it works.
+// This module is a giant mess. Hexadecimal floats suck to parse and everyone
+// seems to do it differently. I'm not sure if this is the best way to do it,
+// but it works.
 //
 // Thanks to Julia Scheaffer for coming up with the code this is based on.
 // You will be remembered for your contribution to society.
@@ -9,12 +10,10 @@ use core::fmt;
 #[derive(Debug)]
 /// Indicates the preicsision of a conversion
 pub enum ConversionResult<T> {
-    /// The conversion was precise and the result represents the original exactly.
+    /// The conversion was precise and the result represents the original
+    /// exactly.
     Precise(T),
 
-    // TODO: I should be able to calculate how imprecise the conversion is too,
-    // which might be useful. This also might allow some subnormal numbers to be
-    // returned as precise results.
     /// The conversion was imprecise and the result is as close to the original
     /// as possible.
     Imprecise(T),
@@ -93,7 +92,7 @@ impl fmt::Display for ParseError {
             ParseErrorKind::ExponentOverflow => write!(f, "exponent too large to fit in integer"),
             ParseErrorKind::MissingEnd => {
                 write!(f, "extra bytes were found at the end of float literal")
-            }
+            },
         }
     }
 }
@@ -130,8 +129,8 @@ impl FloatLiteral {
 
     /// Parse a slice of bytes into a `FloatLiteral`.
     ///
-    /// This is based on hexadecimal floating constants in the C11 specification,
-    /// section [6.4.4.2](http://port70.net/~nsz/c/c11/n1570.html#6.4.4.2).
+    /// This is based on hexadecimal floating constants in the C11
+    /// specification, section [6.4.4.2](http://port70.net/~nsz/c/c11/n1570.html#6.4.4.2).
     pub fn from_bytes(data: &[u8]) -> Result<FloatLiteral, ParseError> {
         let original_data = data;
 
@@ -171,10 +170,7 @@ impl FloatLiteral {
 
                 let exponent_digits_offset = data[sign_offset..]
                     .iter()
-                    .position(|&b| match b {
-                        b'0'..=b'9' => false,
-                        _ => true,
-                    })
+                    .position(|&b| !matches!(b, b'0'..=b'9'))
                     .unwrap_or_else(|| data[sign_offset..].len());
 
                 if exponent_digits_offset == 0 {
@@ -185,8 +181,6 @@ impl FloatLiteral {
 
                 // The exponent should always contain valid utf-8 beacuse it
                 // consumes a sign, and base-10 digits.
-                // TODO: Maybe make this uft8 conversion unchecked. It should be
-                // good, but I also don't want unsafe code.
                 let exponent: i32 =
                     core::str::from_utf8(&data[..sign_offset + exponent_digits_offset])
                         .expect("exponent did not contain valid utf-8")
@@ -197,7 +191,7 @@ impl FloatLiteral {
                         })?;
 
                 (exponent, &data[sign_offset + exponent_digits_offset..])
-            }
+            },
             _ => (0, data),
         };
 
@@ -241,6 +235,7 @@ impl FloatLiteral {
 
 impl core::str::FromStr for FloatLiteral {
     type Err = ParseError;
+
     fn from_str(s: &str) -> Result<FloatLiteral, ParseError> {
         FloatLiteral::from_bytes(s.as_bytes())
     }
@@ -284,7 +279,7 @@ fn consume_hex_digits(data: &[u8]) -> (&[u8], &[u8]) {
     let i = data
         .iter()
         .position(|&b| hex_digit_to_int(b).is_none())
-        .unwrap_or_else(|| data.len());
+        .unwrap_or(data.len());
 
     data.split_at(i)
 }
@@ -332,7 +327,6 @@ macro_rules! impl_fpformat {
 
                 // Check for underflows
                 if final_exponent < $min_exp - 1 {
-                    // TODO: Implement subnormal numbers.
                     if literal.is_positive {
                         return ConversionResult::Imprecise(0.0);
                     } else {
@@ -366,8 +360,8 @@ macro_rules! impl_fpformat {
                 // // This might be a bit faster.
                 // let mut final_result = !literal.is_positive as $bits_type;
                 // final_result <<= EXPONENT_BITS;
-                // final_result |= (final_exponent + EXPONENT_BIAS as i32) as $bits_type;
-                // final_result <<= MANTISSA_BITS;
+                // final_result |= (final_exponent + EXPONENT_BIAS as i32) as
+                // $bits_type; final_result <<= MANTISSA_BITS;
                 // final_result |= mantissa_result;
                 // ConversionResult::Precise($from_bits(final_result))
             }

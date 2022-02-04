@@ -1,22 +1,22 @@
 mod handle;
-mod trace;
 mod heuristics;
+mod trace;
 
-use std::alloc;
-use std::ptr;
-use std::cell::RefCell;
-use std::collections::HashSet;
+use std::{alloc, cell::RefCell, collections::HashSet, ptr, rc::Rc};
+
 use handle::Handle;
-use trace::{Trace, Visitor};
-use std::rc::Rc;
 use heuristics::Heuristics;
+use trace::{Trace, Visitor};
 
 #[derive(Clone)]
 pub struct Heap<T, B> {
     internal: Rc<HeapInternal<T, B>>,
 }
 
-impl<T, B> Heap<T, B> where B: Trace<T> {
+impl<T, B> Heap<T, B>
+where
+    B: Trace<T>,
+{
     pub fn new(base: B) -> Self {
         Heap {
             internal: Rc::new(HeapInternal::new(base)),
@@ -43,7 +43,10 @@ struct HeapInternal<T, B> {
     base: B,
 }
 
-impl<T, B> HeapInternal<T, B> where B:Trace<T> {
+impl<T, B> HeapInternal<T, B>
+where
+    B: Trace<T>,
+{
     fn new(base: B) -> Self {
         let tree = RefCell::new(Tree {
             objects: HashSet::new(),
@@ -53,7 +56,7 @@ impl<T, B> HeapInternal<T, B> where B:Trace<T> {
         Self {
             heuristics: Heuristics::new(),
             tree,
-            base
+            base,
         }
     }
 
@@ -77,29 +80,62 @@ impl<T, B> HeapInternal<T, B> where B:Trace<T> {
     }
 }
 
-unsafe impl<T, B> alloc::Allocator for Heap<T, B> where B: Trace<T> {
+unsafe impl<T, B> alloc::Allocator for Heap<T, B>
+where
+    B: Trace<T>,
+{
     fn allocate(&self, layout: alloc::Layout) -> Result<ptr::NonNull<[u8]>, alloc::AllocError> {
-        self.internal.heuristics.update_allocated(&self, |x| x + layout.size());
+        self.internal
+            .heuristics
+            .update_allocated(self, |x| x + layout.size());
+
         alloc::Global.allocate(layout)
     }
 
     unsafe fn deallocate(&self, ptr: ptr::NonNull<u8>, layout: alloc::Layout) {
-        self.internal.heuristics.update_allocated(&self, |x| x - layout.size());
+        self.internal
+            .heuristics
+            .update_allocated(self, |x| x - layout.size());
+
         alloc::Global.deallocate(ptr, layout)
     }
 
-    unsafe fn grow(&self, ptr: ptr::NonNull<u8>, old_layout: alloc::Layout, new_layout: alloc::Layout) -> Result<ptr::NonNull<[u8]>, alloc::AllocError> {
-        self.internal.heuristics.update_allocated(&self, |x| x + new_layout.size() - old_layout.size());
+    unsafe fn grow(
+        &self,
+        ptr: ptr::NonNull<u8>,
+        old_layout: alloc::Layout,
+        new_layout: alloc::Layout,
+    ) -> Result<ptr::NonNull<[u8]>, alloc::AllocError> {
+        self.internal
+            .heuristics
+            .update_allocated(self, |x| x + new_layout.size() - old_layout.size());
+
         alloc::Global.grow(ptr, old_layout, new_layout)
     }
 
-    unsafe fn grow_zeroed(&self, ptr: ptr::NonNull<u8>, old_layout: alloc::Layout, new_layout: alloc::Layout) -> Result<ptr::NonNull<[u8]>, alloc::AllocError> {
-        self.internal.heuristics.update_allocated(&self, |x| x + new_layout.size() - old_layout.size());
+    unsafe fn grow_zeroed(
+        &self,
+        ptr: ptr::NonNull<u8>,
+        old_layout: alloc::Layout,
+        new_layout: alloc::Layout,
+    ) -> Result<ptr::NonNull<[u8]>, alloc::AllocError> {
+        self.internal
+            .heuristics
+            .update_allocated(self, |x| x + new_layout.size() - old_layout.size());
+
         alloc::Global.grow_zeroed(ptr, old_layout, new_layout)
     }
 
-    unsafe fn shrink(&self, ptr: ptr::NonNull<u8>, old_layout: alloc::Layout, new_layout: alloc::Layout) -> Result<ptr::NonNull<[u8]>, alloc::AllocError> {
-        self.internal.heuristics.update_allocated(&self, |x| x + new_layout.size() - old_layout.size());
+    unsafe fn shrink(
+        &self,
+        ptr: ptr::NonNull<u8>,
+        old_layout: alloc::Layout,
+        new_layout: alloc::Layout,
+    ) -> Result<ptr::NonNull<[u8]>, alloc::AllocError> {
+        self.internal
+            .heuristics
+            .update_allocated(self, |x| x + new_layout.size() - old_layout.size());
+
         alloc::Global.shrink(ptr, old_layout, new_layout)
     }
 }
