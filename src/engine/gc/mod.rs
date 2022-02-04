@@ -4,9 +4,9 @@ mod trace;
 
 use std::{alloc, cell::RefCell, collections::HashSet, ptr, rc::Rc};
 
-use handle::Handle;
+pub use handle::Handle;
 use heuristics::Heuristics;
-use trace::{Trace, Visitor};
+pub use trace::{Trace, Visitor};
 
 #[derive(Clone)]
 pub struct Heap<T, B> {

@@ -1,6 +1,6 @@
 use std::{cmp, collections::HashMap, hash};
 
-use broom::Handle;
+use super::gc::Handle;
 
 #[derive(Clone)]
 pub enum Value {
