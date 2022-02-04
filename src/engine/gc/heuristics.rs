@@ -28,7 +28,7 @@ impl Heuristics {
     where
         B: Trace<T>,
     {
-        if !self.in_cycle.get() && self.allocated >= self.threshold {
+        if self.allocated >= self.threshold {
             self.in_cycle.set(true);
             heap.collect();
             self.in_cycle.set(false);
@@ -44,6 +44,9 @@ impl Heuristics {
         F: FnOnce(usize) -> usize,
     {
         self.allocated.update(f);
-        self.check_collect(heap);
+
+        if !self.in_cycle.get() {
+            self.check_collect(heap);
+        }
     }
 }
