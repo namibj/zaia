@@ -1,6 +1,9 @@
-use std::{cmp, collections::HashMap, hash};
+use std::{cmp, hash};
 
 use super::gc::Handle;
+use super::Heap;
+use hashbrown::HashMap;
+use hashbrown::hash_map::DefaultHashBuilder;
 
 #[derive(Clone)]
 pub enum Value {
@@ -83,18 +86,16 @@ pub enum RefValue {
     Table(Table),
 }
 
-pub struct Function {
-    scope: HashMap<String, Value>,
-}
+pub struct Function {}
 
 pub struct Table {
-    inner: HashMap<Value, Value>,
+    inner: HashMap<Value, Value, DefaultHashBuilder, Heap>,
 }
 
 impl Table {
-    pub fn new() -> Self {
+    pub fn new(heap: Heap) -> Self {
         Table {
-            inner: HashMap::new(),
+            inner: HashMap::with_capacity_in(0, heap),
         }
     }
 

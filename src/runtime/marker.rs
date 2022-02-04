@@ -1,4 +1,4 @@
-use std::ptr::NonNull;
+use std::ptr;
 
 use super::{
     gc::{Trace, Visitor},
@@ -7,12 +7,18 @@ use super::{
 };
 
 pub struct Marker {
-    data: NonNull<VM>,
+    data: *const VM,
 }
 
 impl Marker {
-    pub fn new(data: NonNull<VM>) -> Self {
-        Self { data }
+    pub fn new() -> Self {
+        Self {
+            data: ptr::null_mut(),
+        }
+    }
+
+    pub fn initialize(&mut self, vm: &VM) {
+        self.data = vm;
     }
 }
 

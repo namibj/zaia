@@ -2,13 +2,13 @@ mod handle;
 mod heuristics;
 mod trace;
 
-use std::{alloc, cell::RefCell, collections::HashSet, ptr, rc::Rc};
+use std::{alloc, cell::RefCell, ptr, rc::Rc};
 
 pub use handle::Handle;
 use heuristics::Heuristics;
 pub use trace::{Trace, Visitor};
+use hashbrown::HashSet;
 
-#[derive(Clone)]
 pub struct Heap<T, B> {
     internal: Rc<HeapInternal<T, B>>,
 }
@@ -29,6 +29,18 @@ where
 
     pub fn collect(&self) {
         self.internal.collect();
+    }
+
+    pub unsafe fn base_mut(&mut self) -> &mut B {
+        Rc::get_mut_unchecked(&mut self.internal).base_mut()
+    }
+}
+
+impl<T, B> Clone for Heap<T, B> {
+    fn clone(&self) -> Self {
+        Heap {
+            internal: self.internal.clone(),
+        }
     }
 }
 
@@ -77,6 +89,10 @@ where
         }
 
         tree.visitor.reset();
+    }
+
+    fn base_mut(&mut self) -> &mut B {
+        &mut self.base
     }
 }
 
