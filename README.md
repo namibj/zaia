@@ -23,3 +23,8 @@ We do not support the following Lua 5.4 features:
 - `goto` statements and labels
 - `\z` string literal escapes
 - function calls without parentheses
+
+## License
+
+Zaia is licensed under the Apache v2.0 license.
+See LICENSE for more information.

@@ -220,6 +220,6 @@ pub enum Literal {
 
 #[derive(Debug, PartialEq)]
 pub enum NumLiteral {
-    Int(i64),
-    Float(f64),
+    Int(i32),
+    Float(f32),
 }

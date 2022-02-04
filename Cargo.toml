@@ -6,8 +6,6 @@ edition = "2021"
 [dependencies]
 logos = "0.12.0"
 ariadne = { git = "https://github.com/zesterer/ariadne", rev = "689782a3531c3d4a3e53af998b059c733729c42e" }
-either = "1.6.1"
-hexponent = "0.3.1"
 
 [dev-dependencies]
 insta = "1.10.0"

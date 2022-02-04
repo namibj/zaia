@@ -1,5 +1,6 @@
 mod binding_power;
 mod classifiers;
+mod hex_float;
 mod state;
 mod token;
 
@@ -12,7 +13,6 @@ use binding_power::{
     INDEX_BINDING_POWER,
 };
 use classifiers::{token_is_expr_start, token_is_literal, token_to_binary_op, token_to_unary_op};
-use either::Either;
 use state::State;
 
 use crate::{
@@ -103,8 +103,8 @@ fn parse_stmt(state: &mut State) -> Stmt {
             Stmt::If(item)
         },
         T![for] => match parse_for(state) {
-            Either::Left(numeric) => Stmt::ForNumeric(numeric),
-            Either::Right(generic) => Stmt::ForGeneric(generic),
+            For::Numeric(numeric) => Stmt::ForNumeric(numeric),
+            For::Generic(generic) => Stmt::ForGeneric(generic),
         },
         T![return] => {
             let item = parse_return(state);
@@ -459,16 +459,21 @@ fn parse_if(state: &mut State) -> If {
     }
 }
 
-fn parse_for(state: &mut State) -> Either<ForNumeric, ForGeneric> {
+enum For {
+    Numeric(ForNumeric),
+    Generic(ForGeneric),
+}
+
+fn parse_for(state: &mut State) -> For {
     state.eat(T![for]);
     let first_var = parse_ident(state);
 
     if state.peek() == T![=] {
         let item = parse_for_numeric(state, first_var);
-        Either::Left(item)
+        For::Numeric(item)
     } else {
         let item = parse_for_generic(state, first_var);
-        Either::Right(item)
+        For::Generic(item)
     }
 }
 
@@ -765,27 +770,27 @@ fn parse_long_string(state: &mut State) -> Vec<u8> {
         .into_bytes()
 }
 
-fn parse_int(state: &mut State) -> i64 {
+fn parse_int(state: &mut State) -> i32 {
     state.eat(T![int]);
     state.slice().parse().unwrap()
 }
 
-fn parse_hex_int(state: &mut State) -> i64 {
+fn parse_hex_int(state: &mut State) -> i32 {
     state.eat(T![hex_int]);
     let raw = &state.slice()[2..];
-    i64::from_str_radix(raw, 16).unwrap()
+    i32::from_str_radix(raw, 16).unwrap()
 }
 
-fn parse_float(state: &mut State) -> f64 {
+fn parse_float(state: &mut State) -> f32 {
     state.eat(T![float]);
     state.slice().parse().unwrap()
 }
 
-fn parse_hex_float(state: &mut State) -> f64 {
+fn parse_hex_float(state: &mut State) -> f32 {
     state.eat(T![hex_float]);
 
     let raw = state.slice();
-    hexponent::FloatLiteral::from_str(raw)
+    hex_float::FloatLiteral::from_str(raw)
         .unwrap()
         .convert()
         .inner()
