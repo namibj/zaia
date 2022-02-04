@@ -1,4 +1,5 @@
-#![feature(arbitrary_self_types)]
+#![feature(allocator_api)]
+#![feature(cell_update)]
 
 mod engine;
 mod utf8;

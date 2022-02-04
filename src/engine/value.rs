@@ -2,7 +2,6 @@ use std::collections::HashMap;
 use broom::Handle;
 use std::cmp;
 use std::hash;
-use std::mem;
 
 #[derive(Clone)]
 pub enum Value {
@@ -68,7 +67,7 @@ impl hash::Hash for Value {
 
 fn float_cmp(a: f32, b: f32) -> cmp::Ordering {
     let convert = |f: f32| {
-        let i = unsafe { mem::transmute::<_, u32>(f)};
+        let i = f.to_bits();
         let bit = 1 << (32 - 1);
         if i & bit == 0 {
             i | bit
