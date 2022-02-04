@@ -20,9 +20,16 @@ impl<T> Visitor<T> {
         self.marked.insert(handle.clone());
     }
 
-    pub fn run(mut self, root: &dyn Trace<T>) -> HashSet<Handle<T>> {
-        root.visit(&mut self);
-        self.marked
+    pub fn run(&mut self, root: &dyn Trace<T>) {
+        root.visit(self);
+    }
+
+    pub fn unmarked<'a>(&'a self, objects: &'a HashSet<Handle<T>>) -> impl Iterator<Item=Handle<T>> + 'a {
+        objects.difference(&self.marked).copied()
+    }
+
+    pub fn reset(&mut self) {
+        self.marked.clear();
     }
 }
 

@@ -36,6 +36,7 @@ struct HeapInternal<T, B> {
     allocated: usize,
     threshold: usize,
     objects: HashSet<Handle<T>>,
+    visitor: Visitor<T>,
     base: B,
 }
 
@@ -45,6 +46,7 @@ impl<T, B> HeapInternal<T, B> where B:Trace<T> {
             allocated: 0,
             threshold: INITIAL_THRESHOLD,
             objects: HashSet::new(),
+            visitor: Visitor::new(),
             base
         }
     }
@@ -61,14 +63,14 @@ impl<T, B> HeapInternal<T, B> where B:Trace<T> {
     }
 
     fn collect(&mut self) {
-        let visitor = Visitor::new();
-        let marked = visitor.run(&self.base);
-        
-        for object in self.objects.difference(&marked) {
+        self.visitor.run(&self.base);
+        for object in self.visitor.unmarked(&self.objects) {
             unsafe {
                 object.destroy();
             }
         }
+
+        self.visitor.reset();
     }
 }
 
