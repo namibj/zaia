@@ -23,6 +23,7 @@ impl Scope {
         if self.stack.last_mut().unwrap().insert(key, value).is_some() {
             return Err(LuaError::VariableAlreadyDeclared);
         }
+        
         Ok(())
     }
 
