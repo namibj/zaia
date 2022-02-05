@@ -1,3 +1,5 @@
+use std::rc::Rc;
+
 #[derive(Debug, PartialEq)]
 pub struct SyntaxTree {
     pub block: Vec<Stmt>,
@@ -87,7 +89,7 @@ pub enum Expr {
     Ident(Ident),
     Unary(Box<UnaryExpr>),
     Binary(Box<BinaryExpr>),
-    Function(Function),
+    Function(Rc<Function>),
     Literal(Literal),
     FunctionCall(Box<FunctionCall>),
     Table(Table),

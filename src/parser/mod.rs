@@ -14,6 +14,7 @@ use binding_power::{
 };
 use classifiers::{token_is_expr_start, token_is_literal, token_to_binary_op, token_to_unary_op};
 use state::State;
+use std::rc::Rc;
 
 use crate::{
     syntax_tree::{
@@ -118,7 +119,7 @@ fn parse_stmt(state: &mut State) -> Stmt {
             let (target, function) = parse_named_function(state);
             let assign = Assign {
                 target: vec![target],
-                value: vec![Expr::Function(function)],
+                value: vec![Expr::Function(Rc::new(function))],
             };
 
             Stmt::Assign(assign)
@@ -172,7 +173,7 @@ fn parse_declare(state: &mut State) -> Declare {
 
         let assign = Assign {
             target: vec![SimpleExpr::Ident(name)],
-            value: vec![Expr::Function(function)],
+            value: vec![Expr::Function(Rc::new(function))],
         };
 
         return Declare {
@@ -378,7 +379,7 @@ fn expr_bp_lhs(state: &mut State) -> Expr {
 
     if T![function] == t {
         let item = parse_anon_function(state);
-        return Expr::Function(item);
+        return Expr::Function(Rc::new(item));
     }
 
     panic!("found unexpected token {}", t);
