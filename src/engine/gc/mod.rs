@@ -24,11 +24,12 @@ impl<T> Heap<T> {
         self.internal.insert(value)
     }
 
-    pub fn collect<F>(&self, trace: F)
+    pub fn collect<F1, F2>(&self, trace: F1, finalize: F2)
     where
-        F: FnOnce(&mut Visitor<T>),
+        F1: FnOnce(&mut Visitor<T>),
+        F2: FnMut(Handle<T>),
     {
-        self.internal.collect(trace);
+        self.internal.collect(trace, finalize);
     }
 
     pub fn should_collect(&self) -> bool {
@@ -50,13 +51,15 @@ struct Tree<T> {
 }
 
 impl<T> Tree<T> {
-    fn collect<F>(&mut self, trace: F)
+    fn collect<F1,F2>(&mut self, trace: F1, mut finalize:F2)
     where
-        F: FnOnce(&mut Visitor<T>),
+    F1: FnOnce(&mut Visitor<T>),
+    F2: FnMut(Handle<T>),
     {
         trace(&mut self.visitor);
 
         for object in self.visitor.unmarked(&self.objects) {
+            finalize(*object);
             self.objects.remove(object);
 
             unsafe {
@@ -93,11 +96,12 @@ impl<T> HeapInternal<T> {
         handle
     }
 
-    fn collect<F>(&self, trace: F)
+    fn collect<F1,F2>(&self, trace: F1, finalize:F2)
     where
-        F: FnOnce(&mut Visitor<T>),
+    F1: FnOnce(&mut Visitor<T>),
+    F2: FnMut(Handle<T>),
     {
-        self.tree.borrow_mut().collect(trace);
+        self.tree.borrow_mut().collect(trace, finalize);
         self.heuristics.adjust();
     }
 }
