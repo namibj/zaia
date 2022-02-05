@@ -1,9 +1,12 @@
+mod table;
+mod function;
+
 use std::{cmp, hash};
 
 use super::gc::Handle;
-use super::Heap;
-use hashbrown::HashMap;
-use hashbrown::hash_map::DefaultHashBuilder;
+pub use table::Table;
+pub use function::Function;
+use std::borrow::Borrow;
 
 #[derive(Clone)]
 pub enum Value {
@@ -67,6 +70,20 @@ impl hash::Hash for Value {
     }
 }
 
+impl Borrow<[u8]> for Value {
+    fn borrow(&self) -> &[u8] {
+        match self {
+            Value::String(a) => a,
+            _ => panic!("Value::borrow() called on non-string value"),
+        }
+    }
+}
+
+pub enum RefValue {
+    Function(Function),
+    Table(Table),
+}
+
 fn float_cmp(a: f32, b: f32) -> cmp::Ordering {
     let convert = |f: f32| {
         let i = f.to_bits();
@@ -79,39 +96,4 @@ fn float_cmp(a: f32, b: f32) -> cmp::Ordering {
     };
 
     convert(a).cmp(&convert(b))
-}
-
-pub enum RefValue {
-    Function(Function),
-    Table(Table),
-}
-
-pub struct Function {}
-
-pub struct Table {
-    inner: HashMap<Value, Value, DefaultHashBuilder, Heap>,
-}
-
-impl Table {
-    pub fn new(heap: Heap) -> Self {
-        Table {
-            inner: HashMap::with_capacity_in(0, heap),
-        }
-    }
-
-    pub fn get(&self, key: &Value) -> Option<&Value> {
-        self.inner.get(key)
-    }
-
-    pub fn get_mut(&mut self, key: &Value) -> Option<&mut Value> {
-        self.inner.get_mut(key)
-    }
-
-    pub fn insert(&mut self, key: Value, value: Value) {
-        self.inner.insert(key, value);
-    }
-
-    pub fn remove(&mut self, key: &Value) -> Option<Value> {
-        self.inner.remove(key)
-    }
 }

@@ -8,7 +8,7 @@ pub trait Resolver {
 
 impl Resolver for Table {
     fn resolve_mut(&mut self, name: &str) -> Option<&mut Value> {
-        self.get_mut(&Value::String(name.as_bytes().to_vec()))
+        self.get_mut(name.as_bytes())
     }
 }
 
