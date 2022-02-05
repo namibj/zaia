@@ -14,6 +14,7 @@ pub struct Heap<T> {
 }
 
 impl<T> Heap<T> {
+    #[allow(clippy::new_without_default)]
     pub fn new() -> Self {
         Heap {
             internal: Rc::new(HeapInternal::new()),

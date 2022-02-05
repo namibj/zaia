@@ -1,6 +1,6 @@
 use std::rc::Rc;
 
-use crate::syntax_tree::Function as Function;
+use crate::syntax_tree::Function;
 
 pub struct Closure {
     internal: Rc<Function>,

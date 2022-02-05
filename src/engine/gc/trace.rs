@@ -12,6 +12,7 @@ pub struct Visitor<T> {
 }
 
 impl<T> Visitor<T> {
+    #[allow(clippy::new_without_default)]
     pub fn new() -> Self {
         Self {
             marked: HashSet::new(),

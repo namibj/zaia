@@ -1,7 +1,7 @@
 mod closure;
 mod table;
 
-use std::{borrow::Borrow, cmp, hash};
+use std::{cmp, hash};
 
 pub use closure::Closure;
 pub use table::Table;
@@ -65,14 +65,6 @@ impl hash::Hash for Value {
     }
 }
 
-impl Borrow<[u8]> for Value {
-    fn borrow(&self) -> &[u8] {
-        match self {
-            _ => &[],
-        }
-    }
-}
-
 impl Trace<RefValue> for Value {
     fn visit(&self, visitor: &mut Visitor<RefValue>) {
         if let Value::Ref(value) = self {
@@ -102,7 +94,7 @@ impl Trace<RefValue> for RefValue {
     fn visit(&self, visitor: &mut Visitor<RefValue>) {
         match self {
             RefValue::String(_a) => (),
-            RefValue::Closure(_a) => todo!(),
+            RefValue::Closure(_a) => (),
             RefValue::Table(a) => a.visit(visitor),
         }
     }
