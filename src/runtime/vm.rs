@@ -1,13 +1,14 @@
-use super::{gc::Handle, value::Table, Heap};
+use super::{gc::Handle, value::Table};
+use std::alloc;
 
 pub struct VM {
-    environment: Handle<Table>,
+    environment: Handle<Table<alloc::Global>>,
 }
 
 impl VM {
-    pub fn new(heap: Heap) -> Self {
+    pub fn new() -> Self {
         Self {
-            environment: Handle::unmanaged(Table::new(heap)),
+            environment: Handle::unmanaged(Table::new(alloc::Global)),
         }
     }
 }

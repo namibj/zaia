@@ -18,14 +18,9 @@ pub struct Runtime {
 
 impl Runtime {
     pub fn new() -> Self {
-        let marker = Marker::new();
-        let mut heap = Heap::new(marker);
-        let vm = Box::new(VM::new(heap.clone()));
-
-        unsafe {
-            heap.base_mut().initialize(&*vm);
-        }
-
+        let vm = Box::new(VM::new());
+        let marker = Marker::new(&*vm);
+        let heap = Heap::new(marker);
         Self { heap, vm }
     }
 }

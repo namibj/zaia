@@ -1,5 +1,3 @@
-use std::ptr;
-
 use super::{
     gc::{Trace, Visitor},
     value::RefValue,
@@ -11,14 +9,10 @@ pub struct Marker {
 }
 
 impl Marker {
-    pub fn new() -> Self {
+    pub fn new(vm: &VM) -> Self {
         Self {
-            data: ptr::null_mut(),
+            data: vm,
         }
-    }
-
-    pub fn initialize(&mut self, vm: &VM) {
-        self.data = vm;
     }
 }
 

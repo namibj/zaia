@@ -30,10 +30,6 @@ where
     pub fn collect(&self) {
         self.internal.collect();
     }
-
-    pub unsafe fn base_mut(&mut self) -> &mut B {
-        Rc::get_mut_unchecked(&mut self.internal).base_mut()
-    }
 }
 
 impl<T, B> Clone for Heap<T, B> {
@@ -89,10 +85,6 @@ where
         }
 
         tree.visitor.reset();
-    }
-
-    fn base_mut(&mut self) -> &mut B {
-        &mut self.base
     }
 }
 
