@@ -22,7 +22,7 @@ impl Heuristics {
         (self.threshold.get() as f32 * THRESHOLD_FACTOR) as usize
     }
 
-    fn adjust(&self) {
+    pub fn adjust(&self) {
         let new_threshold = self.threshold();
         self.threshold.set(new_threshold);
     }

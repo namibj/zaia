@@ -88,6 +88,7 @@ where
             }
         }
 
+        self.heuristics.adjust();
         tree.visitor.reset();
     }
 }
