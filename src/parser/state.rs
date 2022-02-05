@@ -4,8 +4,12 @@ use logos::Logos;
 
 use super::token::Token;
 use crate::T;
+use crate::intern::Interner;
+use crate::engine::gc::Handle;
+use crate::engine::value::RefValue;
 
 pub struct State<'source> {
+    interner: &'source mut Interner,
     tokens: Vec<(Token, Range<usize>)>,
     cursor: usize,
     source: &'source str,
@@ -13,11 +17,12 @@ pub struct State<'source> {
 }
 
 impl<'source> State<'source> {
-    pub fn new(source: &'source str) -> Self {
+    pub fn new(interner: &'source mut Interner, source: &'source str) -> Self {
         let mut tokens = vec![(T![eof], 0..0)];
         tokens.extend(Token::lexer(source).spanned());
 
         State {
+            interner,
             tokens,
             cursor: 0,
             source,
@@ -54,10 +59,17 @@ impl<'source> State<'source> {
         self.tokens[self.cursor].1.clone()
     }
 
-    pub fn slice(&self) -> &str {
+    pub fn slice(&self) -> &'source str {
         let span = self.span();
         &self.source[span.start..span.end]
     }
+
+    pub fn intern<T>(&mut self, item: &T) -> Handle<RefValue>
+    where
+        T: AsRef<[u8]>,
+{
+    self.interner.intern(item)
+}
 
     pub fn result(self) -> Vec<ariadne::Report> {
         self.reports

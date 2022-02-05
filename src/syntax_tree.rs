@@ -1,4 +1,6 @@
 use std::rc::Rc;
+use crate::engine::gc::Handle;
+use crate::engine::value::RefValue;
 
 #[derive(Debug, PartialEq)]
 pub struct SyntaxTree {
@@ -160,7 +162,7 @@ pub struct Function {
 
 #[derive(Debug, PartialEq, Clone)]
 pub struct Ident {
-    pub name: String,
+    pub name: Handle<RefValue>,
 }
 
 #[derive(Debug, PartialEq)]
@@ -217,7 +219,7 @@ pub enum Literal {
     Nil,
     Boolean(bool),
     Num(NumLiteral),
-    String(Vec<u8>),
+    String(Handle<RefValue>),
 }
 
 #[derive(Debug, PartialEq)]

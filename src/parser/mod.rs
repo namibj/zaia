@@ -14,6 +14,9 @@ use binding_power::{
 };
 use classifiers::{token_is_expr_start, token_is_literal, token_to_binary_op, token_to_unary_op};
 use state::State;
+use super::intern::Interner;
+use crate::engine::gc::Handle;
+use crate::engine::value::RefValue;
 
 use crate::{
     syntax_tree::{
@@ -47,8 +50,8 @@ use crate::{
     T,
 };
 
-pub fn parse(source: &str) -> (SyntaxTree, Vec<ariadne::Report>) {
-    let mut state = State::new(source);
+pub fn parse(interner: &mut Interner, source: &str) -> (SyntaxTree, Vec<ariadne::Report>) {
+    let mut state = State::new(interner, source);
     let mut block = Vec::new();
 
     loop {
@@ -571,7 +574,7 @@ fn parse_return(state: &mut State) -> Return {
 fn parse_ident(state: &mut State) -> Ident {
     state.eat(T![ident]);
     Ident {
-        name: state.slice().to_string(),
+        name: state.intern(&state.slice()),
     }
 }
 
@@ -651,7 +654,7 @@ fn parse_literal(state: &mut State) -> Literal {
     }
 }
 
-fn parse_string(state: &mut State) -> Vec<u8> {
+fn parse_string(state: &mut State) -> Handle<RefValue> {
     state.eat(T![string]);
     let mut value = Vec::new();
     let chars = state.slice().chars().collect::<Vec<char>>();
@@ -755,19 +758,21 @@ fn parse_string(state: &mut State) -> Vec<u8> {
         }
     }
 
-    value
+    state.intern(&value)
 }
 
-fn parse_long_string(state: &mut State) -> Vec<u8> {
+fn parse_long_string(state: &mut State) -> Handle<RefValue> {
     state.eat(T![long_string]);
     let mut chars = state.slice().chars();
     chars.next();
     let delim_len = chars.by_ref().take_while(|c| *c != '[').count() + 2;
 
-    chars
+    let bytes = chars
         .take(state.slice().len() - delim_len * 2)
         .collect::<String>()
-        .into_bytes()
+        .into_bytes();
+
+    state.intern(&bytes)
 }
 
 fn parse_int(state: &mut State) -> i32 {
@@ -887,6 +892,7 @@ mod tests {
 
     use insta::assert_debug_snapshot;
     use paste::paste;
+    use crate::intern::Interner;
 
     use super::parse;
 
@@ -895,8 +901,9 @@ mod tests {
             paste! {
                 #[test]
                 fn [<parse_and_verify_ $name>]() {
+                    let mut interner = Interner::new();
                     let source = fs::read_to_string($path).unwrap();
-                    let (syntax_tree, reports) = parse(&source);
+                    let (syntax_tree, reports) = parse(&mut interner, &source);
                     assert!(reports.is_empty());
                     assert_debug_snapshot!(syntax_tree);
                 }

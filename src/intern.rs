@@ -20,7 +20,7 @@ impl Interner {
         }
     }
 
-    pub fn get_or_intern<T>(&mut self, item: &T) -> Handle<RefValue>
+    pub fn intern<T>(&mut self, item: &T) -> Handle<RefValue>
     where
         T: AsRef<[u8]>,
     {
