@@ -1,4 +1,5 @@
-use std::collections::HashMap;
+use fxhash::FxBuildHasher;
+use hashbrown::HashMap;
 
 use super::{
     gc::Handle,
@@ -9,7 +10,7 @@ use crate::error::{LuaError, LuaResult};
 
 pub struct Scope {
     environment: Handle<Table>,
-    stack: Vec<HashMap<String, Value>>,
+    stack: Vec<HashMap<String, Value, FxBuildHasher>>,
 }
 
 impl Scope {
@@ -39,11 +40,6 @@ impl Scope {
                 return;
             }
         }
-
-        unsafe {
-            let key = Value::String(key.as_bytes().to_vec());
-            self.environment.get_unchecked_mut().insert(key, value);
-        }
     }
 
     pub fn resolve(&self, key: &str) -> Option<&Value> {
@@ -57,7 +53,8 @@ impl Scope {
     }
 
     pub fn push(&mut self) {
-        self.stack.push(HashMap::new());
+        self.stack
+            .push(HashMap::with_hasher(FxBuildHasher::default()));
     }
 
     pub fn pop(&mut self) {

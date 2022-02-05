@@ -1,17 +1,18 @@
 use std::{borrow::Borrow, hash::Hash};
 
-use hashbrown::{hash_map::DefaultHashBuilder, HashMap};
+use fxhash::FxBuildHasher;
+use hashbrown::HashMap;
 
 use super::{super::Heap, Value};
 
 pub struct Table {
-    inner: HashMap<Value, Value, DefaultHashBuilder, Heap>,
+    inner: HashMap<Value, Value, FxBuildHasher, Heap>,
 }
 
 impl Table {
     pub fn new(heap: Heap) -> Self {
         Table {
-            inner: HashMap::with_capacity_in(0, heap),
+            inner: HashMap::with_hasher_in(FxBuildHasher::default(), heap),
         }
     }
 

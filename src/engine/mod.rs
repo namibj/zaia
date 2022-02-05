@@ -1,6 +1,6 @@
-mod gc;
+pub mod gc;
 mod scope;
-mod value;
+pub mod value;
 mod vm;
 
 use value::RefValue;

@@ -5,6 +5,7 @@
 
 mod engine;
 mod error;
+mod intern;
 pub mod parser;
 pub mod syntax_tree;
 mod utf8;
