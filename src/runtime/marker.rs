@@ -10,9 +10,7 @@ pub struct Marker {
 
 impl Marker {
     pub fn new(vm: &VM) -> Self {
-        Self {
-            data: vm,
-        }
+        Self { data: vm }
     }
 }
 

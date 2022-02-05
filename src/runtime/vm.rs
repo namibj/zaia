@@ -1,5 +1,6 @@
-use super::{gc::Handle, value::Table};
 use std::alloc;
+
+use super::{gc::Handle, value::Table};
 
 pub struct VM {
     environment: Handle<Table<alloc::Global>>,

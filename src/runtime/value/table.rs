@@ -1,15 +1,20 @@
-use std::{borrow::Borrow, hash::Hash};
-use std::alloc;
+use std::{alloc, borrow::Borrow, hash::Hash};
 
 use hashbrown::{hash_map::DefaultHashBuilder, HashMap};
 
 use super::{super::Heap, Value};
 
-pub struct Table<A = Heap> where A:alloc::Allocator+Clone {
+pub struct Table<A = Heap>
+where
+    A: alloc::Allocator + Clone,
+{
     inner: HashMap<Value, Value, DefaultHashBuilder, A>,
 }
 
-impl<A> Table<A> where A:alloc::Allocator+Clone {
+impl<A> Table<A>
+where
+    A: alloc::Allocator + Clone,
+{
     pub fn new(alloc: A) -> Self {
         Table {
             inner: HashMap::with_capacity_in(0, alloc),

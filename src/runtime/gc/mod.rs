@@ -30,6 +30,10 @@ where
     pub fn collect(&self) {
         self.internal.collect();
     }
+
+    pub fn should_collect(&self) -> bool {
+        self.internal.heuristics.should_collect()
+    }
 }
 
 impl<T, B> Clone for Heap<T, B> {
@@ -95,7 +99,7 @@ where
     fn allocate(&self, layout: alloc::Layout) -> Result<ptr::NonNull<[u8]>, alloc::AllocError> {
         self.internal
             .heuristics
-            .update_allocated(self, |x| x + layout.size());
+            .update_allocated(|x| x + layout.size());
 
         alloc::Global.allocate(layout)
     }
@@ -103,7 +107,7 @@ where
     unsafe fn deallocate(&self, ptr: ptr::NonNull<u8>, layout: alloc::Layout) {
         self.internal
             .heuristics
-            .update_allocated(self, |x| x - layout.size());
+            .update_allocated(|x| x - layout.size());
 
         alloc::Global.deallocate(ptr, layout)
     }
@@ -116,7 +120,7 @@ where
     ) -> Result<ptr::NonNull<[u8]>, alloc::AllocError> {
         self.internal
             .heuristics
-            .update_allocated(self, |x| x + new_layout.size() - old_layout.size());
+            .update_allocated(|x| x + new_layout.size() - old_layout.size());
 
         alloc::Global.grow(ptr, old_layout, new_layout)
     }
@@ -129,7 +133,7 @@ where
     ) -> Result<ptr::NonNull<[u8]>, alloc::AllocError> {
         self.internal
             .heuristics
-            .update_allocated(self, |x| x + new_layout.size() - old_layout.size());
+            .update_allocated(|x| x + new_layout.size() - old_layout.size());
 
         alloc::Global.grow_zeroed(ptr, old_layout, new_layout)
     }
@@ -142,7 +146,7 @@ where
     ) -> Result<ptr::NonNull<[u8]>, alloc::AllocError> {
         self.internal
             .heuristics
-            .update_allocated(self, |x| x + new_layout.size() - old_layout.size());
+            .update_allocated(|x| x + new_layout.size() - old_layout.size());
 
         alloc::Global.shrink(ptr, old_layout, new_layout)
     }
