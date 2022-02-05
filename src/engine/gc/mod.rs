@@ -162,3 +162,12 @@ unsafe impl<T> alloc::Allocator for Heap<T> {
         alloc::Global.shrink(ptr, old_layout, new_layout)
     }
 }
+
+impl<T> Drop for HeapInternal<T> {
+    fn drop(&mut self) {
+        let tree = self.tree.get_mut();
+        tree.objects.iter().for_each(|object| unsafe {
+            object.destroy();
+        });
+    }
+}
