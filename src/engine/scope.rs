@@ -1,8 +1,10 @@
 use std::collections::HashMap;
 
-use super::value::{Table, Value};
+use super::{
+    gc::Handle,
+    value::{Table, Value},
+};
 use crate::error::{LuaError, LuaResult};
-use super::gc::Handle;
 
 pub struct Scope {
     environment: Handle<Table>,
@@ -13,7 +15,7 @@ impl Scope {
     pub fn new(environment: Handle<Table>) -> Self {
         Self {
             environment,
-           stack: Vec::new(),
+            stack: Vec::new(),
         }
     }
 
@@ -37,7 +39,7 @@ impl Scope {
             self.environment.get_unchecked_mut().insert(key, value);
         }
     }
-    
+
     pub fn push(&mut self) {
         self.stack.push(HashMap::new());
     }

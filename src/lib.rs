@@ -3,8 +3,8 @@
 #![feature(get_mut_unchecked)]
 #![allow(dead_code)]
 
-pub mod parser;
 mod engine;
+mod error;
+pub mod parser;
 pub mod syntax_tree;
 mod utf8;
-mod error;
