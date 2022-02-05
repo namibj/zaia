@@ -74,7 +74,7 @@ impl Borrow<[u8]> for Value {
     fn borrow(&self) -> &[u8] {
         match self {
             Value::String(a) => a,
-            _ => panic!("Value::borrow() called on non-string value"),
+            _ => &[],
         }
     }
 }
