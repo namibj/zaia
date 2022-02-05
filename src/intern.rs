@@ -3,7 +3,11 @@ use std::hash::{BuildHasher, Hash, Hasher};
 use fxhash::FxBuildHasher;
 use hashbrown::{hash_map::RawEntryMut, HashMap};
 
-use super::engine::{gc::Handle, value::RefValue, Heap};
+use super::engine::{
+    gc::{Handle},
+    value::RefValue,
+    Heap,
+};
 
 pub struct Interner {
     map: HashMap<Handle<RefValue>, (), ()>,
@@ -54,5 +58,22 @@ impl Interner {
                 handle
             },
         }
+    }
+
+    pub fn remove(&mut self, handle: Handle<RefValue>) {
+        let item = unsafe { handle.get_unchecked().cast_string() };
+
+        let hash = {
+            let mut state = self.hasher.build_hasher();
+            item.hash(&mut state);
+            state.finish()
+        };
+
+        let entry = self.map.raw_entry_mut().from_hash(hash, |handle| {
+            let key_string = unsafe { handle.get_unchecked() };
+            item == key_string.cast_string()
+        });
+
+        entry.and_replace_entry_with(|_, _| None);
     }
 }

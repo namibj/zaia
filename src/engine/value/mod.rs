@@ -6,7 +6,7 @@ use std::{borrow::Borrow, cmp, hash};
 pub use function::Function;
 pub use table::Table;
 
-use super::gc::Handle;
+use super::gc::{Handle, Trace, Visitor};
 
 #[derive(Clone)]
 pub enum Value {
@@ -73,6 +73,16 @@ impl Borrow<[u8]> for Value {
     }
 }
 
+impl Trace<RefValue> for Value {
+    fn visit(&self, visitor: &mut Visitor<RefValue>) {
+        if let Value::Ref(value) = self {
+            unsafe {
+                value.get_unchecked().visit(visitor);
+            }
+        }
+    }
+}
+
 pub enum RefValue {
     String(Vec<u8>),
     Function(Function),
@@ -84,6 +94,16 @@ impl RefValue {
         match self {
             RefValue::String(a) => a,
             _ => unreachable!(),
+        }
+    }
+}
+
+impl Trace<RefValue> for RefValue {
+    fn visit(&self, visitor: &mut Visitor<RefValue>) {
+        match self {
+            RefValue::String(_a) => (),
+            RefValue::Function(_a) => todo!(),
+            RefValue::Table(a) => a.visit(visitor),
         }
     }
 }
