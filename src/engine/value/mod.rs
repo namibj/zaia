@@ -1,9 +1,9 @@
-mod function;
+mod closure;
 mod table;
 
 use std::{borrow::Borrow, cmp, hash};
 
-pub use function::Function;
+pub use closure::Closure;
 pub use table::Table;
 
 use super::gc::{Handle, Trace, Visitor};
@@ -85,7 +85,7 @@ impl Trace<RefValue> for Value {
 
 pub enum RefValue {
     String(Vec<u8>),
-    Function(Function),
+    Closure(Closure),
     Table(Table),
 }
 
@@ -102,7 +102,7 @@ impl Trace<RefValue> for RefValue {
     fn visit(&self, visitor: &mut Visitor<RefValue>) {
         match self {
             RefValue::String(_a) => (),
-            RefValue::Function(_a) => todo!(),
+            RefValue::Closure(_a) => todo!(),
             RefValue::Table(a) => a.visit(visitor),
         }
     }
