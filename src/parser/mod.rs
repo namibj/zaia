@@ -14,11 +14,10 @@ use binding_power::{
 };
 use classifiers::{token_is_expr_start, token_is_literal, token_to_binary_op, token_to_unary_op};
 use state::State;
-use super::intern::Interner;
-use crate::engine::gc::Handle;
-use crate::engine::value::RefValue;
 
+use super::intern::Interner;
 use crate::{
+    engine::{gc::Handle, value::RefValue},
     syntax_tree::{
         Assign,
         BinaryExpr,
@@ -892,9 +891,9 @@ mod tests {
 
     use insta::assert_debug_snapshot;
     use paste::paste;
-    use crate::intern::Interner;
 
     use super::parse;
+    use crate::intern::Interner;
 
     macro_rules! parse_and_verify {
         ($name:ident, $path:literal) => {

@@ -3,10 +3,11 @@ use std::ops::Range;
 use logos::Logos;
 
 use super::token::Token;
-use crate::T;
-use crate::intern::Interner;
-use crate::engine::gc::Handle;
-use crate::engine::value::RefValue;
+use crate::{
+    engine::{gc::Handle, value::RefValue},
+    intern::Interner,
+    T,
+};
 
 pub struct State<'source> {
     interner: &'source mut Interner,
@@ -67,9 +68,9 @@ impl<'source> State<'source> {
     pub fn intern<T>(&mut self, item: &T) -> Handle<RefValue>
     where
         T: AsRef<[u8]>,
-{
-    self.interner.intern(item)
-}
+    {
+        self.interner.intern(item)
+    }
 
     pub fn result(self) -> Vec<ariadne::Report> {
         self.reports

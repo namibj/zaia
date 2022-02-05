@@ -1,6 +1,6 @@
 use std::rc::Rc;
-use crate::engine::gc::Handle;
-use crate::engine::value::RefValue;
+
+use crate::engine::{gc::Handle, value::RefValue};
 
 #[derive(Debug, PartialEq)]
 pub struct SyntaxTree {

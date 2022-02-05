@@ -1,5 +1,4 @@
-use std::{cmp, hash};
-use std::fmt;
+use std::{cmp, fmt, hash};
 
 pub struct Handle<T> {
     ptr: *mut T,
