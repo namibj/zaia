@@ -1,15 +1,15 @@
 use std::alloc;
 
-use super::{gc::Handle, value::Table};
+use super::{gc::Handle, scope::Scope, value::Table};
 
 pub struct VM {
-    environment: Handle<Table<alloc::Global>>,
+    scope: Scope,
 }
 
 impl VM {
     pub fn new() -> Self {
         Self {
-            environment: Handle::unmanaged(Table::new(alloc::Global)),
+            scope: Scope::new(),
         }
     }
 }

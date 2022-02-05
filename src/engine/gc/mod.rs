@@ -9,17 +9,14 @@ use hashbrown::HashSet;
 use heuristics::Heuristics;
 pub use trace::{Trace, Visitor};
 
-pub struct Heap<T, B> {
-    internal: Rc<HeapInternal<T, B>>,
+pub struct Heap<T> {
+    internal: Rc<HeapInternal<T>>,
 }
 
-impl<T, B> Heap<T, B>
-where
-    B: Trace<T>,
-{
-    pub fn new(base: B) -> Self {
+impl<T> Heap<T> {
+    pub fn new() -> Self {
         Heap {
-            internal: Rc::new(HeapInternal::new(base)),
+            internal: Rc::new(HeapInternal::new()),
         }
     }
 
@@ -27,8 +24,8 @@ where
         self.internal.insert(value)
     }
 
-    pub fn collect(&self) {
-        self.internal.collect();
+    pub fn collect<F>(&self, trace: F) where F: FnOnce(&mut Visitor<T>) {
+        self.internal.collect(trace);
     }
 
     pub fn should_collect(&self) -> bool {
@@ -36,7 +33,7 @@ where
     }
 }
 
-impl<T, B> Clone for Heap<T, B> {
+impl<T> Clone for Heap<T> {
     fn clone(&self) -> Self {
         Heap {
             internal: self.internal.clone(),
@@ -49,17 +46,13 @@ struct Tree<T> {
     visitor: Visitor<T>,
 }
 
-struct HeapInternal<T, B> {
+struct HeapInternal<T> {
     heuristics: Heuristics,
     tree: RefCell<Tree<T>>,
-    base: B,
 }
 
-impl<T, B> HeapInternal<T, B>
-where
-    B: Trace<T>,
-{
-    fn new(base: B) -> Self {
+impl<T> HeapInternal<T> {
+    fn new() -> Self {
         let tree = RefCell::new(Tree {
             objects: HashSet::new(),
             visitor: Visitor::new(),
@@ -68,7 +61,6 @@ where
         Self {
             heuristics: Heuristics::new(),
             tree,
-            base,
         }
     }
 
@@ -79,9 +71,9 @@ where
         handle
     }
 
-    fn collect(&self) {
+    fn collect<F>(&self, trace: F) where F: FnOnce(&mut Visitor<T>) {
         let mut tree = self.tree.borrow_mut();
-        tree.visitor.run(&self.base);
+        trace(&mut tree.visitor);
         for object in tree.visitor.unmarked(&tree.objects) {
             unsafe {
                 object.destroy();
@@ -93,10 +85,7 @@ where
     }
 }
 
-unsafe impl<T, B> alloc::Allocator for Heap<T, B>
-where
-    B: Trace<T>,
-{
+unsafe impl<T> alloc::Allocator for Heap<T> {
     fn allocate(&self, layout: alloc::Layout) -> Result<ptr::NonNull<[u8]>, alloc::AllocError> {
         self.internal
             .heuristics
