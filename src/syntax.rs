@@ -1,10 +1,7 @@
-use crate::parser::token::Token;
-use crate::T;
-use rowan::GreenNode;
-use rowan::GreenNodeBuilder;
+use crate::{parser::machinery::kind::SyntaxKind, T};
 
-impl From<Token> for rowan::SyntaxKind {
-    fn from(token: Token) -> Self {
+impl From<SyntaxKind> for cstree::SyntaxKind {
+    fn from(token: SyntaxKind) -> Self {
         Self(token as u16)
     }
 }
@@ -12,15 +9,15 @@ impl From<Token> for rowan::SyntaxKind {
 #[derive(Debug, Clone, Copy, PartialEq, Eq, PartialOrd, Ord, Hash)]
 enum Lang {}
 
-impl rowan::Language for Lang {
-    type Kind = Token;
+impl cstree::Language for Lang {
+    type Kind = SyntaxKind;
 
-    fn kind_from_raw(raw: rowan::SyntaxKind) -> Self::Kind {
-        debug_assert!(raw.0 < T![...] as u16);
+    fn kind_from_raw(raw: cstree::SyntaxKind) -> Self::Kind {
+        debug_assert!(raw.0 < T![__LAST] as u16);
         unsafe { std::mem::transmute(raw.0) }
     }
 
-    fn kind_to_raw(kind: Self::Kind) -> rowan::SyntaxKind {
+    fn kind_to_raw(kind: Self::Kind) -> cstree::SyntaxKind {
         kind.into()
     }
 }

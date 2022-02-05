@@ -1,11 +1,3 @@
-#![feature(allocator_api)]
-#![feature(cell_update)]
-#![feature(get_mut_unchecked)]
-#![allow(dead_code)]
-
-mod engine;
-pub mod intern;
-pub mod parser;
-pub mod old_syntax_tree;
-mod utf8;
+mod parser;
 mod syntax;
+mod utf8;
