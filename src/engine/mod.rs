@@ -3,11 +3,10 @@ mod scope;
 mod value;
 mod vm;
 
-use gc::Heap as GenericHeap;
 use value::RefValue;
 use vm::VM;
 
-pub type Heap = GenericHeap<RefValue>;
+pub type Heap = gc::Heap<RefValue>;
 
 pub struct Runtime {
     heap: Heap,

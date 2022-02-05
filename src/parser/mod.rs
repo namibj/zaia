@@ -4,7 +4,7 @@ mod hex_float;
 mod state;
 mod token;
 
-use std::{str, str::FromStr};
+use std::{rc::Rc, str, str::FromStr};
 
 use binding_power::{
     infix_binding_power,
@@ -14,7 +14,6 @@ use binding_power::{
 };
 use classifiers::{token_is_expr_start, token_is_literal, token_to_binary_op, token_to_unary_op};
 use state::State;
-use std::rc::Rc;
 
 use crate::{
     syntax_tree::{
