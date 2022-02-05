@@ -11,6 +11,7 @@ fn criterion_benchmark(c: &mut Criterion) {
     group.bench_function("parse mixed.lua", |b| {
         b.iter(|| parse(&mut interner, black_box(&src)))
     });
+    
     group.finish();
 }
 
