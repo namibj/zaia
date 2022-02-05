@@ -3,11 +3,7 @@ use std::hash::{BuildHasher, Hash, Hasher};
 use fxhash::FxBuildHasher;
 use hashbrown::{hash_map::RawEntryMut, HashMap};
 
-use super::engine::{
-    gc::{Handle},
-    value::RefValue,
-    Heap,
-};
+use super::engine::{gc::Handle, value::RefValue, Heap};
 
 pub struct Interner {
     map: HashMap<Handle<RefValue>, (), ()>,

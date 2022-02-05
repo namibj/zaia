@@ -51,10 +51,10 @@ struct Tree<T> {
 }
 
 impl<T> Tree<T> {
-    fn collect<F1,F2>(&mut self, trace: F1, mut finalize:F2)
+    fn collect<F1, F2>(&mut self, trace: F1, mut finalize: F2)
     where
-    F1: FnOnce(&mut Visitor<T>),
-    F2: FnMut(Handle<T>),
+        F1: FnOnce(&mut Visitor<T>),
+        F2: FnMut(Handle<T>),
     {
         trace(&mut self.visitor);
 
@@ -96,10 +96,10 @@ impl<T> HeapInternal<T> {
         handle
     }
 
-    fn collect<F1,F2>(&self, trace: F1, finalize:F2)
+    fn collect<F1, F2>(&self, trace: F1, finalize: F2)
     where
-    F1: FnOnce(&mut Visitor<T>),
-    F2: FnMut(Handle<T>),
+        F1: FnOnce(&mut Visitor<T>),
+        F2: FnMut(Handle<T>),
     {
         self.tree.borrow_mut().collect(trace, finalize);
         self.heuristics.adjust();
