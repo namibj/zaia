@@ -9,6 +9,12 @@ impl<T> Handle<T> {
         Handle { ptr }
     }
 
+    pub fn unmanaged(item: T) -> Self {
+        Handle {
+            ptr: Box::into_raw(Box::new(item)),
+        }
+    }
+
     pub unsafe fn get_unchecked<'a>(self) -> &'a T {
         &*self.ptr
     }

@@ -1,4 +1,10 @@
-use std::{cmp, collections::HashMap, hash};
+mod function;
+mod table;
+
+use std::{borrow::Borrow, cmp, hash};
+
+pub use function::Function;
+pub use table::Table;
 
 use super::gc::Handle;
 
@@ -64,6 +70,20 @@ impl hash::Hash for Value {
     }
 }
 
+impl Borrow<[u8]> for Value {
+    fn borrow(&self) -> &[u8] {
+        match self {
+            Value::String(a) => a,
+            _ => panic!("Value::borrow() called on non-string value"),
+        }
+    }
+}
+
+pub enum RefValue {
+    Function(Function),
+    Table(Table),
+}
+
 fn float_cmp(a: f32, b: f32) -> cmp::Ordering {
     let convert = |f: f32| {
         let i = f.to_bits();
@@ -76,17 +96,4 @@ fn float_cmp(a: f32, b: f32) -> cmp::Ordering {
     };
 
     convert(a).cmp(&convert(b))
-}
-
-pub enum RefValue {
-    Function(Function),
-    Table(Table),
-}
-
-pub struct Function {
-    scope: HashMap<String, Value>,
-}
-
-pub struct Table {
-    inner: HashMap<Value, Value>,
 }

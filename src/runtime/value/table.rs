@@ -1,0 +1,41 @@
+use std::{borrow::Borrow, hash::Hash};
+
+use hashbrown::{hash_map::DefaultHashBuilder, HashMap};
+
+use super::{super::Heap, Value};
+
+pub struct Table {
+    inner: HashMap<Value, Value, DefaultHashBuilder, Heap>,
+}
+
+impl Table {
+    pub fn new(heap: Heap) -> Self {
+        Table {
+            inner: HashMap::with_capacity_in(0, heap),
+        }
+    }
+
+    pub fn get<Q>(&self, key: &Q) -> Option<&Value>
+    where
+        Value: Borrow<Q>,
+        Q: Hash + Eq + ?Sized,
+    {
+        self.inner.get(key)
+    }
+
+    pub fn get_mut<Q>(&mut self, key: &Q) -> Option<&mut Value>
+    where
+        Value: Borrow<Q>,
+        Q: Hash + Eq + ?Sized,
+    {
+        self.inner.get_mut(key)
+    }
+
+    pub fn insert(&mut self, key: Value, value: Value) {
+        self.inner.insert(key, value);
+    }
+
+    pub fn remove(&mut self, key: &Value) -> Option<Value> {
+        self.inner.remove(key)
+    }
+}
