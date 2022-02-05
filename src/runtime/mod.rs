@@ -21,7 +21,7 @@ impl Runtime {
         let marker = Marker::new();
         let mut heap = Heap::new(marker);
         let vm = Box::new(VM::new(heap.clone()));
-        
+
         unsafe {
             heap.base_mut().initialize(&*vm);
         }

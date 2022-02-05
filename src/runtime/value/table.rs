@@ -1,9 +1,8 @@
-use hashbrown::HashMap;
-use super::Value;
-use hashbrown::hash_map::DefaultHashBuilder;
-use super::super::Heap;
-use std::borrow::Borrow;
-use std::hash::Hash;
+use std::{borrow::Borrow, hash::Hash};
+
+use hashbrown::{hash_map::DefaultHashBuilder, HashMap};
+
+use super::{super::Heap, Value};
 
 pub struct Table {
     inner: HashMap<Value, Value, DefaultHashBuilder, Heap>,
@@ -16,11 +15,19 @@ impl Table {
         }
     }
 
-    pub fn get<Q>(&self, key: &Q) -> Option<&Value> where Value:Borrow<Q>, Q: Hash + Eq + ?Sized {
+    pub fn get<Q>(&self, key: &Q) -> Option<&Value>
+    where
+        Value: Borrow<Q>,
+        Q: Hash + Eq + ?Sized,
+    {
         self.inner.get(key)
     }
 
-    pub fn get_mut<Q>(&mut self, key: &Q) -> Option<&mut Value> where Value:Borrow<Q>, Q: Hash + Eq + ?Sized {
+    pub fn get_mut<Q>(&mut self, key: &Q) -> Option<&mut Value>
+    where
+        Value: Borrow<Q>,
+        Q: Hash + Eq + ?Sized,
+    {
         self.inner.get_mut(key)
     }
 

@@ -5,9 +5,9 @@ mod trace;
 use std::{alloc, cell::RefCell, ptr, rc::Rc};
 
 pub use handle::Handle;
+use hashbrown::HashSet;
 use heuristics::Heuristics;
 pub use trace::{Trace, Visitor};
-use hashbrown::HashSet;
 
 pub struct Heap<T, B> {
     internal: Rc<HeapInternal<T, B>>,

@@ -1,12 +1,12 @@
-mod table;
 mod function;
+mod table;
 
-use std::{cmp, hash};
+use std::{borrow::Borrow, cmp, hash};
+
+pub use function::Function;
+pub use table::Table;
 
 use super::gc::Handle;
-pub use table::Table;
-pub use function::Function;
-use std::borrow::Borrow;
 
 #[derive(Clone)]
 pub enum Value {
