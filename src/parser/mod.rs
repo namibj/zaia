@@ -2,7 +2,7 @@ mod binding_power;
 mod classifiers;
 mod hex_float;
 mod state;
-mod token;
+pub mod token;
 
 use std::{rc::Rc, str, str::FromStr};
 
@@ -18,7 +18,7 @@ use state::State;
 use super::intern::Interner;
 use crate::{
     engine::{gc::Handle, value::RefValue},
-    syntax_tree::{
+    old_syntax_tree::{
         Assign,
         BinaryExpr,
         BinaryOp,

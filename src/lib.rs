@@ -4,8 +4,8 @@
 #![allow(dead_code)]
 
 mod engine;
-mod error;
 pub mod intern;
 pub mod parser;
-pub mod syntax_tree;
+pub mod old_syntax_tree;
 mod utf8;
+mod syntax;

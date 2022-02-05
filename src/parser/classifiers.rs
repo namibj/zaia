@@ -1,6 +1,6 @@
 use super::token::Token;
 use crate::{
-    syntax_tree::{BinaryOp, UnaryOp},
+    old_syntax_tree::{BinaryOp, UnaryOp},
     T,
 };
 

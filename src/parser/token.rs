@@ -2,206 +2,207 @@ use std::fmt::{self, Display};
 
 use logos::{Lexer, Logos};
 
-#[derive(Logos, Debug, PartialEq, Clone, Copy)]
+#[derive(Logos, Debug, PartialEq, Eq, PartialOrd, Ord, Hash, Clone, Copy)]
+#[repr(u16)]
 pub enum Token {
     // Miscellaneous
     #[regex("--", skip_comment)]
     #[regex(r"[ \n\t\f\r;]+", logos::skip)]
     #[error]
-    Invalid,
+    Invalid = 0,
 
-    Eof,
+    Eof = 1,
 
     #[regex(r"[a-zA-Z_][a-zA-Z0-9_]*", priority = 3)]
-    Ident,
+    Ident = 2,
 
     // Character operators
     #[token("+")]
-    Plus,
+    Plus = 3,
 
     #[token("-")]
-    Minus,
+    Minus = 4,
 
     #[token("*")]
-    Star,
+    Star = 5,
 
     #[token("/")]
-    Slash,
+    Slash = 6,
 
     #[token("%")]
-    Percent,
+    Percent = 7,
 
     #[token("^")]
-    Caret,
+    Caret = 8,
 
     #[token("#")]
-    Hash,
+    Hash = 9,
 
     #[token("&")]
-    Ampersand,
+    Ampersand = 10,
 
     #[token("|")]
-    Pipe,
+    Pipe = 11,
 
     #[token("~")]
-    Tilde,
+    Tilde = 12,
 
     #[token("<<")]
-    DLAngle,
+    DLAngle = 13,
 
     #[token(">>")]
-    DRAngle,
+    DRAngle = 14,
 
     #[token("==")]
-    Eq,
+    Eq = 15,
 
     #[token("~=")]
-    NotEq,
+    NotEq = 16,
 
     #[token("<=")]
-    LEq,
+    LEq = 17,
 
     #[token(">=")]
-    GEq,
+    GEq = 18,
 
     #[token("<")]
-    LAngle,
+    LAngle = 19,
 
     #[token(">")]
-    RAngle,
+    RAngle = 20,
 
     #[token("=")]
-    Assign,
+    Assign = 21,
 
     #[token("//")]
-    DSlash,
+    DSlash = 22,
 
     #[token(".")]
-    Dot,
+    Dot = 23,
 
     #[token("..")]
-    DDot,
+    DDot = 24,
 
     // Keywords
     #[token("local")]
-    Local,
+    Local = 25,
 
     #[token("function")]
-    Function,
+    Function = 26,
 
     #[token("end")]
-    End,
+    End = 27,
 
     #[token("in")]
-    In,
+    In = 28,
 
     #[token("then")]
-    Then,
+    Then = 29,
 
     #[token("break")]
-    Break,
+    Break = 30,
 
     #[token("for")]
-    For,
+    For = 31,
 
     #[token("do")]
-    Do,
+    Do = 32,
 
     #[token("until")]
-    Until,
+    Until = 33,
 
     #[token("else")]
-    Else,
+    Else = 34,
 
     #[token("while")]
-    While,
+    While = 35,
 
     #[token("elseif")]
-    ElseIf,
+    ElseIf = 36,
 
     #[token("if")]
-    If,
+    If = 37,
 
     #[token("repeat")]
-    Repeat,
+    Repeat = 38,
 
     #[token("return")]
-    Return,
+    Return = 39,
 
     #[token("not")]
-    Not,
+    Not = 40,
 
     #[token("or")]
-    Or,
+    Or = 41,
 
     #[token("and")]
-    And,
+    And = 42,
 
     #[token("<const>")]
-    Const,
+    Const = 43,
 
     #[token("<close>")]
-    Close,
+    Close = 44,
 
     // Literals
     #[token("nil")]
-    Nil,
+    Nil = 45,
 
     #[token("true")]
-    True,
+    True = 46,
 
     #[token("false")]
-    False,
+    False = 47,
 
     #[regex(r#""(\\[\\"]|[^"])*""#)]
     #[regex(r#"'(\\[\\']|[^'])*'"#)]
-    String,
+    String = 48,
 
     #[regex(r"\[=*\[", long_string)]
-    LongString,
+    LongString = 49,
 
     #[regex(r"[0-9]+", priority = 2)]
-    Int,
+    Int = 50,
 
     #[regex(r"0x[0-9a-fA-F]+")]
-    HexInt,
+    HexInt = 51,
 
     #[regex(r"[0-9]+(\.[0-9]+)?([eE][+-]?[0-9]+)?")]
-    Float,
+    Float = 52,
 
     #[regex(r"0x[0-9a-fA-F]*\.[0-9a-fA-F]+([pP][+-][0-9a-fA-F]+)?")]
-    HexFloat,
+    HexFloat = 53,
 
     // Grouping
     #[token("(")]
-    LParen,
+    LParen = 54,
 
     #[token(")")]
-    RParen,
+    RParen = 55,
 
     #[token("{")]
-    LCurly,
+    LCurly = 56,
 
     #[token("}")]
-    RCurly,
+    RCurly = 57,
 
     #[token("[")]
-    LBracket,
+    LBracket = 58,
 
     #[token("]")]
-    RBracket,
+    RBracket = 59,
 
     #[token(":")]
-    Colon,
+    Colon = 60,
 
     #[token("::")]
-    DColon,
+    DColon = 61,
 
     #[token(",")]
-    Comma,
+    Comma = 62,
 
     #[token("...")]
-    TDot,
+    TDot = 63,
 }
 
 fn long_string(lexer: &mut Lexer<Token>) {
