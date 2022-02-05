@@ -11,13 +11,13 @@ pub type Heap = GenericHeap<RefValue>;
 
 pub struct Runtime {
     heap: Heap,
-    vm: Box<VM>,
+    vm: VM,
 }
 
 impl Runtime {
     pub fn new() -> Self {
-        let vm = Box::new(VM::new());
         let heap = Heap::new();
+        let vm = VM::new(heap.clone());
         Self { heap, vm }
     }
 }

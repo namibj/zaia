@@ -1,25 +1,26 @@
-use std::{alloc, collections::HashMap};
+use std::collections::HashMap;
 
 use super::{
     gc::Handle,
     value::{Table, Value},
+    Heap,
 };
 use crate::error::{LuaError, LuaResult};
 
 pub struct Scope {
-    environment: Handle<Table<alloc::Global>>,
+    environment: Handle<Table>,
     stack: Vec<HashMap<String, Value>>,
 }
 
 impl Scope {
-    pub fn new() -> Self {
+    pub fn new(heap: Heap) -> Self {
         Self {
-            environment: Handle::unmanaged(Table::new(alloc::Global)),
+            environment: Handle::unmanaged(Table::new(heap)),
             stack: Vec::new(),
         }
     }
 
-    pub fn environment(&mut self) -> &mut Table<alloc::Global> {
+    pub fn environment(&mut self) -> &mut Table {
         unsafe { self.environment.get_unchecked_mut() }
     }
 

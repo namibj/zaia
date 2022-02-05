@@ -1,15 +1,13 @@
-use std::alloc;
-
-use super::{gc::Handle, scope::Scope, value::Table};
+use super::{scope::Scope, Heap};
 
 pub struct VM {
     scope: Scope,
 }
 
 impl VM {
-    pub fn new() -> Self {
+    pub fn new(heap: Heap) -> Self {
         Self {
-            scope: Scope::new(),
+            scope: Scope::new(heap),
         }
     }
 }

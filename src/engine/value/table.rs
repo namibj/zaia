@@ -1,23 +1,17 @@
-use std::{alloc, borrow::Borrow, hash::Hash};
+use std::{borrow::Borrow, hash::Hash};
 
 use hashbrown::{hash_map::DefaultHashBuilder, HashMap};
 
 use super::{super::Heap, Value};
 
-pub struct Table<A = Heap>
-where
-    A: alloc::Allocator + Clone,
-{
-    inner: HashMap<Value, Value, DefaultHashBuilder, A>,
+pub struct Table {
+    inner: HashMap<Value, Value, DefaultHashBuilder, Heap>,
 }
 
-impl<A> Table<A>
-where
-    A: alloc::Allocator + Clone,
-{
-    pub fn new(alloc: A) -> Self {
+impl Table {
+    pub fn new(heap: Heap) -> Self {
         Table {
-            inner: HashMap::with_capacity_in(0, alloc),
+            inner: HashMap::with_capacity_in(0, heap),
         }
     }
 

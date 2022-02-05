@@ -24,7 +24,10 @@ impl<T> Heap<T> {
         self.internal.insert(value)
     }
 
-    pub fn collect<F>(&self, trace: F) where F: FnOnce(&mut Visitor<T>) {
+    pub fn collect<F>(&self, trace: F)
+    where
+        F: FnOnce(&mut Visitor<T>),
+    {
         self.internal.collect(trace);
     }
 
@@ -71,7 +74,10 @@ impl<T> HeapInternal<T> {
         handle
     }
 
-    fn collect<F>(&self, trace: F) where F: FnOnce(&mut Visitor<T>) {
+    fn collect<F>(&self, trace: F)
+    where
+        F: FnOnce(&mut Visitor<T>),
+    {
         let mut tree = self.tree.borrow_mut();
         trace(&mut tree.visitor);
         for object in tree.visitor.unmarked(&tree.objects) {
