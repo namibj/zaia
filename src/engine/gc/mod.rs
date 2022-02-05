@@ -49,6 +49,25 @@ struct Tree<T> {
     visitor: Visitor<T>,
 }
 
+impl<T> Tree<T> {
+    fn collect<F>(&mut self, trace: F)
+    where
+        F: FnOnce(&mut Visitor<T>),
+    {
+        trace(&mut self.visitor);
+
+        for object in self.visitor.unmarked(&self.objects) {
+            self.objects.remove(object);
+
+            unsafe {
+                object.destroy();
+            }
+        }
+
+        self.visitor.reset();
+    }
+}
+
 struct HeapInternal<T> {
     heuristics: Heuristics,
     tree: RefCell<Tree<T>>,
@@ -78,16 +97,8 @@ impl<T> HeapInternal<T> {
     where
         F: FnOnce(&mut Visitor<T>),
     {
-        let mut tree = self.tree.borrow_mut();
-        trace(&mut tree.visitor);
-        for object in tree.visitor.unmarked(&tree.objects) {
-            unsafe {
-                object.destroy();
-            }
-        }
-
+        self.tree.borrow_mut().collect(trace);
         self.heuristics.adjust();
-        tree.visitor.reset();
     }
 }
 
