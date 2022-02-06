@@ -4,6 +4,7 @@ use cstree::{GreenNode, GreenNodeBuilder};
 use logos::Logos;
 
 use super::{event::Event, kind::SyntaxKind, marker::Marker, sink::Sink, span::Span};
+use crate::T;
 
 pub struct State<'source> {
     tokens: Vec<(SyntaxKind, Span)>,
@@ -104,7 +105,15 @@ impl<'source> State<'source> {
     }
 
     pub fn error_eat_until(&mut self, one_of: &[SyntaxKind]) -> Span {
-        unimplemented!()
+        let marker = self.start();
+        let mut last_span = self.span();
+        while !one_of.contains(&self.at()) {
+            self.bump();
+            last_span = self.span();
+        }
+
+        marker.complete(self, T![invalid]);
+        last_span
     }
 
     pub fn finish(self) -> (GreenNode, Vec<ariadne::Report<Span>>) {
