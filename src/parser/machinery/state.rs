@@ -56,9 +56,9 @@ impl<'source> State<'source> {
         } else {
             self.error(
                 self.new_error()
-                    .with_message("Unexpected token")
+                    .with_message("unexpected token")
                     .with_label(self.new_label().with_message(format!(
-                        "Expected token {} but found {}",
+                        "expected token {} but found {}",
                         kind,
                         self.at()
                     )))
@@ -93,6 +93,14 @@ impl<'source> State<'source> {
         while self.at().is_trivia() {
             self.bump();
         }
+    }
+
+    pub fn source(&self, span: Span) -> &str {
+        &self.source[span]
+    }
+
+    pub fn error_eat_until(&mut self, one_of: &[SyntaxKind]) -> Span {
+        unimplemented!()
     }
 
     pub fn finish(self) -> (GreenNode, Vec<ariadne::Report<Span>>) {

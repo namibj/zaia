@@ -1,10 +1,11 @@
+mod item;
 pub mod machinery;
 mod stmt;
-mod item;
+
+use std::ops::{Deref, DerefMut};
 
 use cstree::GreenNode;
 use machinery::{kind::SyntaxKind, marker::Marker, span::Span, state::State};
-use std::ops::{Deref, DerefMut};
 
 use crate::T;
 
