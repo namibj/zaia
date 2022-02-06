@@ -94,6 +94,14 @@ impl<'source> Parser<'source> {
     }
 
     pub(super) fn r_gen_for(&mut self,  marker: Marker) -> Option<CompletedMarker> {
+        while self.at() == T![,] {
+            self.expect(T![,]);
+            self.expect(T![ident]);
+        }
+
+        self.expect(T![in]);
+        self.r_expr_list();
+        self.r_do();
         Some(marker.complete(self, T![for_gen_stmt]))
     }
 
