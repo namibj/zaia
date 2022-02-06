@@ -71,6 +71,26 @@ impl<'source> Parser<'source> {
     }
 
     pub(super) fn r_for(&mut self) -> Option<CompletedMarker> {
+        let marker = self.start();
+        self.expect(T![for]);
+        self.expect(T![ident]);
+
+        let kind = if self.at() == T![=] {
+            self.r_num_for();
+            T![for_num_stmt]
+        } else {
+            self.r_gen_for();
+            T![for_gen_stmt]
+        };
+
+        Some(marker.complete(self, kind))
+    }
+
+    pub(super) fn r_num_for(&mut self) -> Option<CompletedMarker> {
+        todo!()
+    }
+
+    pub(super) fn r_gen_for(&mut self) -> Option<CompletedMarker> {
         todo!()
     }
 
