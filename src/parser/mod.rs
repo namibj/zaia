@@ -1,3 +1,5 @@
+mod control;
+mod expr;
 mod item;
 pub mod machinery;
 mod stmt;
@@ -22,7 +24,7 @@ impl<'source> Parser<'source> {
 
     fn root(&mut self) {
         let marker = self.start();
-        self.items();
+        self.r_items();
         marker.complete(self, T![root]);
     }
 

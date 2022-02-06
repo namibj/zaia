@@ -7,15 +7,15 @@ use crate::T;
 const STATEMENT_RECOVERY: &[SyntaxKind] = &[];
 
 impl<'source> Parser<'source> {
-    pub(super) fn stmt(&mut self) -> Option<CompletedMarker> {
+    pub(super) fn r_stmt(&mut self) -> Option<CompletedMarker> {
         match self.at() {
-            T![do] => todo!(),
-            T![while] => todo!(),
-            T![repeat] => todo!(),
-            T![if] => todo!(),
-            T![for] => todo!(),
-            T![return] => todo!(),
-            T![break] => todo!(),
+            T![do] => self.r_do(),
+            T![while] => self.r_while(),
+            T![repeat] => self.r_repeat(),
+            T![if] => self.r_if(),
+            T![for] => self.r_for(),
+            T![return] => self.r_return(),
+            T![break] => self.r_break(),
             T![function] => todo!(),
             T![local] => todo!(),
             T![ident] => todo!(),

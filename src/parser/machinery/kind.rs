@@ -13,28 +13,10 @@ pub enum SyntaxKind {
 
     Eof,
     Root,
-    Name,
-    Block,
-    Stmt,
-    SimpleExpr,
-    Expr,
-    BinExpr,
-    UnExpr,
-    FnCall,
-    ParamList,
-    Conditional,
-    ForNumeric,
-    Target,
-    Start,
-    StepBy,
-    ForGeneric,
-    Targets,
-    Yielders,
-    ExprList,
-    Declare,
-    Literal,
-    Table,
-    TableElem,
+    BreakStmt,
+    ReturnStmt,
+    BlockStmt,
+    WhileStmt,
 
     #[regex(r"[ \n\t\f\r;]+", logos::skip)]
     Whitespace,
@@ -323,28 +305,10 @@ macro_rules! T {
     [tombstone] => { $crate::parser::machinery::kind::SyntaxKind::Tombstone };
     [eof] => { $crate::parser::machinery::kind::SyntaxKind::Eof };
     [root] => { $crate::parser::machinery::kind::SyntaxKind::Root };
-    [name] => { $crate::parser::machinery::kind::SyntaxKind::Name };
-    [block] => { $crate::parser::machinery::kind::SyntaxKind::Block };
-    [stmt] => { $crate::parser::machinery::kind::SyntaxKind::Stmt };
-    [simple_expr] => { $crate::parser::machinery::kind::SyntaxKind::SimpleExpr };
-    [expr] => { $crate::parser::machinery::kind::SyntaxKind::Expr };
-    [bin_expr] => { $crate::parser::machinery::kind::SyntaxKind::BinExpr };
-    [un_expr] => { $crate::parser::machinery::kind::SyntaxKind::UnExpr };
-    [fncall] => { $crate::parser::machinery::kind::SyntaxKind::FnCall };
-    [param_list] => { $crate::parser::machinery::kind::SyntaxKind::ParamList };
-    [conditional] => { $crate::parser::machinery::kind::SyntaxKind::Conditional };
-    [for_numeric] => { $crate::parser::machinery::kind::SyntaxKind::ForNumeric };
-    [target] => { $crate::parser::machinery::kind::SyntaxKind::Target };
-    [start] => { $crate::parser::machinery::kind::SyntaxKind::Start };
-    [step_by] => { $crate::parser::machinery::kind::SyntaxKind::StepBy };
-    [for_generic] => { $crate::parser::machinery::kind::SyntaxKind::ForGeneric };
-    [targets] => { $crate::parser::machinery::kind::SyntaxKind::Targets };
-    [yielders] => { $crate::parser::machinery::kind::SyntaxKind::Yielders };
-    [expr_list] => { $crate::parser::machinery::kind::SyntaxKind::ExprList };
-    [declare] => { $crate::parser::machinery::kind::SyntaxKind::Declare };
-    [literal] => { $crate::parser::machinery::kind::SyntaxKind::Literal };
-    [table] => { $crate::parser::machinery::kind::SyntaxKind::Table };
-    [table_elem] => { $crate::parser::machinery::kind::SyntaxKind::TableElem };
+    [break_stmt] => { $crate::parser::machinery::kind::SyntaxKind::BreakStmt };
+    [return_stmt] => { $crate::parser::machinery::kind::SyntaxKind::ReturnStmt };
+    [block_stmt] => { $crate::parser::machinery::kind::SyntaxKind::BlockStmt };
+    [while_stmt] => { $crate::parser::machinery::kind::SyntaxKind::WhileStmt };
     [ident] => { $crate::parser::machinery::kind::SyntaxKind::Ident };
     [+] => { $crate::parser::machinery::kind::SyntaxKind::Plus };
     [-] => { $crate::parser::machinery::kind::SyntaxKind::Minus };
@@ -419,27 +383,6 @@ impl Display for SyntaxKind {
                 T![invalid] => "INVALID",
                 T![eof] => "EOF",
                 T![root] => "ROOT",
-                T![name] => "NAME",
-                T![block] => "BLOCK",
-                T![stmt] => "STMT",
-                T![simple_expr] => "SIMPLE_EXPR",
-                T![expr] => "EXPR",
-                T![bin_expr] => "BIN_EXPR",
-                T![un_expr] => "UN_EXPR",
-                T![fncall] => "FN_CALL",
-                T![param_list] => "PARAM_LIST",
-                T![conditional] => "CONDITIONAL",
-                T![for_numeric] => "FOR_NUMERIC",
-                T![target] => "TARGET",
-                T![start] => "START",
-                T![step_by] => "STEP_BY",
-                T![for_generic] => "FOR_GENERIC",
-                T![targets] => "TARGETS",
-                T![expr_list] => "EXPR_LIST",
-                T![declare] => "DECLARE",
-                T![literal] => "LITERAL",
-                T![table] => "TABLE",
-                T![table_elem] => "TABLE_ELEM",
                 T![ident] => "IDENTIFIER",
                 T![+] => "PLUS",
                 T![-] => "MINUS",
