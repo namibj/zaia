@@ -41,6 +41,10 @@ impl Span {
 
         Self::new(range.start as u32, range.end as u32)
     }
+
+    pub fn range(self) -> ops::Range<usize> {
+        self.start() as usize..self.end() as usize
+    }
 }
 
 impl ariadne::Span for Span {
@@ -63,7 +67,7 @@ impl Index<Span> for str {
     type Output = str;
 
     fn index(&self, index: Span) -> &Self::Output {
-        let range: ops::Range<usize> = index.into();
+        let range: ops::Range<usize> = index.range();
         &self[range]
     }
 }
@@ -71,12 +75,6 @@ impl Index<Span> for str {
 impl From<Span> for ops::Range<u32> {
     fn from(range: Span) -> Self {
         range.start()..range.end()
-    }
-}
-
-impl From<Span> for ops::Range<usize> {
-    fn from(range: Span) -> Self {
-        range.start() as usize..range.end() as usize
     }
 }
 

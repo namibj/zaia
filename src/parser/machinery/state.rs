@@ -1,7 +1,9 @@
+use std::mem;
+
 use cstree::{GreenNode, GreenNodeBuilder};
 use logos::Logos;
 
-use super::{event::Event, kind::SyntaxKind, marker::Marker, span::Span};
+use super::{event::Event, kind::SyntaxKind, marker::Marker, sink::Sink, span::Span};
 
 pub struct State<'source> {
     tokens: Vec<(SyntaxKind, Span)>,
@@ -94,7 +96,7 @@ impl<'source> State<'source> {
     }
 
     pub fn finish(self) -> (GreenNode, Vec<ariadne::Report<Span>>) {
-        let builder = GreenNodeBuilder::new();
-        (builder.finish().0, self.errors)
+        let tree = Sink::new(&self.tokens, self.events, self.source).finish();
+        (tree, self.errors)
     }
 }

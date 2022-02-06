@@ -22,7 +22,7 @@ impl Marker {
         state.events().push(Event::Exit);
         CompletedMarker {
             position: self.position,
-            _kind: kind,
+            kind,
         }
     }
 
@@ -48,7 +48,7 @@ impl Marker {
 #[derive(Debug)]
 pub struct CompletedMarker {
     position: usize,
-    _kind: SyntaxKind,
+    kind: SyntaxKind,
 }
 
 impl CompletedMarker {
