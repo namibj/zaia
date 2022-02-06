@@ -10,7 +10,7 @@ impl Marker {
         Self { position }
     }
 
-    pub(super) fn complete(self, state: &mut State, kind: SyntaxKind) -> CompletedMarker {
+    pub fn complete(self, state: &mut State, kind: SyntaxKind) -> CompletedMarker {
         let event_at_pos = &mut state.events()[self.position];
         debug_assert_eq!(*event_at_pos, Event::tombstone());
 
@@ -26,7 +26,7 @@ impl Marker {
         }
     }
 
-    pub(crate) fn abandon(self, state: &mut State) {
+    pub fn abandon(self, state: &mut State) {
         match &mut state.events()[self.position] {
             Event::Enter {
                 kind,

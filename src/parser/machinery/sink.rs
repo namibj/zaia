@@ -43,7 +43,7 @@ impl<'source> Sink<'source> {
         }
     }
 
-    pub(crate) fn finish(mut self) -> GreenNode {
+    pub fn finish(mut self) -> GreenNode {
         let mut preceded_nodes = Vec::new();
         for idx in 0..self.events.len() {
             match mem::take(&mut self.events[idx]) {
