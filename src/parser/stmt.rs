@@ -12,7 +12,7 @@ impl<'source> Parser<'source> {
             T![do] => self.r_do(),
             T![while] => self.r_while(),
             T![repeat] => self.r_repeat(),
-            T![if] => self.r_if(),
+            T![if] => self.r_if(T![if]),
             T![for] => self.r_for(),
             T![return] => self.r_return(),
             T![break] => self.r_break(),

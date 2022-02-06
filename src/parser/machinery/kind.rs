@@ -17,6 +17,10 @@ pub enum SyntaxKind {
     ReturnStmt,
     BlockStmt,
     WhileStmt,
+    RepeatStmt,
+    StmtList,
+    IfStmt,
+    ElseChain,
 
     #[regex(r"[ \n\t\f\r;]+", logos::skip)]
     Whitespace,
@@ -309,6 +313,10 @@ macro_rules! T {
     [return_stmt] => { $crate::parser::machinery::kind::SyntaxKind::ReturnStmt };
     [block_stmt] => { $crate::parser::machinery::kind::SyntaxKind::BlockStmt };
     [while_stmt] => { $crate::parser::machinery::kind::SyntaxKind::WhileStmt };
+    [repeat_stmt] => { $crate::parser::machinery::kind::SyntaxKind::RepeatStmt };
+    [stmt_list] => { $crate::parser::machinery::kind::SyntaxKind::StmtList };
+    [if_stmt] => { $crate::parser::machinery::kind::SyntaxKind::IfStmt };
+    [else_chain] => { $crate::parser::machinery::kind::SyntaxKind::ElseChain };
     [ident] => { $crate::parser::machinery::kind::SyntaxKind::Ident };
     [+] => { $crate::parser::machinery::kind::SyntaxKind::Plus };
     [-] => { $crate::parser::machinery::kind::SyntaxKind::Minus };
