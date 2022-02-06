@@ -23,6 +23,8 @@ pub enum SyntaxKind {
     ElseChain,
     ForNumStmt,
     ForGenStmt,
+    FuncStmt,
+    FuncArgs,
 
     #[regex(r"[ \n\t\f\r;]+", logos::skip)]
     Whitespace,
@@ -321,6 +323,8 @@ macro_rules! T {
     [else_chain] => { $crate::parser::machinery::kind::SyntaxKind::ElseChain };
     [for_num_stmt] => { $crate::parser::machinery::kind::SyntaxKind::ForNumStmt };
     [for_gen_stmt] => { $crate::parser::machinery::kind::SyntaxKind::ForGenStmt };
+    [func_stmt] => { $crate::parser::machinery::kind::SyntaxKind::FuncStmt };
+    [func_args] => { $crate::parser::machinery::kind::SyntaxKind::FuncArgs };
     [ident] => { $crate::parser::machinery::kind::SyntaxKind::Ident };
     [+] => { $crate::parser::machinery::kind::SyntaxKind::Plus };
     [-] => { $crate::parser::machinery::kind::SyntaxKind::Minus };

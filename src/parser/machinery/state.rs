@@ -22,13 +22,16 @@ impl<'source> State<'source> {
                 .map(|(kind, range)| (kind, Span::from_range(range))),
         );
 
-        State {
+        let mut state = State {
             tokens,
             cursor: 0,
             source,
             events: Vec::new(),
             errors: Vec::new(),
-        }
+        };
+
+        state.skip_trivia();
+        state
     }
 
     pub fn at(&self) -> SyntaxKind {
@@ -87,11 +90,12 @@ impl<'source> State<'source> {
         });
 
         self.cursor += 1;
+        self.skip_trivia();
     }
 
-    fn eat_trivia(&mut self) {
+    fn skip_trivia(&mut self) {
         while self.at().is_trivia() {
-            self.bump();
+            self.cursor += 1;
         }
     }
 
