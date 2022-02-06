@@ -25,6 +25,12 @@ pub enum SyntaxKind {
     ForGenStmt,
     FuncStmt,
     FuncArgs,
+    SimpleExpr,
+    Expr,
+    VarArgExpr,
+    BinOp,
+    FuncCall,
+    Index,
 
     #[regex(r"[ \n\t\f\r;]+", logos::skip)]
     Whitespace,
@@ -325,6 +331,12 @@ macro_rules! T {
     [for_gen_stmt] => { $crate::parser::machinery::kind::SyntaxKind::ForGenStmt };
     [func_stmt] => { $crate::parser::machinery::kind::SyntaxKind::FuncStmt };
     [func_args] => { $crate::parser::machinery::kind::SyntaxKind::FuncArgs };
+    [simple_expr] => { $crate::parser::machinery::kind::SyntaxKind::SimpleExpr };
+    [expr] => { $crate::parser::machinery::kind::SyntaxKind::Expr };
+    [vararg_expr] => { $crate::parser::machinery::kind::SyntaxKind::VarArgExpr };
+    [bin_op] => { $crate::parser::machinery::kind::SyntaxKind::BinOp };
+    [func_call] => { $crate::parser::machinery::kind::SyntaxKind::FuncCall };
+    [index] => { $crate::parser::machinery::kind::SyntaxKind::Index };
     [ident] => { $crate::parser::machinery::kind::SyntaxKind::Ident };
     [+] => { $crate::parser::machinery::kind::SyntaxKind::Plus };
     [-] => { $crate::parser::machinery::kind::SyntaxKind::Minus };

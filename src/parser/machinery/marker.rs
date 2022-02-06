@@ -52,7 +52,7 @@ pub struct CompletedMarker {
 }
 
 impl CompletedMarker {
-    fn precede(self, state: &mut State) -> Marker {
+    pub fn precede(self, state: &mut State) -> Marker {
         let marker = state.start();
 
         if let Event::Enter { preceded_by, .. } = &mut state.events()[self.position] {

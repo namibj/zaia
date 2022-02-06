@@ -4,7 +4,17 @@ use super::{
 };
 use crate::T;
 
-const STATEMENT_RECOVERY: &[SyntaxKind] = &[];
+const STATEMENT_RECOVERY: &[SyntaxKind] = &[
+    T![do],
+    T![while],
+    T![repeat],
+    T![if],
+    T![for],
+    T![return],
+    T![break],
+    T![function],
+    T![local],
+];
 
 impl<'source> Parser<'source> {
     pub(super) fn r_stmt(&mut self) -> Option<CompletedMarker> {
