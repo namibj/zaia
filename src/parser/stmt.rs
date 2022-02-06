@@ -16,9 +16,9 @@ impl<'source> Parser<'source> {
             T![for] => self.r_for(),
             T![return] => self.r_return(),
             T![break] => self.r_break(),
-            T![function] => todo!(),
-            T![local] => todo!(),
-            T![ident] => todo!(),
+            T![function] => self.r_function(),
+            T![local] => self.r_decl(),
+            T![ident] => self.r_simple_expr(),
             T![eof] => None,
             _ => {
                 let span = self.error_eat_until(STATEMENT_RECOVERY);

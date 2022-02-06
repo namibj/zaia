@@ -1,5 +1,8 @@
 use super::{
-    machinery::{kind::SyntaxKind, marker::CompletedMarker, marker::Marker},
+    machinery::{
+        kind::SyntaxKind,
+        marker::{CompletedMarker, Marker},
+    },
     Parser,
 };
 use crate::T;
@@ -90,10 +93,10 @@ impl<'source> Parser<'source> {
         self.expect(T![,]);
         self.r_expr();
         self.r_do();
-        Some(marker.complete(self,T![for_num_stmt]))
+        Some(marker.complete(self, T![for_num_stmt]))
     }
 
-    pub(super) fn r_gen_for(&mut self,  marker: Marker) -> Option<CompletedMarker> {
+    pub(super) fn r_gen_for(&mut self, marker: Marker) -> Option<CompletedMarker> {
         while self.at() == T![,] {
             self.expect(T![,]);
             self.expect(T![ident]);

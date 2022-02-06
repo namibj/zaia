@@ -1,7 +1,10 @@
 mod control;
+mod decl;
 mod expr;
+mod function;
 mod item;
 pub mod machinery;
+mod simple_expr;
 mod stmt;
 
 use std::ops::{Deref, DerefMut};
