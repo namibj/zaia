@@ -1,5 +1,5 @@
 use super::{
-    machinery::{kind::SyntaxKind, marker::CompletedMarker},
+    machinery::{kind::SyntaxKind, marker::CompletedMarker, marker::Marker},
     Parser,
 };
 use crate::T;
@@ -75,23 +75,26 @@ impl<'source> Parser<'source> {
         self.expect(T![for]);
         self.expect(T![ident]);
 
-        let kind = if self.at() == T![=] {
-            self.r_num_for();
-            T![for_num_stmt]
+        if self.at() == T![=] {
+            self.r_num_for(marker)
         } else {
-            self.r_gen_for();
-            T![for_gen_stmt]
-        };
-
-        Some(marker.complete(self, kind))
+            self.r_gen_for(marker)
+        }
     }
 
-    pub(super) fn r_num_for(&mut self) -> Option<CompletedMarker> {
-        todo!()
+    pub(super) fn r_num_for(&mut self, marker: Marker) -> Option<CompletedMarker> {
+        self.expect(T![=]);
+        self.r_expr();
+        self.expect(T![,]);
+        self.r_expr();
+        self.expect(T![,]);
+        self.r_expr();
+        self.r_do();
+        Some(marker.complete(self,T![for_num_stmt]))
     }
 
-    pub(super) fn r_gen_for(&mut self) -> Option<CompletedMarker> {
-        todo!()
+    pub(super) fn r_gen_for(&mut self,  marker: Marker) -> Option<CompletedMarker> {
+        Some(marker.complete(self, T![for_gen_stmt]))
     }
 
     pub(super) fn r_return(&mut self) -> Option<CompletedMarker> {
