@@ -1,24 +1,50 @@
 pub mod machinery;
-mod rules;
-
-use std::str;
+mod stmt;
+mod item;
 
 use cstree::GreenNode;
 use machinery::{kind::SyntaxKind, marker::Marker, span::Span, state::State};
+use std::ops::{Deref, DerefMut};
 
 use crate::T;
 
-pub fn parse(source: &str) -> (GreenNode, Vec<ariadne::Report<Span>>) {
-    let mut state = State::new(source);
-    let marker = state.start();
+struct Parser<'source> {
+    state: State<'source>,
+}
 
-    loop {
-        match state.at() {
-            T![eof] => break,
-            _ => rules::stmt::parse_stmt(&mut state),
+impl<'source> Parser<'source> {
+    fn new(source: &'source str) -> Self {
+        Self {
+            state: State::new(source),
         }
     }
 
-    marker.complete(&mut state, T![root]);
-    state.finish()
+    fn root(&mut self) {
+        let marker = self.start();
+        self.items();
+        marker.complete(self, T![root]);
+    }
+
+    fn run(mut self) -> (GreenNode, Vec<ariadne::Report<Span>>) {
+        self.root();
+        self.state.finish()
+    }
+}
+
+impl<'source> Deref for Parser<'source> {
+    type Target = State<'source>;
+
+    fn deref(&self) -> &Self::Target {
+        &self.state
+    }
+}
+
+impl<'source> DerefMut for Parser<'source> {
+    fn deref_mut(&mut self) -> &mut Self::Target {
+        &mut self.state
+    }
+}
+
+pub fn parse(source: &str) -> (GreenNode, Vec<ariadne::Report<Span>>) {
+    Parser::new(source).run()
 }
