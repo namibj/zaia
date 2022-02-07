@@ -66,8 +66,10 @@ impl<'cache, 'source> State<'cache, 'source> {
     pub fn expect(&mut self, kind: SyntaxKind) -> bool {
         if self.at() == kind {
             self.bump();
+            self.skip_trivia();
             true
         } else {
+            panic!("expected {:?} but found {:?}", kind, self.at());
             self.report(
                 self.new_error()
                     .with_message("unexpected token")
@@ -101,12 +103,11 @@ impl<'cache, 'source> State<'cache, 'source> {
         });
 
         self.cursor += 1;
-        self.skip_trivia();
     }
 
     fn skip_trivia(&mut self) {
         while self.at().is_trivia() {
-            self.cursor += 1;
+            self.bump();
         }
     }
 
@@ -119,6 +120,7 @@ impl<'cache, 'source> State<'cache, 'source> {
         let mut last_span = self.span();
         while !one_of.contains(&self.at()) {
             self.bump();
+            self.skip_trivia();
             last_span = self.span();
         }
 

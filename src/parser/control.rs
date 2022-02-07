@@ -37,21 +37,19 @@ impl<'cache, 'source> Parser<'cache, 'source> {
         let marker = self.start();
         self.expect(if_kind);
         self.r_expr();
-        if if_kind == T![if] {
-            self.expect(T![then]);
-        }
-
+        self.expect(T![then]);
         self.r_block(|t| matches!(t, T![end] | T![elseif] | T![else]));
 
         match self.at() {
-            T![end] => (),
+            T![end] => {
+                self.expect(T![end]);
+            },
             T![elseif] | T![else] => {
                 self.r_else();
             },
             _ => unreachable!(),
         }
 
-        self.expect(T![end]);
         Some(marker.complete(self, T![if_stmt]))
     }
 

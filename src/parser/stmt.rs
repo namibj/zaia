@@ -31,6 +31,7 @@ impl<'cache, 'source> Parser<'cache, 'source> {
             T![ident] => self.r_maybe_assign(),
             T![eof] => None,
             _ => {
+                panic!("{:?}", self.at());
                 let span = self.error_eat_until(STATEMENT_RECOVERY);
                 let source = self.source(span);
                 let error = self
