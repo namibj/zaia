@@ -42,7 +42,7 @@ impl<'source> Parser<'source> {
                     )
                     .finish();
 
-                self.error(error);
+                self.report(error);
                 None
             },
         }

@@ -11,7 +11,7 @@ pub struct State<'source> {
     cursor: usize,
     source: &'source str,
     events: Vec<Event>,
-    errors: Vec<ariadne::Report<Span>>,
+    reports: Vec<ariadne::Report<Span>>,
 }
 
 impl<'source> State<'source> {
@@ -29,7 +29,7 @@ impl<'source> State<'source> {
             cursor: 0,
             source,
             events: Vec::new(),
-            errors: Vec::new(),
+            reports: Vec::new(),
         };
 
         state.skip_trivia();
@@ -66,7 +66,7 @@ impl<'source> State<'source> {
             self.bump();
             true
         } else {
-            self.error(
+            self.report(
                 self.new_error()
                     .with_message("unexpected token")
                     .with_label(self.new_label().with_message(format!(
@@ -80,8 +80,8 @@ impl<'source> State<'source> {
         }
     }
 
-    pub fn error(&mut self, error: ariadne::Report<Span>) {
-        self.errors.push(error);
+    pub fn report(&mut self, error: ariadne::Report<Span>) {
+        self.reports.push(error);
     }
 
     pub fn new_error(&self) -> ariadne::ReportBuilder<Span> {
@@ -126,6 +126,6 @@ impl<'source> State<'source> {
 
     pub fn finish(self) -> (GreenNode, Vec<ariadne::Report<Span>>) {
         let tree = Sink::new(&self.tokens, self.events, self.source).finish();
-        (tree, self.errors)
+        (tree, self.reports)
     }
 }

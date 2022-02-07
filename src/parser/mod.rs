@@ -13,6 +13,7 @@ use std::ops::{Deref, DerefMut};
 
 use cstree::GreenNode;
 use machinery::{kind::SyntaxKind, marker::Marker, span::Span, state::State};
+use syntax::SyntaxNode;
 
 use crate::T;
 
@@ -33,9 +34,10 @@ impl<'source> Parser<'source> {
         marker.complete(self, T![root]);
     }
 
-    fn run(mut self) -> (GreenNode, Vec<ariadne::Report<Span>>) {
+    fn run(mut self) -> (SyntaxNode, Vec<ariadne::Report<Span>>) {
         self.root();
-        self.state.finish()
+        let (root, reports) = self.state.finish();
+        (SyntaxNode::new_root(root), reports)
     }
 }
 
@@ -53,7 +55,7 @@ impl<'source> DerefMut for Parser<'source> {
     }
 }
 
-pub fn parse(source: &str) -> (GreenNode, Vec<ariadne::Report<Span>>) {
+pub fn parse(source: &str) -> (SyntaxNode, Vec<ariadne::Report<Span>>) {
     Parser::new(source).run()
 }
 
@@ -73,7 +75,7 @@ mod tests {
                 fn [<parse_and_verify_ $name>]() {
                     let source = fs::read_to_string($path).unwrap();
                     let (syntax_tree, reports) = parse(&source);
-                    assert!(reports.is_empty());
+                    assert!(report.is_empty());
                     assert_debug_snapshot!(syntax_tree);
                 }
             }

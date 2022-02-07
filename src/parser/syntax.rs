@@ -1,3 +1,5 @@
+use cstree::GreenNode;
+
 use crate::{parser::machinery::kind::SyntaxKind, T};
 
 impl From<SyntaxKind> for cstree::SyntaxKind {
@@ -7,7 +9,7 @@ impl From<SyntaxKind> for cstree::SyntaxKind {
 }
 
 #[derive(Debug, Clone, Copy, PartialEq, Eq, PartialOrd, Ord, Hash)]
-enum Lang {}
+pub enum Lang {}
 
 impl cstree::Language for Lang {
     type Kind = SyntaxKind;
@@ -21,3 +23,5 @@ impl cstree::Language for Lang {
         kind.into()
     }
 }
+
+pub type SyntaxNode = cstree::SyntaxNode<Lang>;
