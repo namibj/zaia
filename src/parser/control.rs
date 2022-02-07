@@ -7,7 +7,7 @@ use super::{
 };
 use crate::T;
 
-impl<'source> Parser<'source> {
+impl<'cache, 'source> Parser<'cache, 'source> {
     pub(super) fn r_do(&mut self) -> Option<CompletedMarker> {
         let marker = self.start();
         self.expect(T![do]);

@@ -16,7 +16,7 @@ const STATEMENT_RECOVERY: &[SyntaxKind] = &[
     T![local],
 ];
 
-impl<'source> Parser<'source> {
+impl<'cache, 'source> Parser<'cache, 'source> {
     pub(super) fn r_stmt(&mut self) -> Option<CompletedMarker> {
         match self.at() {
             T![do] => self.r_do(),
@@ -28,7 +28,7 @@ impl<'source> Parser<'source> {
             T![break] => self.r_break(),
             T![function] => self.r_func(false),
             T![local] => self.r_decl(),
-            T![ident] => self.r_simple_expr(),
+            T![ident] => self.r_maybe_assign(),
             T![eof] => None,
             _ => {
                 let span = self.error_eat_until(STATEMENT_RECOVERY);

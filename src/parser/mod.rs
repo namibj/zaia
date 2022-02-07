@@ -1,5 +1,5 @@
+mod assign;
 mod control;
-mod decl;
 mod expr;
 mod function;
 mod item;
@@ -11,20 +11,20 @@ mod table;
 
 use std::ops::{Deref, DerefMut};
 
-use cstree::GreenNode;
+use cstree::{GreenNode, NodeCache};
 use machinery::{kind::SyntaxKind, marker::Marker, span::Span, state::State};
 use syntax::SyntaxNode;
 
 use crate::T;
 
-struct Parser<'source> {
-    state: State<'source>,
+struct Parser<'cache, 'source> {
+    state: State<'cache, 'source>,
 }
 
-impl<'source> Parser<'source> {
-    fn new(source: &'source str) -> Self {
+impl<'cache, 'source> Parser<'cache, 'source> {
+    fn new(cache: &'cache mut NodeCache<'static>, source: &'source str) -> Self {
         Self {
-            state: State::new(source),
+            state: State::new(cache, source),
         }
     }
 
@@ -41,52 +41,58 @@ impl<'source> Parser<'source> {
     }
 }
 
-impl<'source> Deref for Parser<'source> {
-    type Target = State<'source>;
+impl<'cache, 'source> Deref for Parser<'cache, 'source> {
+    type Target = State<'cache, 'source>;
 
     fn deref(&self) -> &Self::Target {
         &self.state
     }
 }
 
-impl<'source> DerefMut for Parser<'source> {
+impl<'cache, 'source> DerefMut for Parser<'cache, 'source> {
     fn deref_mut(&mut self) -> &mut Self::Target {
         &mut self.state
     }
 }
 
-pub fn parse(source: &str) -> (SyntaxNode, Vec<ariadne::Report<Span>>) {
-    Parser::new(source).run()
+pub fn parse(
+    cache: &mut NodeCache<'static>,
+    source: &str,
+) -> (SyntaxNode, Vec<ariadne::Report<Span>>) {
+    Parser::new(cache, source).run()
 }
 
 #[cfg(test)]
 mod tests {
     use std::fs;
 
-    use insta::assert_debug_snapshot;
+    use cstree::NodeCache;
+    use insta::assert_snapshot;
     use paste::paste;
 
-    use super::parse;
+    use super::{parse, syntax::syntax_tree_debug};
 
     macro_rules! parse_and_verify {
         ($name:ident, $path:literal) => {
             paste! {
                 #[test]
                 fn [<parse_and_verify_ $name>]() {
+                    let mut cache = NodeCache::new();
                     let source = fs::read_to_string($path).unwrap();
-                    let (syntax_tree, reports) = parse(&source);
-                    assert!(report.is_empty());
-                    assert_debug_snapshot!(syntax_tree);
+                    let (syntax_tree, reports) = parse(&mut cache, &source);
+                    let syntax_tree_debug = syntax_tree_debug(&mut cache, &syntax_tree);
+                    assert!(reports.is_empty());
+                    assert_snapshot!(syntax_tree_debug);
                 }
             }
         };
     }
 
-    //parse_and_verify!(function, "test-files/function.lua");
-    //parse_and_verify!(op_prec, "test-files/op_prec.lua");
-    //parse_and_verify!(if, "test-files/if.lua");
-    //parse_and_verify!(declare, "test-files/declare.lua");
-    //parse_and_verify!(literal, "test-files/literal.lua");
-    //parse_and_verify!(comment, "test-files/comment.lua");
-    //parse_and_verify!(mixed, "test-files/mixed.lua");
+    parse_and_verify!(function, "test-files/function.lua");
+    parse_and_verify!(op_prec, "test-files/op_prec.lua");
+    // parse_and_verify!(if, "test-files/if.lua");
+    // parse_and_verify!(declare, "test-files/declare.lua");
+    // parse_and_verify!(literal, "test-files/literal.lua");
+    // parse_and_verify!(comment, "test-files/comment.lua");
+    // parse_and_verify!(mixed, "test-files/mixed.lua");
 }

@@ -3,12 +3,19 @@ use std::process::Command;
 use super::{machinery::marker::CompletedMarker, Parser};
 use crate::T;
 
-impl<'source> Parser<'source> {
-    pub(super) fn r_simple_expr(&mut self) -> Option<CompletedMarker> {
+impl<'cache, 'source> Parser<'cache, 'source> {
+    pub(super) fn r_simple_expr(&mut self, allow_call: bool) -> Option<CompletedMarker> {
         let mut lhs = self.r_ident()?;
 
         loop {
             let t = self.at();
+
+            if t == T!['('] && allow_call {
+                let n = lhs.precede(self);
+                let _rhs = self.r_func_call_args()?;
+                lhs = n.complete(self, T![func_call]);
+                continue;
+            }
 
             if t == T!['['] {
                 let n = lhs.precede(self);
@@ -22,7 +29,7 @@ impl<'source> Parser<'source> {
             if t == T![.] || t == T![:] {
                 let n = lhs.precede(self);
                 self.expect(t);
-                let _rhs = self.r_simple_expr();
+                let _rhs = self.r_simple_expr(true);
                 lhs = n.complete(self, T![bin_op]);
                 continue;
             }

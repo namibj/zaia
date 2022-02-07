@@ -40,6 +40,7 @@ pub enum SyntaxKind {
     TableArrayElem,
     TableMapElem,
     TableGenericElem,
+    AssignStmt,
 
     #[regex(r"[ \n\t\f\r;]+", logos::skip)]
     Whitespace,
@@ -355,6 +356,7 @@ macro_rules! T {
     [table_array_elem] => { $crate::parser::machinery::kind::SyntaxKind::TableArrayElem };
     [table_map_elem] => { $crate::parser::machinery::kind::SyntaxKind::TableMapElem };
     [table_generic_elem] => { $crate::parser::machinery::kind::SyntaxKind::TableGenericElem };
+    [assign_stmt] => { $crate::parser::machinery::kind::SyntaxKind::AssignStmt };
     [ident] => { $crate::parser::machinery::kind::SyntaxKind::Ident };
     [+] => { $crate::parser::machinery::kind::SyntaxKind::Plus };
     [-] => { $crate::parser::machinery::kind::SyntaxKind::Minus };

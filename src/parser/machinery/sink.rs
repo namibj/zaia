@@ -1,26 +1,27 @@
 use std::mem;
 
-use cstree::{GreenNode, GreenNodeBuilder};
+use cstree::{GreenNode, GreenNodeBuilder, NodeCache};
 
 use super::{event::Event, kind::SyntaxKind, span::Span};
 use crate::T;
 
-pub struct Sink<'source> {
-    builder: GreenNodeBuilder<'static, 'static>,
+pub struct Sink<'cache, 'source> {
+    builder: GreenNodeBuilder<'cache, 'static>,
     tokens: &'source [(SyntaxKind, Span)],
     cursor: usize,
     events: Vec<Event>,
     source: &'source str,
 }
 
-impl<'source> Sink<'source> {
+impl<'cache, 'source> Sink<'cache, 'source> {
     pub fn new(
+        cache: &'cache mut NodeCache<'static>,
         tokens: &'source [(SyntaxKind, Span)],
         events: Vec<Event>,
         source: &'source str,
     ) -> Self {
         Self {
-            builder: GreenNodeBuilder::new(),
+            builder: GreenNodeBuilder::with_cache(cache),
             tokens,
             cursor: 0,
             events,

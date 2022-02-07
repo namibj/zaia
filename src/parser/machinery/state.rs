@@ -1,12 +1,13 @@
 use std::{mem, ops::Not};
 
-use cstree::{GreenNode, GreenNodeBuilder};
+use cstree::{GreenNode, GreenNodeBuilder, NodeCache};
 use logos::Logos;
 
 use super::{event::Event, kind::SyntaxKind, marker::Marker, sink::Sink, span::Span};
 use crate::T;
 
-pub struct State<'source> {
+pub struct State<'cache, 'source> {
+    cache: &'cache mut NodeCache<'static>,
     tokens: Vec<(SyntaxKind, Span)>,
     cursor: usize,
     source: &'source str,
@@ -14,8 +15,8 @@ pub struct State<'source> {
     reports: Vec<ariadne::Report<Span>>,
 }
 
-impl<'source> State<'source> {
-    pub fn new(source: &'source str) -> Self {
+impl<'cache, 'source> State<'cache, 'source> {
+    pub fn new(cache: &'cache mut NodeCache<'static>, source: &'source str) -> Self {
         let mut tokens = Vec::new();
         tokens.extend(
             SyntaxKind::lexer(source)
@@ -25,6 +26,7 @@ impl<'source> State<'source> {
         tokens.push((T![eof], Span::from_range(0..0)));
 
         let mut state = State {
+            cache,
             tokens,
             cursor: 0,
             source,
@@ -125,7 +127,7 @@ impl<'source> State<'source> {
     }
 
     pub fn finish(self) -> (GreenNode, Vec<ariadne::Report<Span>>) {
-        let tree = Sink::new(&self.tokens, self.events, self.source).finish();
+        let tree = Sink::new(self.cache, &self.tokens, self.events, self.source).finish();
         (tree, self.reports)
     }
 }

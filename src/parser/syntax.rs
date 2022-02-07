@@ -1,4 +1,4 @@
-use cstree::GreenNode;
+use cstree::{GreenNode, NodeCache};
 
 use crate::{parser::machinery::kind::SyntaxKind, T};
 
@@ -25,3 +25,7 @@ impl cstree::Language for Lang {
 }
 
 pub type SyntaxNode = cstree::SyntaxNode<Lang>;
+
+pub fn syntax_tree_debug(cache: &NodeCache<'static>, node: &SyntaxNode) -> String {
+    node.debug(cache.interner(), true)
+}

@@ -3,22 +3,30 @@ use std::process::Command;
 use super::{machinery::marker::CompletedMarker, Parser};
 use crate::T;
 
-impl<'source> Parser<'source> {
+impl<'cache, 'source> Parser<'cache, 'source> {
     pub(super) fn r_func_call_args(&mut self) -> Option<CompletedMarker> {
         let marker = self.start();
         self.expect(T!['(']);
 
-        while self.at() != T![')'] {
-            self.r_expr();
+        loop {
+            match self.at() {
+                T![')'] => {
+                    self.expect(T![')']);
+                    break;
+                },
+                _ => {
+                    self.r_expr();
+                },
+            }
 
             if self.at() == T![,] {
                 self.expect(T![,]);
             } else {
+                self.expect(T![')']);
                 break;
             }
         }
 
-        self.expect(T![')']);
         Some(marker.complete(self, T![func_args]))
     }
 
@@ -27,7 +35,7 @@ impl<'source> Parser<'source> {
         self.expect(T![function]);
 
         if !expr {
-            self.r_simple_expr();
+            self.r_simple_expr(false);
         }
 
         self.r_func_def_args();
@@ -41,17 +49,25 @@ impl<'source> Parser<'source> {
         let marker = self.start();
         self.expect(T!['(']);
 
-        while self.at() != T![')'] {
-            self.expect(T![ident]);
+        loop {
+            match self.at() {
+                T![')'] => {
+                    self.expect(T![')']);
+                    break;
+                },
+                _ => {
+                    self.r_ident();
+                },
+            }
 
             if self.at() == T![,] {
                 self.expect(T![,]);
             } else {
+                self.expect(T![')']);
                 break;
             }
         }
 
-        self.expect(T![')']);
         Some(marker.complete(self, T![func_args]))
     }
 }

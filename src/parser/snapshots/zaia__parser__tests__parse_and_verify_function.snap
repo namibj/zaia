@@ -1,0 +1,144 @@
+---
+source: src/parser/mod.rs
+assertion_line: 91
+expression: syntax_tree_debug
+
+---
+Root@0..148
+  FuncStmt@0..28
+    Function@0..8 "function"
+    Ident@8..11
+      Ident@8..11 "add"
+    FuncArgs@11..16
+      LParen@11..12 "("
+      Ident@12..13
+        Ident@12..13 "a"
+      Comma@13..14 ","
+      Ident@14..15
+        Ident@14..15 "b"
+      RParen@15..16 ")"
+    StmtList@16..25
+      ReturnStmt@16..25
+        Return@16..22 "return"
+        ExprList@22..25
+          BinOp@22..25
+            Ident@22..23
+              Ident@22..23 "a"
+            Plus@23..24 "+"
+            Ident@24..25
+              Ident@24..25 "b"
+    End@25..28 "end"
+  FuncStmt@28..56
+    Function@28..36 "function"
+    Ident@36..39
+      Ident@36..39 "sub"
+    FuncArgs@39..44
+      LParen@39..40 "("
+      Ident@40..41
+        Ident@40..41 "a"
+      Comma@41..42 ","
+      Ident@42..43
+        Ident@42..43 "b"
+      RParen@43..44 ")"
+    StmtList@44..53
+      ReturnStmt@44..53
+        Return@44..50 "return"
+        ExprList@50..53
+          BinOp@50..53
+            Ident@50..51
+              Ident@50..51 "a"
+            Minus@51..52 "-"
+            Ident@52..53
+              Ident@52..53 "b"
+    End@53..56 "end"
+  FuncStmt@56..84
+    Function@56..64 "function"
+    Ident@64..67
+      Ident@64..67 "mul"
+    FuncArgs@67..72
+      LParen@67..68 "("
+      Ident@68..69
+        Ident@68..69 "a"
+      Comma@69..70 ","
+      Ident@70..71
+        Ident@70..71 "b"
+      RParen@71..72 ")"
+    StmtList@72..81
+      ReturnStmt@72..81
+        Return@72..78 "return"
+        ExprList@78..81
+          BinOp@78..81
+            Ident@78..79
+              Ident@78..79 "a"
+            Star@79..80 "*"
+            Ident@80..81
+              Ident@80..81 "b"
+    End@81..84 "end"
+  FuncStmt@84..112
+    Function@84..92 "function"
+    Ident@92..95
+      Ident@92..95 "div"
+    FuncArgs@95..100
+      LParen@95..96 "("
+      Ident@96..97
+        Ident@96..97 "a"
+      Comma@97..98 ","
+      Ident@98..99
+        Ident@98..99 "b"
+      RParen@99..100 ")"
+    StmtList@100..109
+      ReturnStmt@100..109
+        Return@100..106 "return"
+        ExprList@106..109
+          BinOp@106..109
+            Ident@106..107
+              Ident@106..107 "a"
+            Slash@107..108 "/"
+            Ident@108..109
+              Ident@108..109 "b"
+    End@109..112 "end"
+  FuncCall@112..148
+    Ident@112..117
+      Ident@112..117 "print"
+    FuncArgs@117..148
+      LParen@117..118 "("
+      FuncCall@118..147
+        Ident@118..121
+          Ident@118..121 "add"
+        FuncArgs@121..147
+          LParen@121..122 "("
+          FuncCall@122..130
+            Ident@122..125
+              Ident@122..125 "mul"
+            FuncArgs@125..130
+              LParen@125..126 "("
+              Int@126..127
+                Int@126..127 "3"
+              Comma@127..128 ","
+              Int@128..129
+                Int@128..129 "4"
+              RParen@129..130 ")"
+          Comma@130..131 ","
+          FuncCall@131..146
+            Ident@131..134
+              Ident@131..134 "div"
+            FuncArgs@134..146
+              LParen@134..135 "("
+              Int@135..136
+                Int@135..136 "6"
+              Comma@136..137 ","
+              FuncCall@137..145
+                Ident@137..140
+                  Ident@137..140 "sub"
+                FuncArgs@140..145
+                  LParen@140..141 "("
+                  Int@141..142
+                    Int@141..142 "3"
+                  Comma@142..143 ","
+                  Int@143..144
+                    Int@143..144 "1"
+                  RParen@144..145 ")"
+              RParen@145..146 ")"
+          RParen@146..147 ")"
+      RParen@147..148 ")"
+
