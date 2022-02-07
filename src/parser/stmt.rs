@@ -26,7 +26,7 @@ impl<'source> Parser<'source> {
             T![for] => self.r_for(),
             T![return] => self.r_return(),
             T![break] => self.r_break(),
-            T![function] => self.r_func(),
+            T![function] => self.r_func(false),
             T![local] => self.r_decl(),
             T![ident] => self.r_simple_expr(),
             T![eof] => None,

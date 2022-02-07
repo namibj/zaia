@@ -89,11 +89,20 @@ impl<'source> Parser<'source> {
             T![...] => self.r_vararg(),
             T!['{'] => self.r_table(),
             T!['('] => self.r_paren(),
-            T![function] => todo!(),
-            t if token_is_unary_op(t) => todo!(),
-            t if token_is_literal(t) => todo!(),
+            T![function] => self.r_func(true),
+            t if token_is_unary_op(t) => self.r_expr_unary(),
+            t if token_is_literal(t) => self.r_literal(),
             _ => None,
         }
+    }
+
+    fn r_expr_unary(&mut self) -> Option<CompletedMarker> {
+        let n = self.start();
+        let op = self.at();
+        self.expect(op);
+        let ((), r_bp) = prefix_binding_power(op);
+        let _rhs = self.r_expr_inner(r_bp);
+        Some(n.complete(self, T![prefix_op]))
     }
 
     fn r_ident(&mut self) -> Option<CompletedMarker> {
@@ -117,6 +126,10 @@ impl<'source> Parser<'source> {
     }
 
     fn r_table(&mut self) -> Option<CompletedMarker> {
+        todo!()
+    }
+
+    fn r_literal(&mut self) -> Option<CompletedMarker> {
         todo!()
     }
 }

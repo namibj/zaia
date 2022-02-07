@@ -22,14 +22,19 @@ impl<'source> Parser<'source> {
         Some(marker.complete(self, T![func_args]))
     }
 
-    pub(super) fn r_func(&mut self) -> Option<CompletedMarker> {
+    pub(super) fn r_func(&mut self, expr: bool) -> Option<CompletedMarker> {
         let marker = self.start();
         self.expect(T![function]);
-        self.r_simple_expr();
+
+        if !expr {
+            self.r_simple_expr();
+        }
+
         self.r_func_def_args();
         self.r_block(|t| t == T![end]);
         self.expect(T![end]);
-        Some(marker.complete(self, T![func_stmt]))
+        let kind = if expr { T![func_expr] } else { T![func_stmt] };
+        Some(marker.complete(self, kind))
     }
 
     fn r_func_def_args(&mut self) -> Option<CompletedMarker> {
