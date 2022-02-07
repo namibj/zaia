@@ -56,3 +56,35 @@ impl<'source> DerefMut for Parser<'source> {
 pub fn parse(source: &str) -> (GreenNode, Vec<ariadne::Report<Span>>) {
     Parser::new(source).run()
 }
+
+#[cfg(test)]
+mod tests {
+    use std::fs;
+
+    use insta::assert_debug_snapshot;
+    use paste::paste;
+
+    use super::parse;
+
+    macro_rules! parse_and_verify {
+        ($name:ident, $path:literal) => {
+            paste! {
+                #[test]
+                fn [<parse_and_verify_ $name>]() {
+                    let source = fs::read_to_string($path).unwrap();
+                    let (syntax_tree, reports) = parse(&source);
+                    assert!(reports.is_empty());
+                    assert_debug_snapshot!(syntax_tree);
+                }
+            }
+        };
+    }
+
+    parse_and_verify!(function, "test-files/function.lua");
+    //parse_and_verify!(op_prec, "test-files/op_prec.lua");
+    //parse_and_verify!(if, "test-files/if.lua");
+    //parse_and_verify!(declare, "test-files/declare.lua");
+    //parse_and_verify!(literal, "test-files/literal.lua");
+    //parse_and_verify!(comment, "test-files/comment.lua");
+    //parse_and_verify!(mixed, "test-files/mixed.lua");
+}
