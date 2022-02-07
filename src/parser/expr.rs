@@ -105,7 +105,7 @@ impl<'source> Parser<'source> {
         Some(n.complete(self, T![prefix_op]))
     }
 
-    fn r_ident(&mut self) -> Option<CompletedMarker> {
+    pub(super) fn r_ident(&mut self) -> Option<CompletedMarker> {
         let marker = self.start();
         self.expect(T![ident]);
         Some(marker.complete(self, T![ident]))
