@@ -32,6 +32,8 @@ pub enum SyntaxKind {
     FuncCall,
     Index,
     ExprList,
+    DeclStmt,
+    DeclTarget,
 
     #[regex(r"[ \n\t\f\r;]+", logos::skip)]
     Whitespace,
@@ -339,6 +341,8 @@ macro_rules! T {
     [func_call] => { $crate::parser::machinery::kind::SyntaxKind::FuncCall };
     [index] => { $crate::parser::machinery::kind::SyntaxKind::Index };
     [expr_list] => { $crate::parser::machinery::kind::SyntaxKind::ExprList };
+    [decl_stmt] => { $crate::parser::machinery::kind::SyntaxKind::DeclStmt };
+    [decl_target] => { $crate::parser::machinery::kind::SyntaxKind::DeclTarget };
     [ident] => { $crate::parser::machinery::kind::SyntaxKind::Ident };
     [+] => { $crate::parser::machinery::kind::SyntaxKind::Plus };
     [-] => { $crate::parser::machinery::kind::SyntaxKind::Minus };

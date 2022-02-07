@@ -1,9 +1,26 @@
 use std::process::Command;
 
-use super::{machinery::marker::CompletedMarker, Parser, machinery::kind::SyntaxKind};
-use crate::T;
-use crate::parser::machinery::classifiers::{token_is_binary_op, token_is_expr_start, token_is_literal, token_is_unary_op};
-use crate::parser::machinery::binding_power::{INDEX_BINDING_POWER, CALL_BINDING_POWER, infix_binding_power, prefix_binding_power};
+use super::{
+    machinery::{kind::SyntaxKind, marker::CompletedMarker},
+    Parser,
+};
+use crate::{
+    parser::machinery::{
+        binding_power::{
+            infix_binding_power,
+            prefix_binding_power,
+            CALL_BINDING_POWER,
+            INDEX_BINDING_POWER,
+        },
+        classifiers::{
+            token_is_binary_op,
+            token_is_expr_start,
+            token_is_literal,
+            token_is_unary_op,
+        },
+    },
+    T,
+};
 
 impl<'source> Parser<'source> {
     pub(super) fn r_expr_list(&mut self) -> Option<CompletedMarker> {
@@ -20,7 +37,7 @@ impl<'source> Parser<'source> {
 
         Some(marker.complete(self, T![expr_list]))
     }
-    
+
     pub(super) fn r_expr(&mut self) -> Option<CompletedMarker> {
         self.r_expr_inner(0)
     }
@@ -59,7 +76,7 @@ impl<'source> Parser<'source> {
                 lhs = n.complete(self, T![bin_op]);
                 continue;
             }
-            
+
             break;
         }
 
@@ -71,7 +88,7 @@ impl<'source> Parser<'source> {
             T![ident] => self.r_ident(),
             T![...] => self.r_vararg(),
             T!['{'] => self.r_table(),
-            T!['('] => self.r_paren(), 
+            T!['('] => self.r_paren(),
             T![function] => todo!(),
             t if token_is_unary_op(t) => todo!(),
             t if token_is_literal(t) => todo!(),
