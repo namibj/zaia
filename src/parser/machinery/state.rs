@@ -43,7 +43,7 @@ impl<'cache, 'source> State<'cache, 'source> {
     }
 
     pub fn peek(&self) -> SyntaxKind {
-        self.tokens[self.cursor..]
+        self.tokens[self.cursor+1..]
             .iter()
             .find_map(|(t, _)| t.is_trivia().not().then(|| *t))
             .unwrap()

@@ -17,7 +17,7 @@ pub fn token_is_literal(token: SyntaxKind) -> bool {
 }
 
 pub fn token_is_expr_start(token: SyntaxKind) -> bool {
-    token == T![ident] || token == T!['('] || token_is_literal(token) || token_is_unary_op(token)
+    token == T![ident] || token == T!['('] || token_is_literal(token) || token_is_unary_op(token) || token == T!['{']
 }
 
 pub fn token_is_unary_op(token: SyntaxKind) -> bool {

@@ -9,17 +9,25 @@ impl<'cache, 'source> Parser<'cache, 'source> {
         let marker = self.start();
         self.expect(T!['{']);
 
-        while self.at() != T!['}'] {
-            self.r_table_elem();
+        loop {
+            match self.at() {
+                T!['}'] => {
+                    self.expect(T!['}']);
+                    break;
+                },
+                _ => {
+                    self.r_table_elem();
+                },
+            }
 
             if self.at() == T![,] {
                 self.expect(T![,]);
             } else {
+                self.expect(T!['}']);
                 break;
             }
         }
 
-        self.expect(T!['}']);
         Some(marker.complete(self, T![table_expr]))
     }
 
