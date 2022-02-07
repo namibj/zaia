@@ -80,7 +80,7 @@ mod tests {
         };
     }
 
-    parse_and_verify!(function, "test-files/function.lua");
+    //parse_and_verify!(function, "test-files/function.lua");
     //parse_and_verify!(op_prec, "test-files/op_prec.lua");
     //parse_and_verify!(if, "test-files/if.lua");
     //parse_and_verify!(declare, "test-files/declare.lua");

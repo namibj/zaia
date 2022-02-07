@@ -10,14 +10,6 @@ impl<'source> Parser<'source> {
         loop {
             let t = self.at();
 
-            if t == T!['('] {
-                let n = lhs.precede(self);
-                self.expect(T!['(']);
-                let _rhs = self.r_func_call_args()?;
-                lhs = n.complete(self, T![func_call]);
-                continue;
-            }
-
             if t == T!['['] {
                 let n = lhs.precede(self);
                 self.expect(T!['[']);

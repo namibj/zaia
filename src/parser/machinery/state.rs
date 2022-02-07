@@ -22,6 +22,7 @@ impl<'source> State<'source> {
                 .spanned()
                 .map(|(kind, range)| (kind, Span::from_range(range))),
         );
+        tokens.push((T![eof], Span::from_range(0..0)));
 
         let mut state = State {
             tokens,
