@@ -22,7 +22,6 @@ impl Event {
         }
     }
 
-    #[inline]
     pub fn is_tombstone(self) -> bool {
         matches!(
             self,
