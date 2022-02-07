@@ -28,6 +28,7 @@ impl<'source> Parser<'source> {
         self.r_simple_expr();
         self.r_func_def_args();
         self.r_block(|t| t == T![end]);
+        self.expect(T![end]);
         Some(marker.complete(self, T![func_stmt]))
     }
 
