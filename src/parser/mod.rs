@@ -7,6 +7,7 @@ pub mod machinery;
 mod simple_expr;
 mod stmt;
 mod syntax;
+mod table;
 
 use std::ops::{Deref, DerefMut};
 

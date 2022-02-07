@@ -36,6 +36,10 @@ pub enum SyntaxKind {
     DeclTarget,
     FuncExpr,
     PrefixOp,
+    TableExpr,
+    TableArrayElem,
+    TableMapElem,
+    TableGenericElem,
 
     #[regex(r"[ \n\t\f\r;]+", logos::skip)]
     Whitespace,
@@ -347,6 +351,10 @@ macro_rules! T {
     [decl_target] => { $crate::parser::machinery::kind::SyntaxKind::DeclTarget };
     [func_expr] => { $crate::parser::machinery::kind::SyntaxKind::FuncExpr };
     [prefix_op] => { $crate::parser::machinery::kind::SyntaxKind::PrefixOp };
+    [table_expr] => { $crate::parser::machinery::kind::SyntaxKind::TableExpr };
+    [table_array_elem] => { $crate::parser::machinery::kind::SyntaxKind::TableArrayElem };
+    [table_map_elem] => { $crate::parser::machinery::kind::SyntaxKind::TableMapElem };
+    [table_generic_elem] => { $crate::parser::machinery::kind::SyntaxKind::TableGenericElem };
     [ident] => { $crate::parser::machinery::kind::SyntaxKind::Ident };
     [+] => { $crate::parser::machinery::kind::SyntaxKind::Plus };
     [-] => { $crate::parser::machinery::kind::SyntaxKind::Minus };

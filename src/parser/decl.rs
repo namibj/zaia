@@ -1,5 +1,3 @@
-use std::process::Command;
-
 use super::{machinery::marker::CompletedMarker, Parser};
 use crate::T;
 

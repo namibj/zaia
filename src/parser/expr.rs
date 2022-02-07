@@ -125,11 +125,9 @@ impl<'source> Parser<'source> {
         Some(marker.complete(self, T![expr]))
     }
 
-    fn r_table(&mut self) -> Option<CompletedMarker> {
-        todo!()
-    }
-
     fn r_literal(&mut self) -> Option<CompletedMarker> {
-        todo!()
+        let marker = self.start();
+        let kind = self.at();
+        Some(marker.complete(self, kind))
     }
 }
