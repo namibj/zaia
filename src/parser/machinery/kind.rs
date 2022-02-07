@@ -31,6 +31,7 @@ pub enum SyntaxKind {
     BinOp,
     FuncCall,
     Index,
+    ExprList,
 
     #[regex(r"[ \n\t\f\r;]+", logos::skip)]
     Whitespace,
@@ -337,6 +338,7 @@ macro_rules! T {
     [bin_op] => { $crate::parser::machinery::kind::SyntaxKind::BinOp };
     [func_call] => { $crate::parser::machinery::kind::SyntaxKind::FuncCall };
     [index] => { $crate::parser::machinery::kind::SyntaxKind::Index };
+    [expr_list] => { $crate::parser::machinery::kind::SyntaxKind::ExprList };
     [ident] => { $crate::parser::machinery::kind::SyntaxKind::Ident };
     [+] => { $crate::parser::machinery::kind::SyntaxKind::Plus };
     [-] => { $crate::parser::machinery::kind::SyntaxKind::Minus };

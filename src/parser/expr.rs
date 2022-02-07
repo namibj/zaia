@@ -7,7 +7,18 @@ use crate::parser::machinery::binding_power::{INDEX_BINDING_POWER, CALL_BINDING_
 
 impl<'source> Parser<'source> {
     pub(super) fn r_expr_list(&mut self) -> Option<CompletedMarker> {
-        todo!()
+        let marker = self.start();
+
+        while token_is_expr_start(self.at()) {
+            self.r_expr()?;
+            if self.at() != T![,] {
+                break;
+            }
+
+            self.expect(T![,]);
+        }
+
+        Some(marker.complete(self, T![expr_list]))
     }
     
     pub(super) fn r_expr(&mut self) -> Option<CompletedMarker> {
@@ -56,15 +67,39 @@ impl<'source> Parser<'source> {
     }
 
     fn r_expr_lhs(&mut self) -> Option<CompletedMarker> {
-        Some(match self.at() {
-            T![ident] => todo!(),
-            T!['{'] => todo!(),
-            T!['('] => todo!(), 
-            T![...] => todo!(),
+        match self.at() {
+            T![ident] => self.r_ident(),
+            T![...] => self.r_vararg(),
+            T!['{'] => self.r_table(),
+            T!['('] => self.r_paren(), 
             T![function] => todo!(),
             t if token_is_unary_op(t) => todo!(),
             t if token_is_literal(t) => todo!(),
-            _ => return None,
-        })
+            _ => None,
+        }
+    }
+
+    fn r_ident(&mut self) -> Option<CompletedMarker> {
+        let marker = self.start();
+        self.expect(T![ident]);
+        Some(marker.complete(self, T![ident]))
+    }
+
+    fn r_vararg(&mut self) -> Option<CompletedMarker> {
+        let marker = self.start();
+        self.expect(T![...]);
+        Some(marker.complete(self, T![vararg_expr]))
+    }
+
+    fn r_paren(&mut self) -> Option<CompletedMarker> {
+        let marker = self.start();
+        self.expect(T!['(']);
+        let _rhs = self.r_expr()?;
+        self.expect(T![')']);
+        Some(marker.complete(self, T![expr]))
+    }
+
+    fn r_table(&mut self) -> Option<CompletedMarker> {
+        todo!()
     }
 }
