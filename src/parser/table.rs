@@ -25,7 +25,7 @@ impl<'source> Parser<'source> {
 
     fn r_table_elem(&mut self) -> Option<CompletedMarker> {
         match self.at() {
-            T![ident] => self.r_table_elem_array(),
+            T![ident] if self.peek() == T![=] => self.r_table_elem_map(),
             T!['['] => self.r_table_elem_generic(),
             t if token_is_expr_start(t) => self.r_table_elem_array(),
             _ => unreachable!(),

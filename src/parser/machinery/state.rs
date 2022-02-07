@@ -1,4 +1,4 @@
-use std::mem;
+use std::{mem, ops::Not};
 
 use cstree::{GreenNode, GreenNodeBuilder};
 use logos::Logos;
@@ -37,6 +37,13 @@ impl<'source> State<'source> {
 
     pub fn at(&self) -> SyntaxKind {
         self.tokens[self.cursor].0
+    }
+
+    pub fn peek(&self) -> SyntaxKind {
+        self.tokens[self.cursor..]
+            .iter()
+            .find_map(|(t, _)| t.is_trivia().not().then(|| *t))
+            .unwrap()
     }
 
     pub fn span(&self) -> Span {
