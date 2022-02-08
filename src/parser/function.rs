@@ -55,9 +55,13 @@ impl<'cache, 'source> Parser<'cache, 'source> {
                     self.expect(T![')']);
                     break;
                 },
-                _ => {
+                T![...] => {
+                    self.r_vararg();
+                },
+                T![ident] => {
                     self.r_ident();
                 },
+                _ => unreachable!(),
             }
 
             if self.at() == T![,] {

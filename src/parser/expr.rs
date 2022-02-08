@@ -110,7 +110,7 @@ impl<'cache, 'source> Parser<'cache, 'source> {
         Some(marker.complete(self, T![ident]))
     }
 
-    fn r_vararg(&mut self) -> Option<CompletedMarker> {
+    pub(super) fn r_vararg(&mut self) -> Option<CompletedMarker> {
         let marker = self.start();
         self.expect(T![...]);
         Some(marker.complete(self, T![vararg_expr]))

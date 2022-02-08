@@ -29,7 +29,7 @@ impl<'cache, 'source> Parser<'cache, 'source> {
             if t == T![.] || t == T![:] {
                 let n = lhs.precede(self);
                 self.expect(t);
-                let _rhs = self.r_simple_expr(true);
+                let _rhs = self.r_ident();
                 lhs = n.complete(self, T![bin_op]);
                 continue;
             }

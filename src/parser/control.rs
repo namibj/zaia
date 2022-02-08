@@ -88,8 +88,11 @@ impl<'cache, 'source> Parser<'cache, 'source> {
         self.r_expr();
         self.expect(T![,]);
         self.r_expr();
-        self.expect(T![,]);
-        self.r_expr();
+        if self.at() == T![,] {
+            self.expect(T![,]);
+            self.r_expr();
+        }
+
         self.r_do();
         Some(marker.complete(self, T![for_num_stmt]))
     }

@@ -43,7 +43,7 @@ impl<'cache, 'source> State<'cache, 'source> {
     }
 
     pub fn peek(&self) -> SyntaxKind {
-        self.tokens[self.cursor+1..]
+        self.tokens[self.cursor + 1..]
             .iter()
             .find_map(|(t, _)| t.is_trivia().not().then(|| *t))
             .unwrap()
@@ -69,7 +69,6 @@ impl<'cache, 'source> State<'cache, 'source> {
             self.skip_trivia();
             true
         } else {
-            panic!("expected {:?} but found {:?}", kind, self.at());
             self.report(
                 self.new_error()
                     .with_message("unexpected token")
