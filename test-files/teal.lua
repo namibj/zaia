@@ -3,130 +3,6 @@ local VERSION = "0.13.2+dev"
 
 local tl = {TypeCheckOptions = {}, Env = {}, Symbol = {}, Result = {}, Error = {}, TypeInfo = {}, TypeReport = {}, TypeReportEnv = {}, }
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
 tl.version = function()
    return VERSION
 end
@@ -138,16 +14,6 @@ tl.warning_kinds = {
    ["hint"] = true,
    ["debug"] = true,
 }
-
-
-
-
-
-
-
-
-
-
 
 tl.typecodes = {
 
@@ -202,75 +68,13 @@ local TargetMode = tl.TargetMode
 local TypeInfo = tl.TypeInfo
 local TypeReport = tl.TypeReport
 local TypeReportEnv = tl.TypeReportEnv
-local Symbol = tl.Symbol
-
-
-
-
-
-local TokenKind = {}
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
+local Symbol = tl.Symbollocal TokenKind = {}
 local Token = {}
-
-
-
-
-
-
 
 do
    local LexState = {}
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-   local last_token_kind = {
-
-
-      ["identifier"] = "identifier",
+   local last_token_kind = {      ["identifier"] = "identifier",
       ["got -"] = "op",
 
       ["got ."] = ".",
@@ -290,9 +94,6 @@ do
       ["string double got \\"] = "$invalid_string$",
       ["string long"] = "$invalid_string$",
       ["string long got ]"] = "$invalid_string$",
-
-
-
       ["number dec"] = "integer",
       ["number decfloat"] = "number",
       ["number hex"] = "integer",
@@ -888,62 +689,20 @@ function tl.get_token_at(tks, y, x)
    function(tk)
       return tk.y < y or
       (tk.y == y and tk.x <= x)
-   end)
-
-
-   if found and
+   end)   if found and
       found.y == y and
       found.x <= x and x < found.x + #found.tk then
 
       return found.tk
    end
-end
-
-
-
-
-
-local last_typeid = 0
+endlocal last_typeid = 0
 
 local function new_typeid()
    last_typeid = last_typeid + 1
    return last_typeid
 end
 
-local TypeName = {}
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-local table_types = {
+local TypeName = {}local table_types = {
    ["array"] = true,
    ["map"] = true,
    ["arrayrecord"] = true,
@@ -953,255 +712,9 @@ local table_types = {
 
 local Type = {}
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
 local Operator = {}
 
-
-
-
-
-
-
-local NodeKind = {}
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-local FactType = {}
-
-
-
-
-
-
-
-
-local Fact = {}
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-local KeyParsed = {}
-
-
-
-
-
-local Node = {ExpectedContext = {}, }
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
+local NodeKind = {}local FactType = {}local Fact = {}local KeyParsed = {}local Node = {ExpectedContext = {}, }
 local function is_array_type(t)
    return t.typename == "array" or t.typename == "arrayrecord"
 end
@@ -1220,19 +733,7 @@ end
 
 local ParseState = {}
 
-
-
-
-
-
-
-local ParseTypeListMode = {}
-
-
-
-
-
-local parse_type_list
+local ParseTypeListMode = {}local parse_type_list
 local parse_expression
 local parse_expression_and_tk
 local parse_statements
@@ -1409,9 +910,6 @@ local ParseItem = {}
 
 local SeparatorMode = {}
 
-
-
-
 local function parse_list(ps, i, list, close, sep, parse_item)
    local n = 1
    while ps.tokens[i].kind ~= "$EOF$" do
@@ -1442,9 +940,6 @@ local function parse_list(ps, i, list, close, sep, parse_item)
          local expected = "syntax error, expected one of: " .. table.concat(options, ", ")
          fail(ps, i, expected)
          local first = options[1]:sub(2, -2)
-
-
-
          if first ~= "}" and ps.tokens[i].y ~= ps.tokens[i - 1].y then
 
             table.insert(ps.tokens, i, { tk = first, y = ps.tokens[i - 1].y, x = ps.tokens[i - 1].x + 1, kind = "keyword" })
@@ -1884,9 +1379,6 @@ do
       prevnode.kind == "identifier" or
       prevnode.kind == "variable"
    end
-
-
-
    local function failstore(tkop, e1)
       return { y = tkop.y, x = tkop.x, kind = "paren", e1 = e1, failstore = true }
    end
@@ -2865,14 +2357,8 @@ parse_statements = function(ps, i, toplevel)
       end
       if (not toplevel) and stop_statement_list[ps.tokens[i].tk] then
          break
-      end
-
-
-      local parse_statement_fn = parse_statement_fns[ps.tokens[i].tk] or parse_call_or_assignment
-      i, item = parse_statement_fn(ps, i)
-
-
-      if item then
+      end      local parse_statement_fn = parse_statement_fns[ps.tokens[i].tk] or parse_call_or_assignment
+      i, item = parse_statement_fn(ps, i)      if item then
          table.insert(node, item)
       elseif i > 1 then
 
@@ -2925,36 +2411,9 @@ function tl.parse_program(tokens, errs, filename)
 
    clear_redundant_errors(errs)
    return i, node, ps.required_modules
-end
+endlocal VisitorCallbacks = {}
 
-
-
-
-
-local VisitorCallbacks = {}
-
-
-
-
-
-
-
-local VisitorExtraCallback = {}
-
-
-
-
-
-local Visitor = {}
-
-
-
-
-
-local MetaMode = {}
-
-
-
+local VisitorExtraCallback = {}local Visitor = {}local MetaMode = {}
 local function fields_of(t, meta)
    local i = 1
    local field_order = meta and t.meta_field_order or t.field_order
@@ -3309,13 +2768,7 @@ local function recurse_node(root,
    end
 
    return recurse(root)
-end
-
-
-
-
-
-local tight_op = {
+endlocal tight_op = {
    [1] = {
       ["-"] = true,
       ["~"] = true,
@@ -3358,9 +2811,6 @@ local spaced_op = {
 
 local PrettyPrintOpts = {}
 
-
-
-
 local default_pretty_print_ast_opts = {
    preserve_indent = true,
    preserve_newlines = true,
@@ -3394,13 +2844,7 @@ function tl.pretty_print_ast(ast, mode)
       opts = default_pretty_print_ast_opts
    end
 
-   local Output = {}
-
-
-
-
-
-   local save_indent = {}
+   local Output = {}   local save_indent = {}
 
    local function increment_indent(node)
       local child = node.body or node[1]
@@ -3978,13 +3422,7 @@ function tl.pretty_print_ast(ast, mode)
       code = out
    end
    return concat_output(code)
-end
-
-
-
-
-
-local function VARARG(t)
+endlocal function VARARG(t)
    local tuple = t
    tuple.typename = "tuple"
    tuple.is_va = true
@@ -4477,15 +3915,6 @@ end
 
 local Variable = {}
 
-
-
-
-
-
-
-
-
-
 local function sorted_keys(m)
    local keys = {}
    for k, _ in pairs(m) do
@@ -4647,10 +4076,7 @@ local globals_typeid
 
 local function init_globals(lax)
    local globals = {}
-   local stdlib_compat = get_stdlib_compat(lax)
-
-
-   local is_first_init = globals_typeid == nil
+   local stdlib_compat = get_stdlib_compat(lax)   local is_first_init = globals_typeid == nil
 
    local save_typeid = last_typeid
    if is_first_init then
@@ -4714,10 +4140,7 @@ local function init_globals(lax)
       rets = TUPLE({}),
    })
 
-   local TABLE_SORT_FUNCTION = a_type({ typename = "function", typeargs = TUPLE({ ARG_ALPHA }), args = TUPLE({ ALPHA, ALPHA }), rets = TUPLE({ BOOLEAN }) })
-
-
-   local OPT_NUMBER = NUMBER
+   local TABLE_SORT_FUNCTION = a_type({ typename = "function", typeargs = TUPLE({ ARG_ALPHA }), args = TUPLE({ ALPHA, ALPHA }), rets = TUPLE({ BOOLEAN }) })   local OPT_NUMBER = NUMBER
    local OPT_STRING = STRING
    local OPT_THREAD = THREAD
    local OPT_ALPHA = ALPHA
@@ -5174,9 +4597,6 @@ rets = TUPLE({ a_type({ typename = "function", args = TUPLE({}), rets = TUPLE({ 
       globals[name] = { t = typ, needs_compat = stdlib_compat[name], is_const = true }
    end
 
-
-
-
    globals["@is_va"] = { t = ANY }
 
    if not is_first_init then
@@ -5212,10 +4632,7 @@ tl.init_env = function(lax, gen_compat, gen_target, predefined)
       globals = globals,
       gen_compat = gen_compat,
       gen_target = gen_target,
-   }
-
-
-   for name, var in pairs(standard_library) do
+   }   for name, var in pairs(standard_library) do
       if var.typename == "record" then
          env.modules[name] = var
       end
@@ -5372,10 +4789,7 @@ tl.type_check = function(ast, opts)
       end
    end
 
-   local function is_valid_union(typ)
-
-
-      local n_table_types = 0
+   local function is_valid_union(typ)      local n_table_types = 0
       local n_function_types = 0
       local n_userdata_types = 0
       local n_string_enum = 0
@@ -5434,10 +4848,7 @@ tl.type_check = function(ast, opts)
       local errs
       local seen = {}
 
-      local function resolve(t)
-
-
-         if no_nested_types[t.typename] or (t.typename == "nominal" and not t.typevals) then
+      local function resolve(t)         if no_nested_types[t.typename] or (t.typename == "nominal" and not t.typevals) then
             return t
          end
 
@@ -5702,10 +5113,7 @@ tl.type_check = function(ast, opts)
             check_if_redeclaration(var, node)
          end
          scope[var] = { t = valtype, is_const = is_const, is_narrowed = is_narrowing, declared_at = node }
-         if old_var then
-
-
-            if not old_var.used then
+         if old_var then            if not old_var.used then
                unused_warning(var, old_var)
             end
          end
@@ -5732,13 +5140,7 @@ tl.type_check = function(ast, opts)
 
       if t1.typevar == t2.typevar then
          return true
-      end
-
-
-      local typevar = t2.typevar or t1.typevar
-
-
-      local vt = find_var_type(typevar)
+      end      local typevar = t2.typevar or t1.typevar      local vt = find_var_type(typevar)
       if vt then
 
          if t2.typevar then
@@ -5766,10 +5168,7 @@ tl.type_check = function(ast, opts)
          return
       end
       for _, err in ipairs(src) do
-         err.msg = prefix .. err.msg
-
-
-         if node and node.y and (
+         err.msg = prefix .. err.msg         if node and node.y and (
             (err.filename ~= filename) or
             (not err.y) or
             (node.y > err.y or (node.y == err.y and node.x > err.x))) then
@@ -5886,12 +5285,6 @@ tl.type_check = function(ast, opts)
    end
 
    local Unused = {}
-
-
-
-
-
-
    local function check_for_unused_vars(vars)
       if not next(vars) then
          return
@@ -6091,10 +5484,7 @@ tl.type_check = function(ast, opts)
    end
 
    local is_lua_table_type
-   local resolve_tuple_and_nominal = nil
-
-
-   same_type = function(t1, t2)
+   local resolve_tuple_and_nominal = nil   same_type = function(t1, t2)
       assert(type(t1) == "table")
       assert(type(t2) == "table")
 
@@ -6179,10 +5569,7 @@ tl.type_check = function(ast, opts)
       end
 
       local ts = {}
-      local stack = {}
-
-
-      local types_seen = {}
+      local stack = {}      local types_seen = {}
 
       types_seen[NIL.typeid] = true
       types_seen["nil"] = true
@@ -6254,10 +5641,7 @@ tl.type_check = function(ast, opts)
       record = true,
       arrayrecord = true,
       tupletable = true,
-   }
-
-
-   is_lua_table_type = function(t)
+   }   is_lua_table_type = function(t)
       return known_table_types[t.typename] and not t.is_userdata
    end
 
@@ -6271,10 +5655,7 @@ tl.type_check = function(ast, opts)
             elements = element_type,
             typename = "array",
          })
-      end
-
-
-      local arr_type = a_type({
+      end      local arr_type = a_type({
          elements = tupletype.types[1],
          typename = "array",
       })
@@ -6285,10 +5666,7 @@ tl.type_check = function(ast, opts)
          end
       end
       return arr_type
-   end
-
-
-   is_a = function(t1, t2, for_equality)
+   end   is_a = function(t1, t2, for_equality)
       assert(type(t1) == "table")
       assert(type(t2) == "table")
 
@@ -6298,10 +5676,7 @@ tl.type_check = function(ast, opts)
 
       if t1.typename == "bad_nominal" or t2.typename == "bad_nominal" then
          return false
-      end
-
-
-      if t1.typename == "nil" then
+      end      if t1.typename == "nil" then
          return true
       end
 
@@ -6318,14 +5693,8 @@ tl.type_check = function(ast, opts)
 
       if t1.typename == "typevar" or t2.typename == "typevar" then
          return compare_and_infer_typevars(t1, t2, is_a)
-      end
-
-
-      if t2.typename == "any" then
+      end      if t2.typename == "any" then
          return true
-
-
-
 
       elseif t1.typename == "union" then
          for _, t in ipairs(t1.types) do
@@ -6335,18 +5704,12 @@ tl.type_check = function(ast, opts)
          end
          return true
 
-
-
-
       elseif t2.typename == "union" then
          for _, t in ipairs(t2.types) do
             if is_a(t1, t, for_equality) then
                return true
             end
          end
-
-
-
 
       elseif t2.typename == "poly" then
          for _, t in ipairs(t2.types) do
@@ -6355,9 +5718,6 @@ tl.type_check = function(ast, opts)
             end
          end
          return true
-
-
-
 
       elseif t1.typename == "poly" then
          for _, t in ipairs(t1.types) do
@@ -6408,10 +5768,7 @@ tl.type_check = function(ast, opts)
          local t2r = resolve_tuple_and_nominal(t2)
          local ok, errs = is_a(t1r, t2r, for_equality)
          if errs and #errs == 1 then
-            if errs[1].msg:match("^got ") then
-
-
-               errs = terr(t1, "got %s, expected %s", t1, t2)
+            if errs[1].msg:match("^got ") then               errs = terr(t1, "got %s, expected %s", t1, t2)
             end
          end
          return ok, errs
@@ -6537,9 +5894,6 @@ tl.type_check = function(ast, opts)
             if t1.inferred_len and t1.inferred_len > #t2.types then
                return false, terr(t1, "incompatible length, expected maximum length of " .. tostring(#t2.types) .. ", got " .. tostring(t1.inferred_len))
             end
-
-
-
             local len = (t1.inferred_len and t1.inferred_len > 0) and
             t1.inferred_len or
             #t2.types
@@ -6596,10 +5950,7 @@ tl.type_check = function(ast, opts)
       t2 = resolve_tuple(t2)
       if lax and (is_unknown(t1) or is_unknown(t2)) then
          return true
-      end
-
-
-      if t1.typename == "nil" then
+      end      if t1.typename == "nil" then
          return true
       elseif t2.typename == "unresolved_emptytable_value" then
          if is_number_type(t2.emptytable_type.keys) then
@@ -6693,10 +6044,7 @@ tl.type_check = function(ast, opts)
             end
          end
 
-         mark_invalid_typeargs(f)
-
-
-         for a = 1, given do
+         mark_invalid_typeargs(f)         for a = 1, given do
             local argument = args[a]
             if argument.typename == "emptytable" then
                local farg = f.args[a] or (va and f.args[expected])
@@ -6779,10 +6127,7 @@ tl.type_check = function(ast, opts)
                   if f.is_method and not is_method and not (args[1] and is_a(args[1], f.args[1])) then
                      return node_error(node, "invoked method as a regular function: use ':' instead of '.'")
                   end
-                  local expected = #f.args
-
-
-                  if (is_func and (given <= expected or (f.args.is_va and given > expected))) or
+                  local expected = #f.args                  if (is_func and (given <= expected or (f.args.is_va and given > expected))) or
 
                      (is_poly and ((pass == 1 and given == expected) or
 
@@ -7009,10 +6354,7 @@ tl.type_check = function(ast, opts)
       local ret = {}
       if vals == nil then
          return ret
-      end
-
-
-      local is_va = vals.is_va
+      end      local is_va = vals.is_va
       for i = 1, #vals - 1 do
          ret[i] = resolve_tuple(vals[i])
       end
@@ -7027,10 +6369,7 @@ tl.type_check = function(ast, opts)
       else
 
          table.insert(ret, last)
-      end
-
-
-      if is_va and last and #ret < wanted then
+      end      if is_va and last and #ret < wanted then
          while #ret < wanted do
             table.insert(ret, last)
          end
@@ -7174,10 +6513,7 @@ tl.type_check = function(ast, opts)
          local t = find_var_type(exp.tk)
          if not t then
             return t
-         end
-
-
-         if t.def then
+         end         if t.def then
             if not t.def.closed and not t.closed then
                return t.def
             end
@@ -7200,10 +6536,7 @@ tl.type_check = function(ast, opts)
          t = t.fields and t.fields[exp.e2.tk]
          return t
       end
-   end
-
-
-   local facts_and
+   end   local facts_and
    local facts_or
    local facts_not
    local apply_facts
@@ -7251,15 +6584,9 @@ tl.type_check = function(ast, opts)
          else
             return nil
          end
-      end
-
-
-      local function unite_types(t1, t2)
+      end      local function unite_types(t1, t2)
          return unite({ t2, t1 })
-      end
-
-
-      local function intersect_types(t1, t2)
+      end      local function intersect_types(t1, t2)
          if t2.typename == "union" then
             t1, t2 = t2, t1
          end
@@ -7288,16 +6615,10 @@ tl.type_check = function(ast, opts)
             return rt
          end
          return t
-      end
-
-
-      local function subtract_types(t1, t2)
+      end      local function subtract_types(t1, t2)
          local types = {}
 
-         t1 = resolve_if_union(t1)
-
-
-         if t1.typename ~= "union" then
+         t1 = resolve_if_union(t1)         if t1.typename ~= "union" then
             return t1
          end
 
@@ -7618,10 +6939,7 @@ tl.type_check = function(ast, opts)
       else
          return type_check_function_call(node, a, b, false, argdelta)
       end
-   end
-
-
-   local function is_localizing_a_variable(node, i)
+   end   local function is_localizing_a_variable(node, i)
       return node.exps and
       node.exps[i] and
       node.exps[i].kind == "variable" and
@@ -8160,10 +7478,7 @@ node.exps[3] and node.exps[3].type, }
                         end
                      end
                   end
-               end
-
-
-               local last
+               end               local last
                local rets = exp1type.rets
                for i, v in ipairs(node.vars) do
                   local r = rets[i]
@@ -8251,10 +7566,7 @@ node.exps[3] and node.exps[3].type, }
       },
       ["variable_list"] = {
          after = function(node, children)
-            node.type = TUPLE(children)
-
-
-            local n = #children
+            node.type = TUPLE(children)            local n = #children
             if n > 0 and children[n].typename == "tuple" then
                if children[n].is_va then
                   node.type.is_va = true
@@ -8529,10 +7841,7 @@ node.exps[3] and node.exps[3].type, }
             add_internal_function_variables(node)
          end,
          after = function(node, children)
-            end_function_scope(node)
-
-
-            node.type = a_type({
+            end_function_scope(node)            node.type = a_type({
                y = node.y,
                x = node.x,
                typename = "function",
@@ -9066,13 +8375,7 @@ node.exps[3] and node.exps[3].type, }
    table.insert(env.loaded_order, filename)
 
    return result
-end
-
-
-
-
-
-local typename_to_typecode = {
+endlocal typename_to_typecode = {
    ["typevar"] = tl.typecodes.TYPE_VARIABLE,
    ["typearg"] = tl.typecodes.TYPE_VARIABLE,
    ["function"] = tl.typecodes.FUNCTION,
@@ -9145,10 +8448,7 @@ function tl.get_types(result, trenv)
       local n = typeid_to_num[t.typeid]
       if n then
          return n
-      end
-
-
-      n = trenv.next_num
+      end      n = trenv.next_num
 
       local rt = t
       if rt.typename == "typetype" or rt.typename == "nestedtype" then
@@ -9246,10 +8546,7 @@ function tl.get_types(result, trenv)
 
    recurse_node(result.ast, visit_node, visit_type)
 
-   tr.by_pos[filename][0] = nil
-
-
-   do
+   tr.by_pos[filename][0] = nil   do
       local n = 0
       local p = 0
       local n_stack, p_stack = {}, {}
@@ -9270,10 +8567,7 @@ function tl.get_types(result, trenv)
             level = level - 1
          end
       end
-   end
-
-
-   do
+   end   do
       local stack = {}
       local level = 0
       local i = 0
@@ -9319,16 +8613,7 @@ function tl.symbols_in_scope(tr, y, x)
       return binary_search(symbols, { at_y, at_x }, le) or 0
    end
 
-   local ret = {}
-
-
-
-
-
-
-
-
-   local n = find(tr.symbols, y, x)
+   local ret = {}   local n = find(tr.symbols, y, x)
 
    local symbols = tr.symbols
    while n >= 1 do
@@ -9344,13 +8629,7 @@ function tl.symbols_in_scope(tr, y, x)
    end
 
    return ret
-end
-
-
-
-
-
-tl.process = function(filename, env)
+endtl.process = function(filename, env)
    if env and env.loaded and env.loaded[filename] then
       return env.loaded[filename]
    end
