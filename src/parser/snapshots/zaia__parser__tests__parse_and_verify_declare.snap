@@ -1,6 +1,6 @@
 ---
 source: src/parser/mod.rs
-assertion_line: 94
+assertion_line: 98
 expression: syntax_tree_debug
 
 ---
@@ -9,17 +9,15 @@ Root@0..175
     Ident@0..1
       Ident@0..1 "x"
     Assign@1..2 "="
-    ExprList@2..3
-      Int@2..3
-        Int@2..3 "5"
+    Int@2..3
+      Int@2..3 "5"
   DeclStmt@3..12
     Local@3..8 "local"
     DeclTarget@8..9
       Ident@8..9 "y"
     Assign@9..10 "="
-    ExprList@10..12
-      Int@10..12
-        Int@10..12 "10"
+    Int@10..12
+      Int@10..12 "10"
   DeclStmt@12..22
     Local@12..17 "local"
     DeclTarget@17..19
@@ -33,18 +31,16 @@ Root@0..175
       Ident@27..28 "z"
       Const@28..35 "<const>"
     Assign@35..36 "="
-    ExprList@36..38
-      Int@36..38
-        Int@36..38 "15"
+    Int@36..38
+      Int@36..38 "15"
   DeclStmt@38..57
     Local@38..43 "local"
     DeclTarget@43..51
       Ident@43..44 "w"
       Close@44..51 "<close>"
     Assign@51..52 "="
-    ExprList@52..57
-      String@52..57
-        String@52..57 "\"abs\""
+    String@52..57
+      String@52..57 "\"abs\""
   AssignStmt@57..75
     Ident@57..58
       Ident@57..58 "i"

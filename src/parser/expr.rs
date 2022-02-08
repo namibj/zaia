@@ -13,11 +13,13 @@ use crate::{
 };
 
 impl<'cache, 'source> Parser<'cache, 'source> {
-    pub(super) fn r_expr_list(&mut self) -> Option<CompletedMarker> {
+    pub(super) fn r_expr_list(&mut self) {
         let marker = self.start();
+        let mut count = 0;
 
         while token_is_expr_start(self.at()) {
-            self.r_expr()?;
+            count += 1;
+            self.r_expr();
             if self.at() != T![,] {
                 break;
             }
@@ -25,7 +27,11 @@ impl<'cache, 'source> Parser<'cache, 'source> {
             self.expect(T![,]);
         }
 
-        Some(marker.complete(self, T![expr_list]))
+        if count > 1 {
+            marker.complete(self, T![expr_list]);
+        } else {
+            marker.abandon(self);
+        }
     }
 
     pub(super) fn r_expr(&mut self) -> Option<CompletedMarker> {

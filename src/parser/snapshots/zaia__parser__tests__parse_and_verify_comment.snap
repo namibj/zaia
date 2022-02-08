@@ -1,6 +1,6 @@
 ---
 source: src/parser/mod.rs
-assertion_line: 96
+assertion_line: 100
 expression: syntax_tree_debug
 
 ---
@@ -10,23 +10,20 @@ Root@0..17
     DeclTarget@5..6
       Ident@5..6 "x"
     Assign@6..7 "="
-    ExprList@7..8
-      Int@7..8
-        Int@7..8 "5"
+    Int@7..8
+      Int@7..8 "5"
   AssignStmt@8..12
     Ident@8..9
       Ident@8..9 "y"
     Assign@9..10 "="
-    ExprList@10..12
-      PrefixOp@10..12
-        Minus@10..11 "-"
-        Int@11..12
-          Int@11..12 "6"
+    PrefixOp@10..12
+      Minus@10..11 "-"
+      Int@11..12
+        Int@11..12 "6"
   AssignStmt@12..17
     Ident@12..13
       Ident@12..13 "z"
     Assign@13..14 "="
-    ExprList@14..17
-      Float@14..17
-        Float@14..17 "2e7"
+    Float@14..17
+      Float@14..17 "2e7"
 
