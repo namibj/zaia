@@ -23,20 +23,18 @@ impl<'cache, 'source> State<'cache, 'source> {
                 .spanned()
                 .map(|(kind, range)| (kind, Span::from_range(range))),
         );
+        
         tokens.push((T![eof], Span::from_range(0..0)));
-
         let estimated_events = source.len() / 4;
-        let mut state = State {
+
+        State {
             cache,
             tokens,
             cursor: 0,
             source,
             events: Vec::with_capacity(estimated_events),
             reports: Vec::new(),
-        };
-
-        state.skip_trivia();
-        state
+        }
     }
 
     pub fn at(&self) -> SyntaxKind {
@@ -67,7 +65,6 @@ impl<'cache, 'source> State<'cache, 'source> {
     pub fn expect(&mut self, kind: SyntaxKind) -> bool {
         if self.at() == kind {
             self.bump();
-            self.skip_trivia();
             true
         } else {
             self.report(
@@ -105,12 +102,6 @@ impl<'cache, 'source> State<'cache, 'source> {
         self.cursor += 1;
     }
 
-    fn skip_trivia(&mut self) {
-        while self.at().is_trivia() {
-            self.cursor += 1;
-        }
-    }
-
     pub fn source(&self, span: Span) -> &str {
         &self.source[span]
     }
@@ -120,7 +111,6 @@ impl<'cache, 'source> State<'cache, 'source> {
         let mut last_span = self.span();
         while !one_of.contains(&self.at()) {
             self.bump();
-            self.skip_trivia();
             last_span = self.span();
         }
 
