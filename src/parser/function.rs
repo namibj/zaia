@@ -54,10 +54,10 @@ impl<'cache, 'source> Parser<'cache, 'source> {
                     break;
                 },
                 T![...] => {
-                    self.r_vararg();
+                    self.expect(T![...]);
                 },
                 T![ident] => {
-                    self.r_ident();
+                    self.expect(T![ident]);
                 },
                 _ => unreachable!(),
             }

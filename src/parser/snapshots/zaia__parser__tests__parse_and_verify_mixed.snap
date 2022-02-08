@@ -1,6 +1,6 @@
 ---
 source: src/parser/mod.rs
-assertion_line: 97
+assertion_line: 101
 expression: syntax_tree_debug
 
 ---
@@ -31,20 +31,15 @@ Root@0..2249
       Ident@46..58 "newAnimation"
     FuncArgs@58..84
       LParen@58..59 "("
-      Ident@59..64
-        Ident@59..64 "image"
+      Ident@59..64 "image"
       Comma@64..65 ","
-      Ident@65..67
-        Ident@65..67 "fw"
+      Ident@65..67 "fw"
       Comma@67..68 ","
-      Ident@68..70
-        Ident@68..70 "fh"
+      Ident@68..70 "fh"
       Comma@70..71 ","
-      Ident@71..76
-        Ident@71..76 "delay"
+      Ident@71..76 "delay"
       Comma@76..77 ","
-      Ident@77..83
-        Ident@77..83 "frames"
+      Ident@77..83 "frames"
       RParen@83..84 ")"
     StmtList@84..538
       DeclStmt@84..93
@@ -408,8 +403,7 @@ Root@0..2249
         Ident@557..563 "update"
     FuncArgs@563..567
       LParen@563..564 "("
-      Ident@564..566
-        Ident@564..566 "dt"
+      Ident@564..566 "dt"
       RParen@566..567 ")"
     StmtList@567..1056
       IfStmt@567..597
@@ -748,20 +742,15 @@ Root@0..2249
         Ident@1075..1079 "draw"
     FuncArgs@1079..1096
       LParen@1079..1080 "("
-      Ident@1080..1081
-        Ident@1080..1081 "x"
+      Ident@1080..1081 "x"
       Comma@1081..1082 ","
-      Ident@1082..1083
-        Ident@1082..1083 "y"
+      Ident@1082..1083 "y"
       Comma@1083..1084 ","
-      Ident@1084..1089
-        Ident@1084..1089 "angle"
+      Ident@1084..1089 "angle"
       Comma@1089..1090 ","
-      Ident@1090..1092
-        Ident@1090..1092 "sx"
+      Ident@1090..1092 "sx"
       Comma@1092..1093 ","
-      Ident@1093..1095
-        Ident@1093..1095 "sy"
+      Ident@1093..1095 "sy"
       RParen@1095..1096 ")"
     StmtList@1096..1167
       FuncCall@1096..1167
@@ -826,20 +815,15 @@ Root@0..2249
         Ident@1186..1194 "addFrame"
     FuncArgs@1194..1209
       LParen@1194..1195 "("
-      Ident@1195..1196
-        Ident@1195..1196 "x"
+      Ident@1195..1196 "x"
       Comma@1196..1197 ","
-      Ident@1197..1198
-        Ident@1197..1198 "y"
+      Ident@1197..1198 "y"
       Comma@1198..1199 ","
-      Ident@1199..1200
-        Ident@1199..1200 "w"
+      Ident@1199..1200 "w"
       Comma@1200..1201 ","
-      Ident@1201..1202
-        Ident@1201..1202 "h"
+      Ident@1201..1202 "h"
       Comma@1202..1203 ","
-      Ident@1203..1208
-        Ident@1203..1208 "delay"
+      Ident@1203..1208 "delay"
       RParen@1208..1209 ")"
     StmtList@1209..1347
       DeclStmt@1209..1285
@@ -1025,8 +1009,7 @@ Root@0..2249
         Ident@1489..1493 "seek"
     FuncArgs@1493..1500
       LParen@1493..1494 "("
-      Ident@1494..1499
-        Ident@1494..1499 "frame"
+      Ident@1494..1499 "frame"
       RParen@1499..1500 ")"
     StmtList@1500..1531
       AssignStmt@1500..1519
@@ -1108,11 +1091,9 @@ Root@0..2249
         Ident@1651..1659 "setDelay"
     FuncArgs@1659..1672
       LParen@1659..1660 "("
-      Ident@1660..1665
-        Ident@1660..1665 "frame"
+      Ident@1660..1665 "frame"
       Comma@1665..1666 ","
-      Ident@1666..1671
-        Ident@1666..1671 "delay"
+      Ident@1666..1671 "delay"
       RParen@1671..1672 ")"
     StmtList@1672..1696
       AssignStmt@1672..1696
@@ -1142,8 +1123,7 @@ Root@0..2249
         Ident@1715..1723 "setSpeed"
     FuncArgs@1723..1730
       LParen@1723..1724 "("
-      Ident@1724..1729
-        Ident@1724..1729 "speed"
+      Ident@1724..1729 "speed"
       RParen@1729..1730 ")"
     StmtList@1730..1746
       AssignStmt@1730..1746
@@ -1246,8 +1226,7 @@ Root@0..2249
         Ident@1911..1918 "setMode"
     FuncArgs@1918..1924
       LParen@1918..1919 "("
-      Ident@1919..1923
-        Ident@1919..1923 "mode"
+      Ident@1919..1923 "mode"
       RParen@1923..1924 ")"
     StmtList@1924..2024
       IfStmt@1924..2024
@@ -1368,11 +1347,9 @@ Root@0..2249
             Ident@2152..2156 "draw"
         FuncArgs@2156..2166
           LParen@2156..2157 "("
-          Ident@2157..2161
-            Ident@2157..2161 "item"
+          Ident@2157..2161 "item"
           Comma@2161..2162 ","
-          VarArgExpr@2162..2165
-            TDot@2162..2165 "..."
+          TDot@2162..2165 "..."
           RParen@2165..2166 ")"
         StmtList@2166..2243
           IfStmt@2166..2243
