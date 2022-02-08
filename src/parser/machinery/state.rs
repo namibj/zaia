@@ -106,7 +106,7 @@ impl<'cache, 'source> State<'cache, 'source> {
 
     fn skip_trivia(&mut self) {
         while self.at().is_trivia() {
-            self.bump();
+            self.cursor += 1;
         }
     }
 

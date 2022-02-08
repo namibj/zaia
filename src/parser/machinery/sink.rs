@@ -34,16 +34,6 @@ impl<'cache, 'source> Sink<'cache, 'source> {
         self.builder.token(kind.into(), text);
     }
 
-    fn eat_trivia(&mut self) {
-        while let Some((kind, span)) = self.tokens.get(self.cursor) {
-            if !kind.is_trivia() {
-                break;
-            }
-
-            self.token(*kind, &self.source[*span]);
-        }
-    }
-
     pub fn finish(mut self) -> GreenNode {
         let mut preceded_nodes = Vec::new();
         for idx in 0..self.events.len() {
@@ -53,10 +43,6 @@ impl<'cache, 'source> Sink<'cache, 'source> {
 
                 Event::Enter { kind, preceded_by } => {
                     preceded_nodes.push(kind);
-
-                    if kind != T![root] {
-                        self.eat_trivia();
-                    }
 
                     let (mut idx, mut preceded_by) = (idx, preceded_by);
                     while preceded_by > 0 {
@@ -78,20 +64,13 @@ impl<'cache, 'source> Sink<'cache, 'source> {
                     for kind in preceded_nodes.drain(..).rev() {
                         self.builder.start_node(kind.into());
                     }
-
-                    // Note: We eat trivia *after* entering all the required nodes
-                    //       since otherwise this'll make us eat whitespace before
-                    //       we can open up the root node, which is bad
-                    self.eat_trivia();
                 },
 
                 Event::Exit => {
                     self.builder.finish_node();
-                    self.eat_trivia();
                 },
 
                 Event::Token { kind, span } => {
-                    self.eat_trivia();
                     self.token(kind, &self.source[span]);
                 },
             }
