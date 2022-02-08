@@ -70,7 +70,11 @@ mod tests {
     use insta::assert_snapshot;
     use paste::paste;
 
-    use super::{parse, syntax::syntax_tree_debug};
+    use super::{parse, syntax::SyntaxNode};
+
+    fn syntax_tree_debug(cache: &NodeCache<'static>, node: &SyntaxNode) -> String {
+        node.debug(cache.interner(), true)
+    }
 
     macro_rules! parse_and_verify {
         ($name:ident, $path:literal) => {
