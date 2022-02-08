@@ -9,7 +9,7 @@ fn criterion_benchmark(c: &mut Criterion) {
     let mut group = c.benchmark_group("parse");
     let mut deferred = Vec::new();
     group.throughput(Throughput::Elements(source.lines().count() as u64));
-    group.bench_function("parse mixed.lua", |b| {
+    group.bench_function("mixed.lua", |b| {
         b.iter(|| parse_mixed(black_box(&source), &mut deferred));
     });
 
