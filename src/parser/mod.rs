@@ -99,4 +99,5 @@ mod tests {
     parse_and_verify!(literal, "test-files/literal.lua");
     parse_and_verify!(comment, "test-files/comment.lua");
     parse_and_verify!(mixed, "test-files/mixed.lua");
+    parse_and_verify!(teal, "test-files/teal.lua");
 }
