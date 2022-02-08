@@ -11,3 +11,11 @@ ariadne = { git = "https://github.com/zesterer/ariadne", rev = "689782a3531c3d4a
 [dev-dependencies]
 insta = "1.10.0"
 paste = "1.0.6"
+criterion = "0.3.5"
+
+[profile.bench]
+debug = true
+
+[[bench]]
+name = "parse"
+harness = false
