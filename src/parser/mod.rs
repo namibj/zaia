@@ -11,8 +11,8 @@ mod table;
 
 use std::ops::{Deref, DerefMut};
 
-use cstree::{GreenNode, NodeCache};
-use machinery::{kind::SyntaxKind, marker::Marker, span::Span, state::State};
+use cstree::NodeCache;
+use machinery::{span::Span, state::State};
 use syntax::SyntaxNode;
 
 use crate::T;

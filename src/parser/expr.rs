@@ -1,9 +1,4 @@
-use std::process::Command;
-
-use super::{
-    machinery::{kind::SyntaxKind, marker::CompletedMarker},
-    Parser,
-};
+use super::{machinery::marker::CompletedMarker, Parser};
 use crate::{
     parser::machinery::{
         binding_power::{
@@ -12,12 +7,7 @@ use crate::{
             CALL_BINDING_POWER,
             INDEX_BINDING_POWER,
         },
-        classifiers::{
-            token_is_binary_op,
-            token_is_expr_start,
-            token_is_literal,
-            token_is_unary_op,
-        },
+        classifiers::{token_is_expr_start, token_is_literal, token_is_unary_op},
     },
     T,
 };

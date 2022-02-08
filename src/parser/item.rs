@@ -1,4 +1,4 @@
-use super::{machinery::marker::CompletedMarker, Parser};
+use super::Parser;
 use crate::T;
 
 impl<'cache, 'source> Parser<'cache, 'source> {

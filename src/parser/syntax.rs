@@ -1,5 +1,3 @@
-use cstree::{GreenNode, NodeCache};
-
 use crate::{parser::machinery::kind::SyntaxKind, T};
 
 impl From<SyntaxKind> for cstree::SyntaxKind {
