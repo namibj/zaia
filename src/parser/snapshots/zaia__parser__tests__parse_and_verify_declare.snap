@@ -9,14 +9,14 @@ Root@0..175
     Ident@0..1
       Ident@0..1 "x"
     Assign@1..2 "="
-    Int@2..3
+    LiteralExpr@2..3
       Int@2..3 "5"
   DeclStmt@3..12
     Local@3..8 "local"
     DeclTarget@8..9
       Ident@8..9 "y"
     Assign@9..10 "="
-    Int@10..12
+    LiteralExpr@10..12
       Int@10..12 "10"
   DeclStmt@12..22
     Local@12..17 "local"
@@ -31,7 +31,7 @@ Root@0..175
       Ident@27..28 "z"
       Const@28..35 "<const>"
     Assign@35..36 "="
-    Int@36..38
+    LiteralExpr@36..38
       Int@36..38 "15"
   DeclStmt@38..57
     Local@38..43 "local"
@@ -39,7 +39,7 @@ Root@0..175
       Ident@43..44 "w"
       Close@44..51 "<close>"
     Assign@51..52 "="
-    String@52..57
+    LiteralExpr@52..57
       String@52..57 "\"abs\""
   AssignStmt@57..75
     Ident@57..58
@@ -56,7 +56,7 @@ Root@0..175
           LParen@64..65 "("
           RParen@65..66 ")"
       Comma@66..67 ","
-      String@67..75
+      LiteralExpr@67..75
         String@67..75 "\"other1\""
   DeclStmt@75..99
     Local@75..80 "local"
@@ -74,7 +74,7 @@ Root@0..175
           LParen@88..89 "("
           RParen@89..90 ")"
       Comma@90..91 ","
-      String@91..99
+      LiteralExpr@91..99
         String@91..99 "\"other2\""
   DeclStmt@99..137
     Local@99..104 "local"
@@ -94,7 +94,7 @@ Root@0..175
           LParen@126..127 "("
           RParen@127..128 ")"
       Comma@128..129 ","
-      String@129..137
+      LiteralExpr@129..137
         String@129..137 "\"other3\""
   DeclStmt@137..175
     Local@137..142 "local"
@@ -114,6 +114,6 @@ Root@0..175
           LParen@164..165 "("
           RParen@165..166 ")"
       Comma@166..167 ","
-      String@167..175
+      LiteralExpr@167..175
         String@167..175 "\"other4\""
 

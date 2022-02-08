@@ -1,6 +1,6 @@
 ---
 source: src/parser/mod.rs
-assertion_line: 93
+assertion_line: 97
 expression: syntax_tree_debug
 
 ---
@@ -11,7 +11,7 @@ Root@0..271
       Ident@2..3
         Ident@2..3 "x"
       LAngle@3..4 "<"
-      Int@4..5
+      LiteralExpr@4..5
         Int@4..5 "5"
     Then@5..9 "then"
     StmtList@9..34
@@ -20,7 +20,7 @@ Root@0..271
           Ident@9..14 "print"
         FuncArgs@14..34
           LParen@14..15 "("
-          String@15..33
+          LiteralExpr@15..33
             String@15..33 "\"x is less than 5\""
           RParen@33..34 ")"
     End@34..37 "end"
@@ -30,7 +30,7 @@ Root@0..271
       Ident@39..40
         Ident@39..40 "y"
       LAngle@40..41 "<"
-      Int@41..42
+      LiteralExpr@41..42
         Int@41..42 "5"
     Then@42..46 "then"
     StmtList@46..71
@@ -39,7 +39,7 @@ Root@0..271
           Ident@46..51 "print"
         FuncArgs@51..71
           LParen@51..52 "("
-          String@52..70
+          LiteralExpr@52..70
             String@52..70 "\"y is less than 5\""
           RParen@70..71 ")"
     ElseChain@71..118
@@ -50,7 +50,7 @@ Root@0..271
             Ident@75..80 "print"
           FuncArgs@80..115
             LParen@80..81 "("
-            String@81..114
+            LiteralExpr@81..114
               String@81..114 "\"y is greater than or ..."
             RParen@114..115 ")"
       End@115..118 "end"
@@ -60,7 +60,7 @@ Root@0..271
       Ident@120..121
         Ident@120..121 "z"
       LAngle@121..122 "<"
-      Int@122..123
+      LiteralExpr@122..123
         Int@122..123 "5"
     Then@123..127 "then"
     StmtList@127..152
@@ -69,7 +69,7 @@ Root@0..271
           Ident@127..132 "print"
         FuncArgs@132..152
           LParen@132..133 "("
-          String@133..151
+          LiteralExpr@133..151
             String@133..151 "\"z is less than 5\""
           RParen@151..152 ")"
     ElseChain@152..271
@@ -79,7 +79,7 @@ Root@0..271
           Ident@158..159
             Ident@158..159 "z"
           RAngle@159..160 ">"
-          Int@160..162
+          LiteralExpr@160..162
             Int@160..162 "10"
         Then@162..166 "then"
         StmtList@166..195
@@ -88,7 +88,7 @@ Root@0..271
               Ident@166..171 "print"
             FuncArgs@171..195
               LParen@171..172 "("
-              String@172..194
+              LiteralExpr@172..194
                 String@172..194 "\"z is greater than 10\""
               RParen@194..195 ")"
         ElseChain@195..271
@@ -99,7 +99,7 @@ Root@0..271
                 Ident@199..204 "print"
               FuncArgs@204..268
                 LParen@204..205 "("
-                String@205..267
+                LiteralExpr@205..267
                   String@205..267 "\"z is greater than or ..."
                 RParen@267..268 ")"
           End@268..271 "end"

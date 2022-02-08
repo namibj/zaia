@@ -11,20 +11,20 @@ Root@0..13
     Assign@3..4 "="
     BinOp@4..13
       BinOp@4..9
-        Int@4..5
+        LiteralExpr@4..5
           Int@4..5 "5"
         Plus@5..6 "+"
         BinOp@6..9
-          Int@6..7
+          LiteralExpr@6..7
             Int@6..7 "6"
           Star@7..8 "*"
-          Int@8..9
+          LiteralExpr@8..9
             Int@8..9 "3"
       Minus@9..10 "-"
       BinOp@10..13
-        Int@10..11
+        LiteralExpr@10..11
           Int@10..11 "6"
         Slash@11..12 "/"
-        Int@12..13
+        LiteralExpr@12..13
           Int@12..13 "3"
 

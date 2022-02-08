@@ -124,6 +124,6 @@ impl<'cache, 'source> Parser<'cache, 'source> {
         let marker = self.start();
         let kind = self.at();
         self.expect(kind);
-        Some(marker.complete(self, kind))
+        Some(marker.complete(self, T![literal_expr]))
     }
 }

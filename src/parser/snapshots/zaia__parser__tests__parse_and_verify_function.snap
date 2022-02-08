@@ -100,10 +100,10 @@ Root@0..148
               Ident@122..125 "mul"
             FuncArgs@125..130
               LParen@125..126 "("
-              Int@126..127
+              LiteralExpr@126..127
                 Int@126..127 "3"
               Comma@127..128 ","
-              Int@128..129
+              LiteralExpr@128..129
                 Int@128..129 "4"
               RParen@129..130 ")"
           Comma@130..131 ","
@@ -112,7 +112,7 @@ Root@0..148
               Ident@131..134 "div"
             FuncArgs@134..146
               LParen@134..135 "("
-              Int@135..136
+              LiteralExpr@135..136
                 Int@135..136 "6"
               Comma@136..137 ","
               FuncCall@137..145
@@ -120,10 +120,10 @@ Root@0..148
                   Ident@137..140 "sub"
                 FuncArgs@140..145
                   LParen@140..141 "("
-                  Int@141..142
+                  LiteralExpr@141..142
                     Int@141..142 "3"
                   Comma@142..143 ","
-                  Int@143..144
+                  LiteralExpr@143..144
                     Int@143..144 "1"
                   RParen@144..145 ")"
               RParen@145..146 ")"
