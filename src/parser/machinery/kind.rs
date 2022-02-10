@@ -42,6 +42,7 @@ pub enum SyntaxKind {
     TableGenericElem,
     AssignStmt,
     LiteralExpr,
+    TableVariadicElem,
 
     #[regex(r"[ \n\t\f\r;]+", logos::skip)]
     Whitespace,
@@ -357,6 +358,7 @@ macro_rules! T {
     [table_array_elem] => { $crate::parser::machinery::kind::SyntaxKind::TableArrayElem };
     [table_map_elem] => { $crate::parser::machinery::kind::SyntaxKind::TableMapElem };
     [table_generic_elem] => { $crate::parser::machinery::kind::SyntaxKind::TableGenericElem };
+    [table_variadic_elem] => { $crate::parser::machinery::kind::SyntaxKind::TableVariadicElem };
     [assign_stmt] => { $crate::parser::machinery::kind::SyntaxKind::AssignStmt };
     [literal_expr] => { $crate::parser::machinery::kind::SyntaxKind::LiteralExpr };
     [ident] => { $crate::parser::machinery::kind::SyntaxKind::Ident };
