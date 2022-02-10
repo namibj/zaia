@@ -1,1211 +1,1263 @@
+-------------------------------------------------------------------------------
+-- Copyright (c) 2006-2013 Kein-Hong Man, Fabien Fleutot and others.
+--
+-- All rights reserved.
+--
+-- This program and the accompanying materials are made available
+-- under the terms of the Eclipse Public License v1.0 which
+-- accompanies this distribution, and is available at
+-- http://www.eclipse.org/legal/epl-v10.html
+--
+-- This program and the accompanying materials are also made available
+-- under the terms of the MIT public license which accompanies this
+-- distribution, and is available at http://www.lua.org/license.html
+--
+-- Contributors:
+--     Kein-Hong Man  - Initial implementation for Lua 5.0, part of Yueliang
+--     Fabien Fleutot - Port to Lua 5.1, integration with Metalua
+--
+-------------------------------------------------------------------------------
+
+----------------------------------------------------------------------
+--
+-- This code mainly results from the borrowing, then ruthless abuse, of
+-- Yueliang's implementation of Lua 5.0 compiler.
+--
+---------------------------------------------------------------------
+
+local pp = require('metalua.pprint')
+
+local luaK = require('metalua.compiler.bytecode.lcode')
+local luaP = require('metalua.compiler.bytecode.lopcodes')
+
+local debugf = function() end
+--local debugf=printf
+
+local stat = { }
+local expr = { }
+
+local M = { }
+
+M.MAX_INT            = 2147483645 -- INT_MAX-2 for 32-bit systems (llimits.h)
+M.MAXVARS            = 200        -- (llimits.h)
+M.MAXUPVALUES        = 32         -- (llimits.h)
+M.MAXPARAMS          = 100        -- (llimits.h)
+M.LUA_MAXPARSERLEVEL = 200        -- (llimits.h)
+
+-- from lobject.h
+M.VARARG_HASARG   = 1
+M.VARARG_ISVARARG = 2
+M.VARARG_NEEDSARG = 4
+
+local function hasmultret (k) 
+   return k=="VCALL" or k=="VVARARG"
+end
+
+-----------------------------------------------------------------------
+-- Some ASTs take expression lists as children; it should be
+-- acceptible to give an expression instead, and to automatically
+-- interpret it as a single element list. That's what does this
+-- function, adding a surrounding list iff needed.
+--
+-- WARNING: "Do" is the tag for chunks, which are essentially lists.
+-- Therefore, we don't listify stuffs with a "Do" tag.
+-----------------------------------------------------------------------
+local function ensure_list (ast)
+   return ast.tag and ast.tag ~= "Do" and {ast} or ast end
+
+-----------------------------------------------------------------------
+-- Get a localvar structure { varname, startpc, endpc } from a 
+-- (zero-based) index of active variable. The catch is: don't get
+-- confused between local index and active index.
+--
+-- locvars[x] contains { varname, startpc, endpc };
+-- actvar[i] contains the index of the variable in locvars
+-----------------------------------------------------------------------
+local function getlocvar (fs, i)
+  return fs.f.locvars[fs.actvar[i]] 
+end
+
+local function removevars (fs, tolevel)
+  while fs.nactvar > tolevel do
+     fs.nactvar = fs.nactvar - 1
+     -- There may be dummy locvars due to expr.Stat
+     -- FIXME: strange that they didn't disappear?!
+     local locvar = getlocvar (fs, fs.nactvar)
+     --printf("[REMOVEVARS] removing var #%i = %s", fs.nactvar,
+     --    locvar and tostringv(locvar) or "<nil>")
+     if locvar then locvar.endpc = fs.pc end
+  end
+end
+
+-----------------------------------------------------------------------
+-- [f] has a list of all its local variables, active and inactive.
+-- Some local vars can correspond to the same register, if they exist
+-- in different scopes. 
+-- [fs.nlocvars] is the total number of local variables, not to be
+-- confused with [fs.nactvar] the numebr of variables active at the
+-- current PC.
+-- At this stage, the existence of the variable is not yet aknowledged,
+-- since [fs.nactvar] and [fs.freereg] aren't updated.
+-----------------------------------------------------------------------
+local function registerlocalvar (fs, varname)
+   --debugf("[locvar: %s = reg %i]", varname, fs.nlocvars)
+   local f = fs.f
+   f.locvars[fs.nlocvars] = { } -- LocVar
+   f.locvars[fs.nlocvars].varname = varname
+   local nlocvars = fs.nlocvars
+   fs.nlocvars = fs.nlocvars + 1
+   return nlocvars
+end
+
+-----------------------------------------------------------------------
+-- update the active vars counter in [fs] by adding [nvars] of them,
+-- and sets those variables' [startpc] to the current [fs.pc].
+-- These variables were allready created, but not yet counted, by
+-- new_localvar.
+-----------------------------------------------------------------------
+local function adjustlocalvars (fs, nvars)
+   --debugf("adjustlocalvars, nvars=%i, previous fs.nactvar=%i,"..
+   --       " #locvars=%i, #actvar=%i", 
+   --       nvars, fs.nactvar, #fs.f.locvars, #fs.actvar)
+
+   fs.nactvar = fs.nactvar + nvars
+   for i = nvars, 1, -1 do
+      --printf ("adjusting actvar #%i", fs.nactvar - i)
+      getlocvar (fs, fs.nactvar - i).startpc = fs.pc
+   end
+end
+
+------------------------------------------------------------------------
+-- check whether, in an assignment to a local variable, the local variable
+-- is needed in a previous assignment (to a table). If so, save original
+-- local value in a safe place and use this safe copy in the previous
+-- assignment.
+------------------------------------------------------------------------
+local function check_conflict (fs, lh, v)
+  local extra = fs.freereg  -- eventual position to save local variable
+  local conflict = false
+  while lh do
+    if lh.v.k == "VINDEXED" then
+      if lh.v.info == v.info then  -- conflict?
+        conflict = true
+        lh.v.info = extra  -- previous assignment will use safe copy
+      end
+      if lh.v.aux == v.info then  -- conflict?
+        conflict = true
+        lh.v.aux = extra  -- previous assignment will use safe copy
+      end
+    end
+    lh = lh.prev
+  end
+  if conflict then
+    luaK:codeABC (fs, "OP_MOVE", fs.freereg, v.info, 0)  -- make copy
+    luaK:reserveregs (fs, 1)
+  end
+end
+
+-----------------------------------------------------------------------
+-- Create an expdesc. To be updated when expdesc is lua-ified.
+-----------------------------------------------------------------------
+local function init_exp (e, k, i)
+  e.f, e.t, e.k, e.info = luaK.NO_JUMP, luaK.NO_JUMP, k, i end
+
+-----------------------------------------------------------------------
+-- Reserve the string in tthe constant pool, and return an expdesc
+-- referring to it.
+-----------------------------------------------------------------------
+local function codestring (fs, e, str)
+  --printf( "codestring(%s)", disp.ast(str))
+  init_exp (e, "VK", luaK:stringK (fs, str))
+end
+
+-----------------------------------------------------------------------
+-- search for a local variable named [name] in the function being
+-- built by [fs]. Doesn't try to visit upvalues.
+-----------------------------------------------------------------------
+local function searchvar (fs, name)
+   for i = fs.nactvar - 1, 0, -1 do
+      -- Because of expr.Stat, there can be some actvars which don't
+      -- correspond to any locvar. Hence the checking for locvar's 
+      -- nonnilness before getting the varname.
+      local locvar = getlocvar(fs, i)
+      if locvar and name == locvar.varname then 
+         --printf("Found local var: %s; i = %i", tostringv(locvar), i)
+         return i 
+      end
+   end
+   return -1  -- not found
+end
+
+-----------------------------------------------------------------------
+-- create and return a new proto [f]
+-----------------------------------------------------------------------
+local function newproto () 
+  local f = {}
+  f.k = {}
+  f.sizek = 0
+  f.p = {}
+  f.sizep = 0
+  f.code = {}
+  f.sizecode = 0
+  f.sizelineinfo = 0
+  f.sizeupvalues = 0
+  f.nups = 0
+  f.upvalues = {}
+  f.numparams = 0
+  f.is_vararg = 0
+  f.maxstacksize = 0
+  f.lineinfo = {}
+  f.sizelocvars = 0
+  f.locvars = {}
+  f.lineDefined = 0
+  f.source = nil
+  return f
+end
+
+------------------------------------------------------------------------
+-- create and return a function state [new_fs] as a sub-funcstate of [fs].
+------------------------------------------------------------------------
+local function open_func (old_fs)
+  local new_fs = { }
+  new_fs.upvalues = { }
+  new_fs.actvar = { }
+  local f = newproto ()
+  new_fs.f = f
+  new_fs.prev = old_fs  -- linked list of funcstates
+  new_fs.pc = 0
+  new_fs.lasttarget = -1
+  new_fs.jpc = luaK.NO_JUMP
+  new_fs.freereg = 0
+  new_fs.nk = 0
+  new_fs.h = {}  -- constant table; was luaH_new call
+  new_fs.np = 0
+  new_fs.nlocvars = 0
+  new_fs.nactvar = 0
+  new_fs.bl = nil
+  new_fs.nestlevel =  old_fs and old_fs.nestlevel or 0
+  f.maxstacksize = 2  -- registers 0/1 are always valid
+  new_fs.lastline = 0
+  new_fs.forward_gotos = { }
+  new_fs.labels = { }
+  return new_fs
+end
+
+------------------------------------------------------------------------
+-- Finish to set up [f] according to final state of [fs]
+------------------------------------------------------------------------
+local function close_func (fs)
+  local f = fs.f
+  --printf("[CLOSE_FUNC] remove any remaining var")
+  removevars (fs, 0)
+  luaK:ret (fs, 0, 0)
+  f.sizecode = fs.pc
+  f.sizelineinfo = fs.pc
+  f.sizek = fs.nk
+  f.sizep = fs.np
+  f.sizelocvars = fs.nlocvars
+  f.sizeupvalues = f.nups
+  assert (fs.bl == nil)
+  if next(fs.forward_gotos) then
+     local x = pp.tostring(fs.forward_gotos)
+     error("Unresolved goto: "..x)
+  end
+end
+
+------------------------------------------------------------------------
+-- 
+------------------------------------------------------------------------
+local function pushclosure(fs, func, v)
+   local f = fs.f
+   f.p [fs.np] = func.f
+   fs.np = fs.np + 1
+   init_exp (v, "VRELOCABLE", luaK:codeABx (fs, "OP_CLOSURE", 0, fs.np - 1))
+  for i = 0, func.f.nups - 1 do
+    local o = (func.upvalues[i].k == "VLOCAL") and "OP_MOVE" or "OP_GETUPVAL"
+    luaK:codeABC (fs, o, 0, func.upvalues[i].info, 0)
+  end
+end
+
+------------------------------------------------------------------------
+-- FIXME: is there a need for f=fs.f? if yes, why not always using it? 
+------------------------------------------------------------------------
+local function indexupvalue(fs, name, v)
+   local f = fs.f
+   for i = 0, f.nups - 1 do
+      if fs.upvalues[i].k == v.k and fs.upvalues[i].info == v.info then
+         assert(fs.f.upvalues[i] == name)
+         return i
+      end
+   end
+  -- new one
+  f.upvalues[f.nups] = name
+  assert (v.k == "VLOCAL" or v.k == "VUPVAL")
+  fs.upvalues[f.nups] = { k = v.k; info = v.info }
+  local nups = f.nups
+  f.nups = f.nups + 1
+  return nups
+end
+
+------------------------------------------------------------------------
+--
+------------------------------------------------------------------------
+local function markupval(fs, level)
+  local bl = fs.bl
+  while bl and bl.nactvar > level do bl = bl.previous end
+  if bl then bl.upval = true end
+end
+
+
+--for debug only
 --[[
-Copyright (c) 2009 Bart Bes
-
-Permission is hereby granted, free of charge, to any person
-obtaining a copy of this software and associated documentation
-files (the "Software"), to deal in the Software without
-restriction, including without limitation the rights to use,
-copy, modify, merge, publish, distribute, sublicense, and/or sell
-copies of the Software, and to permit persons to whom the
-Software is furnished to do so, subject to the following
-conditions:
-
-The above copyright notice and this permission notice shall be
-included in all copies or substantial portions of the Software.
-
-THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND,
-EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES
-OF MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND
-NONINFRINGEMENT. IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT
-HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY,
-WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING
-FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR
-OTHER DEALINGS IN THE SOFTWARE.
-]]
-
-local anim_mt = {}
-anim_mt.__index = anim_mt
-
-function newAnimation(image, fw, fh, delay, frames)
-    local a = {}
-    a.img = image
-    a.frames = {}
-    a.delays = {}
-    a.timer = 0
-    a.position = 1
-    a.fw = fw
-    a.fh = fh
-    a.playing = true
-    a.speed = 1
-    a.mode = 1
-    a.direction = 1
-    local imgw = image:getWidth()
-    local imgh = image:getHeight()
-    if frames == 0 then
-        frames = imgw / fw * imgh / fh
-    end
-    local rowsize = imgw/fw
-    for i = 1, frames do
-        local row = math.floor(i/rowsize)
-        local column = i%rowsize
-        local frame = love.graphics.newQuad(column*fw, row*fh, fw, fh, imgw, imgh)
-        table.insert(a.frames, frame)
-        table.insert(a.delays, delay)
-    end
-    return setmetatable(a, anim_mt)
-end
-
-function anim_mt:update(dt)
-    if not self.playing then return end
-    self.timer = self.timer + dt * self.speed
-    if self.timer > self.delays[self.position] then
-        self.timer = self.timer - self.delays[self.position]
-        self.position = self.position + 1 * self.direction
-        if self.position > #self.frames then
-            if self.mode == 1 then
-                self.position = 1
-            elseif self.mode == 2 then
-                self.position = self.position - 1
-                self:stop()
-            elseif self.mode == 3 then
-                self.direction = -1
-                self.position = self.position - 1
-            end
-        elseif self.position < 1 and self.mode == 3 then
-            self.direction = 1
-            self.position = self.position + 1
-        end
-    end
-end
-
-function anim_mt:draw(x, y, angle, sx, sy)
-    love.graphics.draw(self.img, self.frames[self.position], x, y, angle, sx, sy)
-end
-
-function anim_mt:addFrame(x, y, w, h, delay)
-    local frame = love.graphics.newQuad(x, y, w, h, a.img:getWidth(), a.img:getHeight())
-    table.insert(self.frames, frame)
-    table.insert(self.delays, delay)
-end
-
-function anim_mt:play()
-    self.playing = true
-end
-
-function anim_mt:stop()
-    self.playing = false
-end
-
-function anim_mt:reset()
-    self:seek(0)
-end
-
-function anim_mt:seek(frame)
-    self.position = frame
-    self.timer = 0
-end
-
-function anim_mt:getCurrentFrame()
-    return self.position
-end
-
-function anim_mt:getSize()
-    return #self.frames
-end
-
-function anim_mt:setDelay(frame, delay)
-    self.delays[frame] = delay
-end
-
-function anim_mt:setSpeed(speed)
-    self.speed = speed
-end
-
-function anim_mt:getWidth()
-    return self.frames[self.position]:getWidth()
-end
-
-function anim_mt:getHeight()
-    return self.frames[self.position]:getHeight()
-end
-
-function anim_mt:setMode(mode)
-    if mode == "loop" then
-        self.mode = 1
-    elseif mode == "once" then
-        self.mode = 2
-    elseif mode == "bounce" then
-        self.mode = 3
-    end
-end
-
-if Animations_legacy_support then
-    love.graphics.newAnimation = newAnimation
-    local oldLGDraw = love.graphics.draw
-    function love.graphics.draw(item, ...)
-        if type(item) == "table" and item.draw then
-            item:draw(...)
-        else
-            oldLGDraw(item, ...)
-        end
-    end
-end
-
----
---- Lua Fun - a high-performance functional programming library for LuaJIT
----
---- Copyright (c) 2013-2017 Roman Tsisyk <roman@tsisyk.com>
----
---- Distributed under the MIT/X11 License. See COPYING.md for more details.
----
-
-local exports = {}
-local methods = {}
-
--- compatibility with Lua 5.1/5.2
-local unpack = rawget(table, "unpack") or unpack
-
---------------------------------------------------------------------------------
--- Tools
---------------------------------------------------------------------------------
-
-local return_if_not_empty = function(state_x, ...)
-    if state_x == nil then
-        return nil
-    end
-    return ...
-end
-
-local call_if_not_empty = function(fun, state_x, ...)
-    if state_x == nil then
-        return nil
-    end
-    return state_x, fun(...)
-end
-
-local function deepcopy(orig) -- used by cycle()
-    local orig_type = type(orig)
-    local copy
-    if orig_type == 'table' then
-        copy = {}
-        for orig_key, orig_value in next, orig, nil do
-            copy[deepcopy(orig_key)] = deepcopy(orig_value)
-        end
-    else
-        copy = orig
-    end
-    return copy
-end
-
-local iterator_mt = {
-    -- usually called by for-in loop
-    __call = function(self, param, state)
-        return self.gen(param, state)
-    end;
-    __tostring = function(self)
-        return '<generator>'
-    end;
-    -- add all exported methods
-    __index = methods;
-}
-
-local wrap = function(gen, param, state)
-    return setmetatable({
-        gen = gen,
-        param = param,
-        state = state
-    }, iterator_mt), param, state
-end
-exports.wrap = wrap
-
-local unwrap = function(self)
-    return self.gen, self.param, self.state
-end
-methods.unwrap = unwrap
-
---------------------------------------------------------------------------------
--- Basic Functions
---------------------------------------------------------------------------------
-
-local nil_gen = function(_param, _state)
-    return nil
-end
-
-local string_gen = function(param, state)
-    local state = state + 1
-    if state > #param then
-        return nil
-    end
-    local r = string.sub(param, state, state)
-    return state, r
-end
-
-local ipairs_gen = ipairs({}) -- get the generating function from ipairs
-
-local pairs_gen = pairs({ a = 0 }) -- get the generating function from pairs
-local map_gen = function(tab, key)
-    local value
-    local key, value = pairs_gen(tab, key)
-    return key, key, value
-end
-
-local rawiter = function(obj, param, state)
-    assert(obj ~= nil, "invalid iterator")
-    if type(obj) == "table" then
-        local mt = getmetatable(obj);
-        if mt ~= nil then
-            if mt == iterator_mt then
-                return obj.gen, obj.param, obj.state
-            elseif mt.__ipairs ~= nil then
-                return mt.__ipairs(obj)
-            elseif mt.__pairs ~= nil then
-                return mt.__pairs(obj)
-            end
-        end
-        if #obj > 0 then
-            -- array
-            return ipairs(obj)
-        else
-            -- hash
-            return map_gen, obj, nil
-        end
-    elseif (type(obj) == "function") then
-        return obj, param, state
-    elseif (type(obj) == "string") then
-        if #obj == 0 then
-            return nil_gen, nil, nil
-        end
-        return string_gen, obj, 0
-    end
-    error(string.format('object %s of type "%s" is not iterable',
-          obj, type(obj)))
-end
-
-local iter = function(obj, param, state)
-    return wrap(rawiter(obj, param, state))
-end
-exports.iter = iter
-
-local method0 = function(fun)
-    return function(self)
-        return fun(self.gen, self.param, self.state)
-    end
-end
-
-local method1 = function(fun)
-    return function(self, arg1)
-        return fun(arg1, self.gen, self.param, self.state)
-    end
-end
-
-local method2 = function(fun)
-    return function(self, arg1, arg2)
-        return fun(arg1, arg2, self.gen, self.param, self.state)
-    end
-end
-
-local export0 = function(fun)
-    return function(gen, param, state)
-        return fun(rawiter(gen, param, state))
-    end
-end
-
-local export1 = function(fun)
-    return function(arg1, gen, param, state)
-        return fun(arg1, rawiter(gen, param, state))
-    end
-end
-
-local export2 = function(fun)
-    return function(arg1, arg2, gen, param, state)
-        return fun(arg1, arg2, rawiter(gen, param, state))
-    end
-end
-
-local each = function(fun, gen, param, state)
-    repeat
-        state = call_if_not_empty(fun, gen(param, state))
-    until state == nil
-end
-methods.each = method1(each)
-exports.each = export1(each)
-methods.for_each = methods.each
-exports.for_each = exports.each
-methods.foreach = methods.each
-exports.foreach = exports.each
-
---------------------------------------------------------------------------------
--- Generators
---------------------------------------------------------------------------------
-
-local range_gen = function(param, state)
-    local stop, step = param[1], param[2]
-    local state = state + step
-    if state > stop then
-        return nil
-    end
-    return state, state
-end
-
-local range_rev_gen = function(param, state)
-    local stop, step = param[1], param[2]
-    local state = state + step
-    if state < stop then
-        return nil
-    end
-    return state, state
-end
-
-local range = function(start, stop, step)
-    if step == nil then
-        if stop == nil then
-            if start == 0 then
-                return nil_gen, nil, nil
-            end
-            stop = start
-            start = stop > 0 and 1 or -1
-        end
-        step = start <= stop and 1 or -1
-    end
-
-    assert(type(start) == "number", "start must be a number")
-    assert(type(stop) == "number", "stop must be a number")
-    assert(type(step) == "number", "step must be a number")
-    assert(step ~= 0, "step must not be zero")
-
-    if (step > 0) then
-        return wrap(range_gen, {stop, step}, start - step)
-    elseif (step < 0) then
-        return wrap(range_rev_gen, {stop, step}, start - step)
-    end
-end
-exports.range = range
-
-local duplicate_table_gen = function(param_x, state_x)
-    return state_x + 1, unpack(param_x)
-end
-
-local duplicate_fun_gen = function(param_x, state_x)
-    return state_x + 1, param_x(state_x)
-end
-
-local duplicate_gen = function(param_x, state_x)
-    return state_x + 1, param_x
-end
-
-local duplicate = function(...)
-    if select('#', ...) <= 1 then
-        return wrap(duplicate_gen, select(1, ...), 0)
-    else
-        return wrap(duplicate_table_gen, {...}, 0)
-    end
-end
-exports.duplicate = duplicate
-exports.replicate = duplicate
-exports.xrepeat = duplicate
-
-local tabulate = function(fun)
-    assert(type(fun) == "function")
-    return wrap(duplicate_fun_gen, fun, 0)
-end
-exports.tabulate = tabulate
-
-local zeros = function()
-    return wrap(duplicate_gen, 0, 0)
-end
-exports.zeros = zeros
-
-local ones = function()
-    return wrap(duplicate_gen, 1, 0)
-end
-exports.ones = ones
-
-local rands_gen = function(param_x, _state_x)
-    return 0, math.random(param_x[1], param_x[2])
-end
-
-local rands_nil_gen = function(_param_x, _state_x)
-    return 0, math.random()
-end
-
-local rands = function(n, m)
-    if n == nil and m == nil then
-        return wrap(rands_nil_gen, 0, 0)
-    end
-    assert(type(n) == "number", "invalid first arg to rands")
-    if m == nil then
-        m = n
-        n = 0
-    else
-        assert(type(m) == "number", "invalid second arg to rands")
-    end
-    assert(n < m, "empty interval")
-    return wrap(rands_gen, {n, m - 1}, 0)
-end
-exports.rands = rands
-
---------------------------------------------------------------------------------
--- Slicing
---------------------------------------------------------------------------------
-
-local nth = function(n, gen_x, param_x, state_x)
-    assert(n > 0, "invalid first argument to nth")
-    -- An optimization for arrays and strings
-    if gen_x == ipairs_gen then
-        return param_x[n]
-    elseif gen_x == string_gen then
-        if n <= #param_x then
-            return string.sub(param_x, n, n)
-        else
-            return nil
-        end
-    end
-    for i=1,n-1,1 do
-        state_x = gen_x(param_x, state_x)
-        if state_x == nil then
-            return nil
-        end
-    end
-    return return_if_not_empty(gen_x(param_x, state_x))
-end
-methods.nth = method1(nth)
-exports.nth = export1(nth)
-
-local head_call = function(state, ...)
-    if state == nil then
-        error("head: iterator is empty")
-    end
-    return ...
-end
-
-local head = function(gen, param, state)
-    return head_call(gen(param, state))
-end
-methods.head = method0(head)
-exports.head = export0(head)
-exports.car = exports.head
-methods.car = methods.head
-
-local tail = function(gen, param, state)
-    state = gen(param, state)
-    if state == nil then
-        return wrap(nil_gen, nil, nil)
-    end
-    return wrap(gen, param, state)
-end
-methods.tail = method0(tail)
-exports.tail = export0(tail)
-exports.cdr = exports.tail
-methods.cdr = methods.tail
-
-local take_n_gen_x = function(i, state_x, ...)
-    if state_x == nil then
-        return nil
-    end
-    return {i, state_x}, ...
-end
-
-local take_n_gen = function(param, state)
-    local n, gen_x, param_x = param[1], param[2], param[3]
-    local i, state_x = state[1], state[2]
-    if i >= n then
-        return nil
-    end
-    return take_n_gen_x(i + 1, gen_x(param_x, state_x))
-end
-
-local take_n = function(n, gen, param, state)
-    assert(n >= 0, "invalid first argument to take_n")
-    return wrap(take_n_gen, {n, gen, param}, {0, state})
-end
-methods.take_n = method1(take_n)
-exports.take_n = export1(take_n)
-
-local take_while_gen_x = function(fun, state_x, ...)
-    if state_x == nil or not fun(...) then
-        return nil
-    end
-    return state_x, ...
-end
-
-local take_while_gen = function(param, state_x)
-    local fun, gen_x, param_x = param[1], param[2], param[3]
-    return take_while_gen_x(fun, gen_x(param_x, state_x))
-end
-
-local take_while = function(fun, gen, param, state)
-    assert(type(fun) == "function", "invalid first argument to take_while")
-    return wrap(take_while_gen, {fun, gen, param}, state)
-end
-methods.take_while = method1(take_while)
-exports.take_while = export1(take_while)
-
-local take = function(n_or_fun, gen, param, state)
-    if type(n_or_fun) == "number" then
-        return take_n(n_or_fun, gen, param, state)
-    else
-        return take_while(n_or_fun, gen, param, state)
-    end
-end
-methods.take = method1(take)
-exports.take = export1(take)
-
-local drop_n = function(n, gen, param, state)
-    assert(n >= 0, "invalid first argument to drop_n")
-    local i
-    for i=1,n,1 do
-        state = gen(param, state)
-        if state == nil then
-            return wrap(nil_gen, nil, nil)
-        end
-    end
-    return wrap(gen, param, state)
-end
-methods.drop_n = method1(drop_n)
-exports.drop_n = export1(drop_n)
-
-local drop_while_x = function(fun, state_x, ...)
-    if state_x == nil or not fun(...) then
-        return state_x, false
-    end
-    return state_x, true, ...
-end
-
-local drop_while = function(fun, gen_x, param_x, state_x)
-    assert(type(fun) == "function", "invalid first argument to drop_while")
-    local cont, state_x_prev
-    repeat
-        state_x_prev = deepcopy(state_x)
-        state_x, cont = drop_while_x(fun, gen_x(param_x, state_x))
-    until not cont
-    if state_x == nil then
-        return wrap(nil_gen, nil, nil)
-    end
-    return wrap(gen_x, param_x, state_x_prev)
-end
-methods.drop_while = method1(drop_while)
-exports.drop_while = export1(drop_while)
-
-local drop = function(n_or_fun, gen_x, param_x, state_x)
-    if type(n_or_fun) == "number" then
-        return drop_n(n_or_fun, gen_x, param_x, state_x)
-    else
-        return drop_while(n_or_fun, gen_x, param_x, state_x)
-    end
-end
-methods.drop = method1(drop)
-exports.drop = export1(drop)
-
-local split = function(n_or_fun, gen_x, param_x, state_x)
-    return take(n_or_fun, gen_x, param_x, state_x),
-           drop(n_or_fun, gen_x, param_x, state_x)
-end
-methods.split = method1(split)
-exports.split = export1(split)
-methods.split_at = methods.split
-exports.split_at = exports.split
-methods.span = methods.split
-exports.span = exports.split
-
---------------------------------------------------------------------------------
--- Indexing
---------------------------------------------------------------------------------
-
-local index = function(x, gen, param, state)
-    local i = 1
-    for _k, r in gen, param, state do
-        if r == x then
-            return i
-        end
-        i = i + 1
-    end
-    return nil
-end
-methods.index = method1(index)
-exports.index = export1(index)
-methods.index_of = methods.index
-exports.index_of = exports.index
-methods.elem_index = methods.index
-exports.elem_index = exports.index
-
-local indexes_gen = function(param, state)
-    local x, gen_x, param_x = param[1], param[2], param[3]
-    local i, state_x = state[1], state[2]
-    local r
-    while true do
-        state_x, r = gen_x(param_x, state_x)
-        if state_x == nil then
-            return nil
-        end
-        i = i + 1
-        if r == x then
-            return {i, state_x}, i
-        end
-    end
-end
-
-local indexes = function(x, gen, param, state)
-    return wrap(indexes_gen, {x, gen, param}, {0, state})
-end
-methods.indexes = method1(indexes)
-exports.indexes = export1(indexes)
-methods.elem_indexes = methods.indexes
-exports.elem_indexes = exports.indexes
-methods.indices = methods.indexes
-exports.indices = exports.indexes
-methods.elem_indices = methods.indexes
-exports.elem_indices = exports.indexes
-
---------------------------------------------------------------------------------
--- Filtering
---------------------------------------------------------------------------------
-
-local filter1_gen = function(fun, gen_x, param_x, state_x, a)
-    while true do
-        if state_x == nil or fun(a) then break; end
-        state_x, a = gen_x(param_x, state_x)
-    end
-    return state_x, a
-end
-
--- call each other
-local filterm_gen
-local filterm_gen_shrink = function(fun, gen_x, param_x, state_x)
-    return filterm_gen(fun, gen_x, param_x, gen_x(param_x, state_x))
-end
-
-filterm_gen = function(fun, gen_x, param_x, state_x, ...)
-    if state_x == nil then
-        return nil
-    end
-    if fun(...) then
-        return state_x, ...
-    end
-    return filterm_gen_shrink(fun, gen_x, param_x, state_x)
-end
-
-local filter_detect = function(fun, gen_x, param_x, state_x, ...)
-    if select('#', ...) < 2 then
-        return filter1_gen(fun, gen_x, param_x, state_x, ...)
-    else
-        return filterm_gen(fun, gen_x, param_x, state_x, ...)
-    end
-end
-
-local filter_gen = function(param, state_x)
-    local fun, gen_x, param_x = param[1], param[2], param[3]
-    return filter_detect(fun, gen_x, param_x, gen_x(param_x, state_x))
-end
-
-local filter = function(fun, gen, param, state)
-    return wrap(filter_gen, {fun, gen, param}, state)
-end
-methods.filter = method1(filter)
-exports.filter = export1(filter)
-methods.remove_if = methods.filter
-exports.remove_if = exports.filter
-
-local grep = function(fun_or_regexp, gen, param, state)
-    local fun = fun_or_regexp
-    if type(fun_or_regexp) == "string" then
-        fun = function(x) return string.find(x, fun_or_regexp) ~= nil end
-    end
-    return filter(fun, gen, param, state)
-end
-methods.grep = method1(grep)
-exports.grep = export1(grep)
-
-local partition = function(fun, gen, param, state)
-    local neg_fun = function(...)
-        return not fun(...)
-    end
-    return filter(fun, gen, param, state),
-           filter(neg_fun, gen, param, state)
-end
-methods.partition = method1(partition)
-exports.partition = export1(partition)
-
---------------------------------------------------------------------------------
--- Reducing
---------------------------------------------------------------------------------
-
-local foldl_call = function(fun, start, state, ...)
-    if state == nil then
-        return nil, start
-    end
-    return state, fun(start, ...)
-end
-
-local foldl = function(fun, start, gen_x, param_x, state_x)
-    while true do
-        state_x, start = foldl_call(fun, start, gen_x(param_x, state_x))
-        if state_x == nil then
-            break;
-        end
-    end
-    return start
-end
-methods.foldl = method2(foldl)
-exports.foldl = export2(foldl)
-methods.reduce = methods.foldl
-exports.reduce = exports.foldl
-
-local length = function(gen, param, state)
-    if gen == ipairs_gen or gen == string_gen then
-        return #param
-    end
-    local len = 0
-    repeat
-        state = gen(param, state)
-        len = len + 1
-    until state == nil
-    return len - 1
-end
-methods.length = method0(length)
-exports.length = export0(length)
-
-local is_null = function(gen, param, state)
-    return gen(param, deepcopy(state)) == nil
-end
-methods.is_null = method0(is_null)
-exports.is_null = export0(is_null)
-
-local is_prefix_of = function(iter_x, iter_y)
-    local gen_x, param_x, state_x = iter(iter_x)
-    local gen_y, param_y, state_y = iter(iter_y)
-
-    local r_x, r_y
-    for i=1,10,1 do
-        state_x, r_x = gen_x(param_x, state_x)
-        state_y, r_y = gen_y(param_y, state_y)
-        if state_x == nil then
-            return true
-        end
-        if state_y == nil or r_x ~= r_y then
-            return false
-        end
-    end
-end
-methods.is_prefix_of = is_prefix_of
-exports.is_prefix_of = is_prefix_of
-
-local all = function(fun, gen_x, param_x, state_x)
-    local r
-    repeat
-        state_x, r = call_if_not_empty(fun, gen_x(param_x, state_x))
-    until state_x == nil or not r
-    return state_x == nil
-end
-methods.all = method1(all)
-exports.all = export1(all)
-methods.every = methods.all
-exports.every = exports.all
-
-local any = function(fun, gen_x, param_x, state_x)
-    local r
-    repeat
-        state_x, r = call_if_not_empty(fun, gen_x(param_x, state_x))
-    until state_x == nil or r
-    return not not r
-end
-methods.any = method1(any)
-exports.any = export1(any)
-methods.some = methods.any
-exports.some = exports.any
-
-local sum = function(gen, param, state)
-    local s = 0
-    local r = 0
-    repeat
-        s = s + r
-        state, r = gen(param, state)
-    until state == nil
-    return s
-end
-methods.sum = method0(sum)
-exports.sum = export0(sum)
-
-local product = function(gen, param, state)
-    local p = 1
-    local r = 1
-    repeat
-        p = p * r
-        state, r = gen(param, state)
-    until state == nil
-    return p
-end
-methods.product = method0(product)
-exports.product = export0(product)
-
-local min_cmp = function(m, n)
-    if n < m then return n else return m end
-end
-
-local max_cmp = function(m, n)
-    if n > m then return n else return m end
-end
-
-local min = function(gen, param, state)
-    local state, m = gen(param, state)
-    if state == nil then
-        error("min: iterator is empty")
-    end
-
-    local cmp
-    if type(m) == "number" then
-        -- An optimization: use math.min for numbers
-        cmp = math.min
-    else
-        cmp = min_cmp
-    end
-
-    for _, r in gen, param, state do
-        m = cmp(m, r)
-    end
-    return m
-end
-methods.min = method0(min)
-exports.min = export0(min)
-methods.minimum = methods.min
-exports.minimum = exports.min
-
-local min_by = function(cmp, gen_x, param_x, state_x)
-    local state_x, m = gen_x(param_x, state_x)
-    if state_x == nil then
-        error("min: iterator is empty")
-    end
-
-    for _, r in gen_x, param_x, state_x do
-        m = cmp(m, r)
-    end
-    return m
-end
-methods.min_by = method1(min_by)
-exports.min_by = export1(min_by)
-methods.minimum_by = methods.min_by
-exports.minimum_by = exports.min_by
-
-local max = function(gen_x, param_x, state_x)
-    local state_x, m = gen_x(param_x, state_x)
-    if state_x == nil then
-        error("max: iterator is empty")
-    end
-
-    local cmp
-    if type(m) == "number" then
-        -- An optimization: use math.max for numbers
-        cmp = math.max
-    else
-        cmp = max_cmp
-    end
-
-    for _, r in gen_x, param_x, state_x do
-        m = cmp(m, r)
-    end
-    return m
-end
-methods.max = method0(max)
-exports.max = export0(max)
-methods.maximum = methods.max
-exports.maximum = exports.max
-
-local max_by = function(cmp, gen_x, param_x, state_x)
-    local state_x, m = gen_x(param_x, state_x)
-    if state_x == nil then
-        error("max: iterator is empty")
-    end
-
-    for _, r in gen_x, param_x, state_x do
-        m = cmp(m, r)
-    end
-    return m
-end
-methods.max_by = method1(max_by)
-exports.max_by = export1(max_by)
-methods.maximum_by = methods.maximum_by
-exports.maximum_by = exports.maximum_by
-
-local totable = function(gen_x, param_x, state_x)
-    local tab, key, val = {}
-    while true do
-        state_x, val = gen_x(param_x, state_x)
-        if state_x == nil then
-            break
-        end
-        table.insert(tab, val)
-    end
-    return tab
-end
-methods.totable = method0(totable)
-exports.totable = export0(totable)
-
-local tomap = function(gen_x, param_x, state_x)
-    local tab, key, val = {}
-    while true do
-        state_x, key, val = gen_x(param_x, state_x)
-        if state_x == nil then
-            break
-        end
-        tab[key] = val
-    end
-    return tab
-end
-methods.tomap = method0(tomap)
-exports.tomap = export0(tomap)
-
---------------------------------------------------------------------------------
--- Transformations
---------------------------------------------------------------------------------
-
-local map_gen = function(param, state)
-    local gen_x, param_x, fun = param[1], param[2], param[3]
-    return call_if_not_empty(fun, gen_x(param_x, state))
-end
-
-local map = function(fun, gen, param, state)
-    return wrap(map_gen, {gen, param, fun}, state)
-end
-methods.map = method1(map)
-exports.map = export1(map)
-
-local enumerate_gen_call = function(state, i, state_x, ...)
-    if state_x == nil then
-        return nil
-    end
-    return {i + 1, state_x}, i, ...
-end
-
-local enumerate_gen = function(param, state)
-    local gen_x, param_x = param[1], param[2]
-    local i, state_x = state[1], state[2]
-    return enumerate_gen_call(state, i, gen_x(param_x, state_x))
-end
-
-local enumerate = function(gen, param, state)
-    return wrap(enumerate_gen, {gen, param}, {1, state})
-end
-methods.enumerate = method0(enumerate)
-exports.enumerate = export0(enumerate)
-
-local intersperse_call = function(i, state_x, ...)
-    if state_x == nil then
-        return nil
-    end
-    return {i + 1, state_x}, ...
-end
-
-local intersperse_gen = function(param, state)
-    local x, gen_x, param_x = param[1], param[2], param[3]
-    local i, state_x = state[1], state[2]
-    if i % 2 == 1 then
-        return {i + 1, state_x}, x
-    else
-        return intersperse_call(i, gen_x(param_x, state_x))
-    end
-end
-
--- TODO: interperse must not add x to the tail
-local intersperse = function(x, gen, param, state)
-    return wrap(intersperse_gen, {x, gen, param}, {0, state})
-end
-methods.intersperse = method1(intersperse)
-exports.intersperse = export1(intersperse)
-
---------------------------------------------------------------------------------
--- Compositions
---------------------------------------------------------------------------------
-
-local function zip_gen_r(param, state, state_new, ...)
-    if #state_new == #param / 2 then
-        return state_new, ...
-    end
-
-    local i = #state_new + 1
-    local gen_x, param_x = param[2 * i - 1], param[2 * i]
-    local state_x, r = gen_x(param_x, state[i])
-    if state_x == nil then
-        return nil
-    end
-    table.insert(state_new, state_x)
-    return zip_gen_r(param, state, state_new, r, ...)
-end
-
-local zip_gen = function(param, state)
-    return zip_gen_r(param, state, {})
-end
-
--- A special hack for zip/chain to skip last two state, if a wrapped iterator
--- has been passed
-local numargs = function(...)
-    local n = select('#', ...)
-    if n >= 3 then
-        -- Fix last argument
-        local it = select(n - 2, ...)
-        if type(it) == 'table' and getmetatable(it) == iterator_mt and
-           it.param == select(n - 1, ...) and it.state == select(n, ...) then
-            return n - 2
-        end
-    end
-    return n
-end
-
-local zip = function(...)
-    local n = numargs(...)
-    if n == 0 then
-        return wrap(nil_gen, nil, nil)
-    end
-    local param = { [2 * n] = 0 }
-    local state = { [n] = 0 }
-
-    local i, gen_x, param_x, state_x
-    for i=1,n,1 do
-        local it = select(n - i + 1, ...)
-        gen_x, param_x, state_x = rawiter(it)
-        param[2 * i - 1] = gen_x
-        param[2 * i] = param_x
-        state[i] = state_x
-    end
-
-    return wrap(zip_gen, param, state)
-end
-methods.zip = zip
-exports.zip = zip
-
-local cycle_gen_call = function(param, state_x, ...)
-    if state_x == nil then
-        local gen_x, param_x, state_x0 = param[1], param[2], param[3]
-        return gen_x(param_x, deepcopy(state_x0))
-    end
-    return state_x, ...
-end
-
-local cycle_gen = function(param, state_x)
-    local gen_x, param_x, state_x0 = param[1], param[2], param[3]
-    return cycle_gen_call(param, gen_x(param_x, state_x))
-end
-
-local cycle = function(gen, param, state)
-    return wrap(cycle_gen, {gen, param, state}, deepcopy(state))
-end
-methods.cycle = method0(cycle)
-exports.cycle = export0(cycle)
-
--- call each other
-local chain_gen_r1
-local chain_gen_r2 = function(param, state, state_x, ...)
-    if state_x == nil then
-        local i = state[1]
-        i = i + 1
-        if param[3 * i - 1] == nil then
-            return nil
-        end
-        local state_x = param[3 * i]
-        return chain_gen_r1(param, {i, state_x})
-    end
-    return {state[1], state_x}, ...
-end
-
-chain_gen_r1 = function(param, state)
-    local i, state_x = state[1], state[2]
-    local gen_x, param_x = param[3 * i - 2], param[3 * i - 1]
-    return chain_gen_r2(param, state, gen_x(param_x, state[2]))
-end
-
-local chain = function(...)
-    local n = numargs(...)
-    if n == 0 then
-        return wrap(nil_gen, nil, nil)
-    end
-
-    local param = { [3 * n] = 0 }
-    local i, gen_x, param_x, state_x
-    for i=1,n,1 do
-        local elem = select(i, ...)
-        gen_x, param_x, state_x = iter(elem)
-        param[3 * i - 2] = gen_x
-        param[3 * i - 1] = param_x
-        param[3 * i] = state_x
-    end
-
-    return wrap(chain_gen_r1, param, {1, param[3]})
-end
-methods.chain = chain
-exports.chain = chain
-
---------------------------------------------------------------------------------
--- Operators
---------------------------------------------------------------------------------
-
-local operator = {
-    ----------------------------------------------------------------------------
-    -- Comparison operators
-    ----------------------------------------------------------------------------
-    lt  = function(a, b) return a < b end,
-    le  = function(a, b) return a <= b end,
-    eq  = function(a, b) return a == b end,
-    ne  = function(a, b) return a ~= b end,
-    ge  = function(a, b) return a >= b end,
-    gt  = function(a, b) return a > b end,
-
-    ----------------------------------------------------------------------------
-    -- Arithmetic operators
-    ----------------------------------------------------------------------------
-    add = function(a, b) return a + b end,
-    div = function(a, b) return a / b end,
-    floordiv = function(a, b) return math.floor(a/b) end,
-    intdiv = function(a, b)
-        local q = a / b
-        if a >= 0 then return math.floor(q) else return math.ceil(q) end
-    end,
-    mod = function(a, b) return a % b end,
-    mul = function(a, b) return a * b end,
-    neq = function(a) return -a end,
-    unm = function(a) return -a end, -- an alias
-    pow = function(a, b) return a ^ b end,
-    sub = function(a, b) return a - b end,
-    truediv = function(a, b) return a / b end,
-
-    ----------------------------------------------------------------------------
-    -- String operators
-    ----------------------------------------------------------------------------
-    concat = function(a, b) return a..b end,
-    len = function(a) return #a end,
-    length = function(a) return #a end, -- an alias
-
-    ----------------------------------------------------------------------------
-    -- Logical operators
-    ----------------------------------------------------------------------------
-    land = function(a, b) return a and b end,
-    lor = function(a, b) return a or b end,
-    lnot = function(a) return not a end,
-    truth = function(a) return not not a end,
-}
-exports.operator = operator
-methods.operator = operator
-exports.op = operator
-methods.op = operator
-
---------------------------------------------------------------------------------
--- module definitions
---------------------------------------------------------------------------------
-
--- a special syntax sugar to export all functions to the global table
-setmetatable(exports, {
-    __call = function(t, override)
-        for k, v in pairs(t) do
-            if rawget(_G, k) ~= nil then
-                local msg = 'function ' .. k .. ' already exists in global scope.'
-                if override then
-                    rawset(_G, k, v)
-                    print('WARNING: ' .. msg .. ' Overwritten.')
-                else
-                    print('NOTICE: ' .. msg .. ' Skipped.')
-                end
-            else
-                rawset(_G, k, v)
-            end
-        end
-    end,
-})
-
-return exports
+local function bldepth(fs)
+   local i, x= 1, fs.bl
+   while x do i=i+1; x=x.previous end
+   return i
+end
+--]]
+
+------------------------------------------------------------------------
+--
+------------------------------------------------------------------------
+local function enterblock (fs, bl, isbreakable)
+  bl.breaklist = luaK.NO_JUMP
+  bl.isbreakable = isbreakable
+  bl.nactvar = fs.nactvar
+  bl.upval = false
+  bl.previous = fs.bl
+  fs.bl = bl
+  assert (fs.freereg == fs.nactvar)
+end
+
+------------------------------------------------------------------------
+--
+------------------------------------------------------------------------
+local function leaveblock (fs)
+   local bl = fs.bl
+   fs.bl = bl.previous
+   --printf("[LEAVEBLOCK] Removing vars...")
+   removevars (fs, bl.nactvar)
+   --printf("[LEAVEBLOCK] ...Vars removed")
+   if bl.upval then
+      luaK:codeABC (fs, "OP_CLOSE", bl.nactvar, 0, 0)
+   end
+   -- a block either controls scope or breaks (never both)
+   assert (not bl.isbreakable or not bl.upval)
+   assert (bl.nactvar == fs.nactvar)
+   fs.freereg = fs.nactvar  -- free registers
+   luaK:patchtohere (fs, bl.breaklist)
+end
+
+
+------------------------------------------------------------------------
+-- read a list of expressions from a list of ast [astlist]
+-- starts at the [offset]th element of the list (defaults to 1)
+------------------------------------------------------------------------
+local function explist(fs, astlist, v, offset)
+  offset = offset or 1
+  if #astlist < offset then error("I don't handle empty expr lists yet") end
+  --printf("[EXPLIST] about to precompile 1st element %s", disp.ast(astlist[offset]))
+  expr.expr (fs, astlist[offset], v)
+  --printf("[EXPLIST] precompiled first element v=%s", tostringv(v))
+  for i = offset+1, #astlist do
+    luaK:exp2nextreg (fs, v)
+    --printf("[EXPLIST] flushed v=%s", tostringv(v))
+    expr.expr (fs, astlist[i], v)
+    --printf("[EXPLIST] precompiled element v=%s", tostringv(v))
+  end
+  return #astlist - offset + 1
+end
+
+------------------------------------------------------------------------
+-- 
+------------------------------------------------------------------------
+local function funcargs (fs, ast, v, idx_from)
+  local args = { }  -- expdesc
+  local nparams
+  if #ast < idx_from then args.k = "VVOID" else
+     explist(fs, ast, args, idx_from)
+     luaK:setmultret(fs, args)
+  end
+  assert(v.k == "VNONRELOC")
+  local base = v.info  -- base register for call
+  if hasmultret(args.k) then nparams = luaK.LUA_MULTRET else -- open call
+    if args.k ~= "VVOID" then 
+       luaK:exp2nextreg(fs, args) end -- close last argument
+    nparams = fs.freereg - (base + 1)
+  end
+  init_exp(v, "VCALL", luaK:codeABC(fs, "OP_CALL", base, nparams + 1, 2))
+  if ast.lineinfo then
+     luaK:fixline(fs, ast.lineinfo.first.line)
+  else 
+    luaK:fixline(fs, ast.line)
+  end
+  fs.freereg = base + 1  -- call remove function and arguments and leaves
+                         -- (unless changed) one result
+end
+
+------------------------------------------------------------------------
+-- calculates log value for encoding the hash portion's size
+------------------------------------------------------------------------
+local function log2(x)
+  -- math result is always one more than lua0_log2()
+  local mn, ex = math.frexp(x)
+  return ex - 1
+end
+
+------------------------------------------------------------------------
+-- converts an integer to a "floating point byte", represented as
+-- (mmmmmxxx), where the real value is (xxx) * 2^(mmmmm)
+------------------------------------------------------------------------
+
+-- local function int2fb(x)
+--   local m = 0  -- mantissa
+--   while x >= 8 do x = math.floor((x + 1) / 2); m = m + 1 end
+--   return m * 8 + x
+-- end
+
+local function int2fb(x)
+   local e = 0
+   while x >= 16 do
+      x = math.floor ( (x+1) / 2)
+      e = e+1
+   end
+   if x<8 then return x
+   else return (e+1) * 8 + x - 8 end
+end
+
+
+------------------------------------------------------------------------
+-- FIXME: to be unified with singlevar
+------------------------------------------------------------------------
+local function singlevaraux(fs, n, var, base)
+--[[
+print("\n\nsinglevaraux: fs, n, var, base")
+printv(fs)
+printv(n)
+printv(var)
+printv(base)
+print("\n")
+--]]
+   if fs == nil then  -- no more levels?
+      init_exp(var, "VGLOBAL", luaP.NO_REG)  -- default is global variable
+      return "VGLOBAL"
+   else
+      local v = searchvar(fs, n)  -- look up at current level
+      if v >= 0 then
+         init_exp(var, "VLOCAL", v)
+         if not base then
+            markupval(fs, v)  -- local will be used as an upval
+         end
+      else  -- not found at current level; try upper one
+         if singlevaraux(fs.prev, n, var, false) == "VGLOBAL" then
+            return "VGLOBAL" end
+         var.info = indexupvalue (fs, n, var)
+         var.k = "VUPVAL"
+         return "VUPVAL"
+      end
+   end
+end
+
+------------------------------------------------------------------------
+-- 
+------------------------------------------------------------------------
+local function singlevar(fs, varname, var)   
+  if singlevaraux(fs, varname, var, true) == "VGLOBAL" then
+     var.info = luaK:stringK (fs, varname) end
+end
+
+------------------------------------------------------------------------
+-- 
+------------------------------------------------------------------------
+local function new_localvar (fs, name, n)
+  assert (type (name) == "string")
+  if fs.nactvar + n > M.MAXVARS then error ("too many local vars") end
+  fs.actvar[fs.nactvar + n] = registerlocalvar (fs, name)
+  --printf("[NEW_LOCVAR] %i = %s", fs.nactvar+n, name)
+end
+
+------------------------------------------------------------------------
+-- 
+------------------------------------------------------------------------
+local function parlist (fs, ast_params)
+   local dots = (#ast_params > 0 and ast_params[#ast_params].tag == "Dots")
+   local nparams = dots and #ast_params - 1 or #ast_params
+   for i = 1, nparams do
+      assert (ast_params[i].tag == "Id", "Function parameters must be Ids")
+      new_localvar (fs, ast_params[i][1], i-1)
+   end
+   -- from [code_param]:
+   --checklimit (fs, fs.nactvar, self.M.MAXPARAMS, "parameters")
+   fs.f.numparams = fs.nactvar
+   fs.f.is_vararg = dots and M.VARARG_ISVARARG or 0 
+   adjustlocalvars (fs, nparams)
+   fs.f.numparams = fs.nactvar --FIXME vararg must be taken in account
+   luaK:reserveregs (fs, fs.nactvar)  -- reserve register for parameters
+end
+
+------------------------------------------------------------------------
+-- if there's more variables than expressions in an assignment,
+-- some assignations to nil are made for extraneous vars.
+-- Also handles multiret functions
+------------------------------------------------------------------------
+local function adjust_assign (fs, nvars, nexps, e)
+  local extra = nvars - nexps
+  if hasmultret (e.k) then
+    extra = extra+1  -- includes call itself
+    if extra <= 0 then extra = 0 end
+    luaK:setreturns(fs, e, extra)  -- call provides the difference
+    if extra > 1 then luaK:reserveregs(fs, extra-1) end
+  else
+    if e.k ~= "VVOID" then 
+       luaK:exp2nextreg(fs, e) end  -- close last expression
+    if extra > 0 then
+      local reg = fs.freereg
+      luaK:reserveregs(fs, extra)
+      luaK:_nil(fs, reg, extra)
+    end
+  end
+end
+
+
+------------------------------------------------------------------------
+-- 
+------------------------------------------------------------------------
+local function enterlevel (fs)
+   fs.nestlevel = fs.nestlevel + 1
+   assert (fs.nestlevel <= M.LUA_MAXPARSERLEVEL, "too many syntax levels")
+end
+
+------------------------------------------------------------------------
+-- 
+------------------------------------------------------------------------
+local function leavelevel (fs)
+  fs.nestlevel = fs.nestlevel - 1
+end
+
+------------------------------------------------------------------------
+-- Parse conditions in if/then/else, while, repeat
+------------------------------------------------------------------------
+local function cond (fs, ast)
+   local v = { }
+   expr.expr(fs, ast, v)  -- read condition
+   if v.k == "VNIL" then v.k = "VFALSE" end  -- 'falses' are all equal here
+   luaK:goiftrue (fs, v)
+   return v.f
+end
+
+------------------------------------------------------------------------
+-- 
+------------------------------------------------------------------------
+local function chunk (fs, ast)
+   enterlevel (fs)
+   assert (not ast.tag)
+   for i=1, #ast do 
+      stat.stat (fs, ast[i]); 
+      fs.freereg = fs.nactvar
+   end
+   leavelevel (fs)
+end
+
+------------------------------------------------------------------------
+-- 
+------------------------------------------------------------------------
+local function block (fs, ast)
+  local bl = {}
+  enterblock (fs, bl, false)
+  for i=1, #ast do
+     stat.stat (fs, ast[i])
+     fs.freereg = fs.nactvar
+  end
+  assert (bl.breaklist == luaK.NO_JUMP)
+  leaveblock (fs)
+end  
+
+------------------------------------------------------------------------
+-- Forin / Fornum body parser
+-- [fs]
+-- [body]
+-- [base]
+-- [nvars]
+-- [isnum]
+------------------------------------------------------------------------
+local function forbody (fs, ast_body, base, nvars, isnum)
+   local bl = {}  -- BlockCnt
+   adjustlocalvars (fs, 3)  -- control variables
+   local prep = 
+      isnum and luaK:codeAsBx (fs, "OP_FORPREP", base, luaK.NO_JUMP)
+      or luaK:jump (fs) 
+   enterblock (fs, bl, false)  -- loop block
+   adjustlocalvars (fs, nvars)  -- scope for declared variables
+   luaK:reserveregs (fs, nvars)
+   block (fs, ast_body)
+   leaveblock (fs)
+   --luaK:patchtohere (fs, prep-1)
+   luaK:patchtohere (fs, prep)
+   local endfor = 
+      isnum and luaK:codeAsBx (fs, "OP_FORLOOP", base, luaK.NO_JUMP)
+      or luaK:codeABC (fs, "OP_TFORLOOP", base, 0, nvars)
+   luaK:fixline (fs, ast_body.line)  -- pretend that 'OP_FOR' starts the loop
+   luaK:patchlist (fs, isnum and endfor or luaK:jump(fs), prep + 1)
+end
+
+
+------------------------------------------------------------------------
+--
+------------------------------------------------------------------------
+local function recfield (fs, ast, cc)
+  local reg = fs.freereg
+  local key, val = {}, {}  -- expdesc
+  --FIXME: expr + exp2val = index -->
+  --       check reduncancy between exp2val and exp2rk
+  cc.nh = cc.nh + 1
+  expr.expr(fs, ast[1], key); 
+  luaK:exp2val (fs, key) 
+  local keyreg = luaK:exp2RK (fs, key)
+  expr.expr(fs, ast[2], val)
+  local valreg = luaK:exp2RK (fs, val)
+  luaK:codeABC(fs, "OP_SETTABLE", cc.t.info, keyreg, valreg)
+  fs.freereg = reg  -- free registers
+end
+
+
+------------------------------------------------------------------------
+--
+------------------------------------------------------------------------
+local function listfield(fs, ast, cc)
+  expr.expr(fs, ast, cc.v)
+  assert (cc.na <= luaP.MAXARG_Bx) -- FIXME check <= or <
+  cc.na = cc.na + 1
+  cc.tostore = cc.tostore + 1
+end
+
+------------------------------------------------------------------------
+--
+------------------------------------------------------------------------
+local function closelistfield(fs, cc)
+   if cc.v.k == "VVOID" then return end  -- there is no list item
+   luaK:exp2nextreg(fs, cc.v)
+   cc.v.k = "VVOID"
+   if cc.tostore == luaP.LFIELDS_PER_FLUSH then
+      luaK:setlist (fs, cc.t.info, cc.na, cc.tostore)
+      cc.tostore = 0
+   end
+end
+
+------------------------------------------------------------------------
+-- The last field might be a call to a multireturn function. In that
+-- case, we must unfold all of its results into the list.
+------------------------------------------------------------------------
+local function lastlistfield(fs, cc)
+  if cc.tostore == 0 then return end
+  if hasmultret (cc.v.k) then
+    luaK:setmultret(fs, cc.v)
+    luaK:setlist (fs, cc.t.info, cc.na, luaK.LUA_MULTRET)
+    cc.na = cc.na - 1
+  else
+    if cc.v.k ~= "VVOID" then luaK:exp2nextreg(fs, cc.v) end
+    luaK:setlist (fs, cc.t.info, cc.na, cc.tostore)
+  end
+end
+------------------------------------------------------------------------
+------------------------------------------------------------------------
+-- 
+-- Statement parsers table
+-- 
+------------------------------------------------------------------------
+------------------------------------------------------------------------
+
+function stat.stat (fs, ast)
+   if ast.lineinfo then fs.lastline = ast.lineinfo.last.line end
+   --debugf (" - Statement %s", table.tostring (ast) )
+
+   if not ast.tag then chunk (fs, ast) else
+
+      local parser = stat [ast.tag]
+      if not parser then 
+         error ("A statement cannot have tag `"..ast.tag) end
+      parser (fs, ast)
+   end
+   --debugf (" - /Statement `%s", ast.tag)
+end
+
+------------------------------------------------------------------------
+
+stat.Do = block
+
+------------------------------------------------------------------------
+
+function stat.Break (fs, ast)
+   --   if ast.lineinfo then fs.lastline = ast.lineinfo.last.line
+   local bl, upval = fs.bl, false
+   while bl and not bl.isbreakable do
+      if bl.upval then upval = true end
+      bl = bl.previous
+   end
+   assert (bl, "no loop to break")
+   if upval then luaK:codeABC(fs, "OP_CLOSE", bl.nactvar, 0, 0) end
+   bl.breaklist = luaK:concat(fs, bl.breaklist, luaK:jump(fs))
+end
+
+------------------------------------------------------------------------
+
+function stat.Return (fs, ast)
+   local e = {}  -- expdesc
+   local first -- registers with returned values
+   local nret = #ast
+
+   if nret == 0 then first = 0
+   else
+      --printf("[RETURN] compiling explist")
+      explist (fs, ast, e)
+      --printf("[RETURN] explist e=%s", tostringv(e))
+      if hasmultret (e.k) then
+         luaK:setmultret(fs, e)
+         if e.k == "VCALL" and nret == 1 then
+            luaP:SET_OPCODE(luaK:getcode(fs, e), "OP_TAILCALL")
+            assert(luaP:GETARG_A(luaK:getcode(fs, e)) == fs.nactvar)
+         end
+         first = fs.nactvar
+         nret = luaK.LUA_MULTRET  -- return all values
+      elseif nret == 1 then
+         first = luaK:exp2anyreg(fs, e)
+      else
+         --printf("* Return multiple vals in nextreg %i", fs.freereg)
+         luaK:exp2nextreg(fs, e)  -- values must go to the 'stack'
+         first = fs.nactvar  -- return all 'active' values
+         assert(nret == fs.freereg - first)
+      end
+   end
+   luaK:ret(fs, first, nret)
+end
+------------------------------------------------------------------------
+
+function stat.Local (fs, ast)
+  local names, values = ast[1], ast[2] or { }
+  for i = 1, #names do new_localvar (fs, names[i][1], i-1) end
+  local e = { }
+  if #values == 0 then e.k = "VVOID" else explist (fs, values, e) end
+  adjust_assign (fs, #names, #values, e)
+  adjustlocalvars (fs, #names)
+end
+
+------------------------------------------------------------------------
+
+function stat.Localrec (fs, ast)
+   assert(#ast[1]==1 and #ast[2]==1, "Multiple letrecs not implemented yet")
+   local ast_var, ast_val, e_var, e_val = ast[1][1], ast[2][1], { }, { }
+   new_localvar (fs, ast_var[1], 0)
+   init_exp (e_var, "VLOCAL", fs.freereg)
+   luaK:reserveregs (fs, 1)
+   adjustlocalvars (fs, 1)
+   expr.expr (fs, ast_val, e_val)
+   luaK:storevar (fs, e_var, e_val)
+   getlocvar (fs, fs.nactvar-1).startpc = fs.pc
+end
+
+------------------------------------------------------------------------
+
+function stat.If (fs, ast)
+  local astlen = #ast
+  -- Degenerate case #1: no statement
+  if astlen==0 then return block(fs, { }) end
+  -- Degenerate case #2: only an else statement
+  if astlen==1 then return block(fs, ast[1]) end   
+
+  local function test_then_block (fs, test, body)
+    local condexit = cond (fs, test); 
+    block (fs, body) 
+    return condexit
+  end
+
+  local escapelist = luaK.NO_JUMP
+
+  local flist = test_then_block (fs, ast[1], ast[2]) -- 'then' statement
+  for i = 3, #ast - 1, 2 do -- 'elseif' statement
+    escapelist = luaK:concat( fs, escapelist, luaK:jump(fs))
+    luaK:patchtohere (fs, flist)
+    flist = test_then_block (fs, ast[i], ast[i+1])
+  end
+  if #ast % 2 == 1 then -- 'else' statement
+    escapelist = luaK:concat(fs, escapelist, luaK:jump(fs))
+    luaK:patchtohere(fs, flist)
+    block (fs, ast[#ast])
+  else
+    escapelist = luaK:concat(fs, escapelist, flist)
+  end
+  luaK:patchtohere(fs, escapelist)
+end
+
+------------------------------------------------------------------------
+
+function stat.Forin (fs, ast)
+   local vars, vals, body = ast[1], ast[2], ast[3]
+   -- imitating forstat:
+   local bl = { }
+   enterblock (fs, bl, true)
+   -- imitating forlist:
+   local e, base = { }, fs.freereg
+   new_localvar (fs, "(for generator)", 0)
+   new_localvar (fs, "(for state)", 1)
+   new_localvar (fs, "(for control)", 2)
+   for i = 1, #vars do new_localvar (fs, vars[i][1], i+2) end
+   explist (fs, vals, e)
+   adjust_assign (fs, 3, #vals, e)
+   luaK:checkstack (fs, 3)
+   forbody (fs, body, base, #vars, false)
+   -- back to forstat:
+   leaveblock (fs)
+end
+
+------------------------------------------------------------------------
+
+function stat.Fornum (fs, ast)
+
+   local function exp1 (ast_e)
+      local e = { }
+      expr.expr (fs, ast_e, e)
+      luaK:exp2nextreg (fs, e)
+   end
+   -- imitating forstat:
+   local bl = { }
+   enterblock (fs, bl, true)
+   -- imitating fornum:
+   local base = fs.freereg
+   new_localvar (fs, "(for index)", 0)
+   new_localvar (fs, "(for limit)", 1)
+   new_localvar (fs, "(for step)", 2)
+   new_localvar (fs, ast[1][1], 3) 
+   exp1 (ast[2]) -- initial value
+   exp1 (ast[3]) -- limit
+   if #ast == 5 then exp1 (ast[4]) else -- default step = 1
+      luaK:codeABx(fs, "OP_LOADK", fs.freereg, luaK:numberK(fs, 1))
+      luaK:reserveregs(fs, 1)
+   end
+   forbody (fs, ast[#ast], base, 1, true)
+   -- back to forstat:
+   leaveblock (fs)
+end
+
+------------------------------------------------------------------------
+function stat.Repeat (fs, ast)
+  local repeat_init = luaK:getlabel (fs)
+  local bl1, bl2 = { }, { }
+  enterblock (fs, bl1, true)
+  enterblock (fs, bl2, false)
+  chunk (fs, ast[1])
+  local condexit = cond (fs, ast[2])
+  if not bl2.upval then
+    leaveblock (fs)
+    luaK:patchlist (fs, condexit, repeat_init)
+  else
+    stat.Break (fs)
+    luaK:patchtohere (fs, condexit)
+    leaveblock (fs)
+    luaK:patchlist (fs, luaK:jump (fs), repeat_init)
+  end
+  leaveblock (fs)
+end
+
+------------------------------------------------------------------------
+
+function stat.While (fs, ast)
+   local whileinit = luaK:getlabel (fs)
+   local condexit = cond (fs, ast[1])
+   local bl = { }
+   enterblock (fs, bl, true)
+   block (fs, ast[2])
+   luaK:patchlist (fs, luaK:jump (fs), whileinit)
+   leaveblock (fs)
+   luaK:patchtohere (fs, condexit);
+end
+
+------------------------------------------------------------------------
+
+-- FIXME: it's cumbersome to write this in this semi-recursive way.
+function stat.Set (fs, ast)
+   local ast_lhs, ast_vals, e = ast[1], ast[2], { }
+
+   --print "\n\nSet ast_lhs ast_vals:"
+   --print(disp.ast(ast_lhs))
+   --print(disp.ast(ast_vals))
+
+   local function let_aux (lhs, nvars)
+      local legal = { VLOCAL=1, VUPVAL=1, VGLOBAL=1, VINDEXED=1 }
+      --printv(lhs)
+      if not legal [lhs.v.k] then 
+         error ("Bad lhs expr: "..pp.tostring(ast_lhs)) 
+      end
+      if nvars < #ast_lhs then -- this is not the last lhs
+         local nv = { v = { }, prev = lhs }
+         expr.expr (fs, ast_lhs [nvars+1], nv.v)
+         if nv.v.k == "VLOCAL" then check_conflict (fs, lhs, nv.v) end
+         let_aux (nv, nvars+1)
+      else -- this IS the last lhs
+         explist (fs, ast_vals, e)
+         if #ast_vals < nvars then            
+            adjust_assign (fs, nvars, #ast_vals, e)
+         elseif #ast_vals > nvars then 
+            adjust_assign (fs, nvars, #ast_vals, e)
+            fs.freereg = fs.freereg - #ast_vals + nvars
+         else -- #ast_vals == nvars (and we're at last lhs)
+            luaK:setoneret (fs, e)  -- close last expression
+            luaK:storevar (fs, lhs.v, e)
+            return  -- avoid default
+         end
+      end
+      init_exp (e, "VNONRELOC", fs.freereg - 1)  -- default assignment
+      luaK:storevar (fs, lhs.v, e)
+   end
+
+   local lhs = { v = { }, prev = nil }
+   expr.expr (fs, ast_lhs[1], lhs.v)
+   let_aux( lhs, 1)
+end  
+
+------------------------------------------------------------------------
+
+function stat.Call (fs, ast)
+   local v = {  }
+   expr.Call (fs, ast, v)
+   luaP:SETARG_C (luaK:getcode(fs, v), 1)
+end
+
+------------------------------------------------------------------------
+
+function stat.Invoke (fs, ast)
+   local v = {  }
+   expr.Invoke (fs, ast, v)
+   --FIXME: didn't check that, just copied from stat.Call
+   luaP:SETARG_C (luaK:getcode(fs, v), 1)
+end
+
+
+local function patch_goto (fs, src, dst)
+
+end
+
+
+------------------------------------------------------------------------
+-- Goto/Label data:
+-- fs.labels        :: string => { nactvar :: int; pc :: int }
+-- fs.forward_gotos :: string => list(int)
+--
+-- fs.labels goes from label ids to the number of active variables at
+-- the label's PC, and that PC
+--
+-- fs.forward_gotos goes from label ids to the list of the PC where
+-- some goto wants to jump to this label. Since gotos are actually made
+-- up of two instructions OP_CLOSE and OP_JMP, it's the first instruction's
+-- PC that's stored in fs.forward_gotos
+--
+-- Note that backward gotos aren't stored: since their destination is knowns
+-- when they're compiled, their target is directly set.
+------------------------------------------------------------------------
+
+------------------------------------------------------------------------
+-- Set a Label to jump to with Goto
+------------------------------------------------------------------------
+function stat.Label (fs, ast)
+   local label_id = ast[1]
+   if type(label_id)=='table' then label_id=label_id[1] end
+   -- printf("Label %s at PC %i", label_id, fs.pc)
+   -------------------------------------------------------------------
+   -- Register the label, so that future gotos can use it.
+   -------------------------------------------------------------------
+   if   fs.labels [label_id] then error("Duplicate label in function")
+   else fs.labels [label_id] = { pc = fs.pc; nactvar = fs.nactvar } end
+   local gotos = fs.forward_gotos [label_id]
+   if gotos then 
+      ----------------------------------------------------------------
+      -- Patch forward gotos which were targetting this label.
+      ----------------------------------------------------------------
+      for _, goto_pc in ipairs(gotos) do
+         local close_instr  = fs.f.code[goto_pc]
+         local jmp_instr    = fs.f.code[goto_pc+1]
+         local goto_nactvar = luaP:GETARG_A (close_instr)
+         if fs.nactvar < goto_nactvar then 
+            luaP:SETARG_A (close_instr, fs.nactvar) end
+         luaP:SETARG_sBx (jmp_instr, fs.pc - goto_pc - 2)
+      end
+      ----------------------------------------------------------------
+      -- Gotos are patched, they can be forgotten about (when the
+      -- function will be finished, it will be checked that all gotos
+      -- have been patched, by checking that forward_goto is empty).
+      ----------------------------------------------------------------
+      fs.forward_gotos[label_id] = nil
+   end 
+end
+
+------------------------------------------------------------------------
+-- jumps to a label set with stat.Label. 
+-- Argument must be a String or an Id
+-- FIXME/optim: get rid of useless OP_CLOSE when nactvar doesn't change.
+-- Thsi must be done both here for backward gotos, and in
+-- stat.Label for forward gotos.
+------------------------------------------------------------------------
+function stat.Goto (fs, ast)
+   local label_id = ast[1]
+   if type(label_id)=='table' then label_id=label_id[1] end
+   -- printf("Goto %s at PC %i", label_id, fs.pc)
+   local label = fs.labels[label_id]
+   if label then
+      ----------------------------------------------------------------
+      -- Backward goto: the label already exists, so I can get its
+      -- nactvar and address directly. nactvar is used to close
+      -- upvalues if we get out of scoping blocks by jumping.
+      ----------------------------------------------------------------
+      if fs.nactvar > label.nactvar then
+         luaK:codeABC  (fs, "OP_CLOSE", label.nactvar, 0, 0) end
+      local offset = label.pc - fs.pc - 1
+      luaK:codeAsBx (fs, "OP_JMP", 0, offset)
+   else
+      ----------------------------------------------------------------
+      -- Forward goto: will be patched when the matching label is
+      -- found, forward_gotos[label_id] keeps the PC of the CLOSE
+      -- instruction just before the JMP. [stat.Label] will use it to
+      -- patch the OP_CLOSE and the OP_JMP.
+      ----------------------------------------------------------------
+      if not fs.forward_gotos[label_id] then 
+         fs.forward_gotos[label_id] = { } end
+      table.insert (fs.forward_gotos[label_id], fs.pc)
+      luaK:codeABC  (fs, "OP_CLOSE", fs.nactvar, 0, 0)
+      luaK:codeAsBx (fs, "OP_JMP", 0, luaK.NO_JUMP)
+   end
+end
+
+------------------------------------------------------------------------
+------------------------------------------------------------------------
+-- 
+-- Expression parsers table
+-- 
+------------------------------------------------------------------------
+------------------------------------------------------------------------
+
+function expr.expr (fs, ast, v)
+   if type(ast) ~= "table" then 
+      error ("Expr AST expected, got "..pp.tostring(ast)) end
+
+   if ast.lineinfo then fs.lastline = ast.lineinfo.last.line end
+
+   --debugf (" - Expression %s", table.tostring (ast))
+   local parser = expr[ast.tag]
+   if parser then parser (fs, ast, v)
+   elseif not ast.tag then 
+       error ("No tag in expression "..
+              pp.tostring(ast, {line_max=80, hide_hash=1, metalua_tag=1}))
+   else 
+      error ("No parser for node `"..ast.tag) end
+   --debugf (" - /Expression `%s", ast.tag)
+end
+
+------------------------------------------------------------------------
+
+function expr.Nil (fs, ast, v) init_exp (v, "VNIL", 0) end
+function expr.True (fs, ast, v) init_exp (v, "VTRUE", 0) end
+function expr.False (fs, ast, v) init_exp (v, "VFALSE", 0) end
+function expr.String (fs, ast, v) codestring (fs, v, ast[1]) end
+function expr.Number (fs, ast, v)
+   init_exp (v, "VKNUM", 0)
+   v.nval = ast[1] 
+end
+
+function expr.Paren (fs, ast, v) 
+   expr.expr (fs, ast[1], v)
+   luaK:setoneret (fs, v)
+end
+
+function expr.Dots (fs, ast, v)
+   assert (fs.f.is_vararg ~= 0, "No vararg in this function")
+   -- NEEDSARG flag is set if and only if the function is a vararg,
+   -- but no vararg has been used yet in its code.
+   if fs.f.is_vararg < M.VARARG_NEEDSARG then 
+      fs.f.is_varag = fs.f.is_vararg - M.VARARG_NEEDSARG end
+   init_exp (v, "VVARARG", luaK:codeABC (fs, "OP_VARARG", 0, 1, 0))
+end
+
+------------------------------------------------------------------------
+
+function expr.Table (fs, ast, v)
+  local pc = luaK:codeABC(fs, "OP_NEWTABLE", 0, 0, 0)
+  local cc = { v = { } , na = 0, nh = 0, tostore = 0, t = v }  -- ConsControl
+  init_exp (v, "VRELOCABLE", pc)
+  init_exp (cc.v, "VVOID", 0)  -- no value (yet)
+  luaK:exp2nextreg (fs, v)  -- fix it at stack top (for gc)
+  for i = 1, #ast do
+    assert(cc.v.k == "VVOID" or cc.tostore > 0)
+    closelistfield(fs, cc);
+    (ast[i].tag == "Pair" and recfield or listfield) (fs, ast[i], cc)
+  end    
+  lastlistfield(fs, cc)
+
+  -- Configure [OP_NEWTABLE] dimensions
+  luaP:SETARG_B(fs.f.code[pc], int2fb(cc.na)) -- set initial array size
+  luaP:SETARG_C(fs.f.code[pc], int2fb(cc.nh))  -- set initial table size
+  --printv(fs.f.code[pc])
+end  
+
+
+------------------------------------------------------------------------
+
+function expr.Function (fs, ast, v)
+   if ast.lineinfo then fs.lastline = ast.lineinfo.last.line end
+
+  local new_fs = open_func(fs)
+  if ast.lineinfo then 
+    new_fs.f.lineDefined, new_fs.f.lastLineDefined = 
+        ast.lineinfo.first.line, ast.lineinfo.last.line
+  end
+  parlist (new_fs, ast[1])
+  chunk (new_fs, ast[2])
+  close_func (new_fs)
+  pushclosure(fs, new_fs, v)
+end  
+
+------------------------------------------------------------------------
+
+function expr.Op (fs, ast, v)
+   if ast.lineinfo then fs.lastline = ast.lineinfo.last.line end
+   local op = ast[1]
+
+   if #ast == 2 then
+      expr.expr (fs, ast[2], v)
+      luaK:prefix (fs, op, v)
+   elseif #ast == 3 then
+      local v2 = { }
+      expr.expr (fs, ast[2], v)
+      luaK:infix (fs, op, v)
+      expr.expr (fs, ast[3], v2)
+      luaK:posfix (fs, op, v, v2)
+   else
+      error ("Wrong arg number")
+   end
+end  
+
+------------------------------------------------------------------------
+
+function expr.Call (fs, ast, v)
+   expr.expr (fs, ast[1], v)
+   luaK:exp2nextreg (fs, v)
+   funcargs(fs, ast, v, 2)
+   --debugf("after expr.Call: %s, %s", v.k, luaP.opnames[luaK:getcode(fs, v).OP])
+end  
+
+------------------------------------------------------------------------
+-- `Invoke{ table key args }
+function expr.Invoke (fs, ast, v)
+   expr.expr (fs, ast[1], v)
+   luaK:dischargevars (fs, v)
+   local key = { }
+   codestring (fs, key, ast[2][1])
+   luaK:_self (fs, v, key)
+   funcargs (fs, ast, v, 3)
+end  
+
+------------------------------------------------------------------------
+
+function expr.Index (fs, ast, v)
+   if #ast ~= 2 then
+      print("\n\nBAD INDEX AST:")
+      pp.print(ast)
+      error ("generalized indexes not implemented") end
+
+   if ast.lineinfo then fs.lastline = ast.lineinfo.last.line end
+
+   --assert(fs.lastline ~= 0, ast.tag)
+
+   expr.expr (fs, ast[1], v)
+   luaK:exp2anyreg (fs, v)
+
+   local k = { }
+   expr.expr (fs, ast[2], k)
+   luaK:exp2val (fs, k)
+   luaK:indexed (fs, v, k)
+end  
+
+------------------------------------------------------------------------
+
+function expr.Id (fs, ast, v)
+   assert (ast.tag == "Id")
+   singlevar (fs, ast[1], v)
+end
+
+------------------------------------------------------------------------
+
+function expr.Stat (fs, ast, v)
+   --printf(" * Stat: %i actvars, first freereg is %i", fs.nactvar, fs.freereg)
+   --printf("   actvars: %s", table.tostring(fs.actvar))
+
+   -- Protect temporary stack values by pretending they are local
+   -- variables. Local vars are in registers 0 ... fs.nactvar-1, 
+   -- and temporary unnamed variables in fs.nactvar ... fs.freereg-1
+   local save_nactvar = fs.nactvar
+
+   -- Eventually, the result should go on top of stack *after all
+   -- `Stat{ } related computation and string usage is over. The index
+   -- of this destination register is kept here:
+   local dest_reg = fs.freereg
+
+   -- There might be variables in actvar whose register is > nactvar,
+   -- and therefore will not be protected by the "nactvar := freereg"
+   -- trick. Indeed, `Local only increases nactvar after the variable
+   -- content has been computed. Therefore, in 
+   -- "local foo = -{`Stat{...}}", variable foo will be messed up by
+   -- the compilation of `Stat.
+   -- FIX: save the active variables at indices >= nactvar in
+   -- save_actvar, and restore them after `Stat has been computed.
+   --
+   -- I use a while rather than for loops and length operators because
+   -- fs.actvar is a 0-based array...
+   local save_actvar = { } do
+      local i = fs.nactvar
+      while true do
+         local v = fs.actvar[i]
+         if not v then break end
+         --printf("save hald-baked actvar %s at index %i", table.tostring(v), i)
+         save_actvar[i] = v
+         i=i+1
+      end
+   end
+
+   fs.nactvar = fs.freereg -- Now temp unnamed registers are protected
+   enterblock (fs, { }, false)
+   chunk (fs, ast[1])
+   expr.expr (fs, ast[2], v)
+   luaK:exp2nextreg (fs, v)
+   leaveblock (fs)
+   luaK:exp2reg (fs, v, dest_reg)
+
+   -- Reserve the newly allocated stack level
+   -- Puzzled note: here was written "fs.freereg = fs.freereg+1".
+   -- I'm pretty sure it should rather be dest_reg+1, but maybe
+   -- both are equivalent?
+   fs.freereg = dest_reg+1
+
+   -- Restore nactvar, so that intermediate stacked value stop
+   -- being protected.
+   --printf("   nactvar back from %i to %i", fs.nactvar, save_nactvar)
+   fs.nactvar = save_nactvar
+
+   -- restore messed-up unregistered local vars
+   for i, j in pairs(save_actvar) do
+      --printf("   Restoring actvar %i", i)
+      fs.actvar[i] = j
+   end
+   --printf(" * End of Stat")
+end
+
+------------------------------------------------------------------------
+-- Main function: ast --> proto
+------------------------------------------------------------------------
+function M.ast_to_proto (ast, source)
+  local fs = open_func (nil)
+  fs.f.is_vararg = M.VARARG_ISVARARG
+  chunk (fs, ast)
+  close_func (fs)
+  assert (fs.prev == nil)
+  assert (fs.f.nups == 0)
+  assert (fs.nestlevel == 0)
+  if source then fs.f.source = source end
+  return fs.f, source
+end
+
+return M

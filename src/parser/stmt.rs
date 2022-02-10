@@ -28,7 +28,7 @@ impl<'cache, 'source> Parser<'cache, 'source> {
             T![break] => self.r_break(),
             T![function] => self.r_func(false),
             T![local] => self.r_decl(),
-            T![ident] => self.r_maybe_assign(),
+            T![ident] | T!['('] => self.r_maybe_assign(),
             T![;] => self.r_semicolon(),
             T![eof] => None,
             _ => {
