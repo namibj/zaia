@@ -6,7 +6,7 @@ impl<'cache, 'source> Parser<'cache, 'source> {
         if self.at() == T!['('] {
             let marker = self.start();
             self.r_expr();
-            return Some(marker.complete(self, T![simple_expr]))
+            return Some(marker.complete(self, T![simple_expr]));
         }
 
         let mut lhs = self.r_ident()?;

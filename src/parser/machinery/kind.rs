@@ -2,6 +2,7 @@ use std::fmt::{self, Display};
 
 use logos::{Lexer, Logos};
 
+#[allow(clippy::manual_non_exhaustive)]
 #[derive(Logos, Debug, PartialEq, Eq, PartialOrd, Ord, Hash, Clone, Copy)]
 #[repr(u16)]
 pub enum SyntaxKind {
@@ -250,10 +251,7 @@ pub enum SyntaxKind {
 
 impl SyntaxKind {
     pub fn is_trivia(self) -> bool {
-        match self {
-            SyntaxKind::Whitespace | SyntaxKind::Comment => true,
-            _ => false,
-        }
+        matches!(self, SyntaxKind::Whitespace | SyntaxKind::Comment)
     }
 }
 
