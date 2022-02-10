@@ -43,7 +43,7 @@ pub enum SyntaxKind {
     AssignStmt,
     LiteralExpr,
 
-    #[regex(r"[ \n\t\f\r;]+", logos::skip)]
+    #[regex(r"[ \n\t\f\r]+", logos::skip)]
     Whitespace,
 
     #[regex("--", skip_comment)]
@@ -240,6 +240,9 @@ pub enum SyntaxKind {
     #[token("...")]
     TDot,
 
+    #[token(";")]
+    Semicolon,
+
     #[doc(hidden)]
     #[allow(clippy::upper_case_acronyms)]
     __LAST,
@@ -421,6 +424,7 @@ macro_rules! T {
     [.] => { $crate::parser::machinery::kind::SyntaxKind::Dot };
     [..] => { $crate::parser::machinery::kind::SyntaxKind::DDot };
     [...] => { $crate::parser::machinery::kind::SyntaxKind::TDot };
+    [;] => { $crate::parser::machinery::kind::SyntaxKind::Semicolon };
     [__LAST] => { $crate::parser::machinery::kind::SyntaxKind::__LAST };
 }
 

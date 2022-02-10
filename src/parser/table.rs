@@ -20,8 +20,9 @@ impl<'cache, 'source> Parser<'cache, 'source> {
                 },
             }
 
-            if self.at() == T![,] {
-                self.expect(T![,]);
+            let t = self.at();
+            if t == T![,] || t == T![;] {
+                self.expect(t);
             } else {
                 self.expect(T!['}']);
                 break;

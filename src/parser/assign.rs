@@ -30,16 +30,21 @@ impl<'cache, 'source> Parser<'cache, 'source> {
     pub(super) fn r_decl(&mut self) -> Option<CompletedMarker> {
         let marker = self.start();
         self.expect(T![local]);
-        self.r_decl_target();
 
-        while self.at() == T![,] {
-            self.expect(T![,]);
+        if self.at() == T![function] {
+            self.r_func(false);
+        } else {
             self.r_decl_target();
-        }
 
-        if self.at() == T![=] {
-            self.expect(T![=]);
-            self.r_expr_list();
+            while self.at() == T![,] {
+                self.expect(T![,]);
+                self.r_decl_target();
+            }
+
+            if self.at() == T![=] {
+                self.expect(T![=]);
+                self.r_expr_list();
+            }
         }
 
         Some(marker.complete(self, T![decl_stmt]))

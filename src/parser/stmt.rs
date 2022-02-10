@@ -29,6 +29,7 @@ impl<'cache, 'source> Parser<'cache, 'source> {
             T![function] => self.r_func(false),
             T![local] => self.r_decl(),
             T![ident] => self.r_maybe_assign(),
+            T![;] => self.r_semicolon(),
             T![eof] => None,
             _ => {
                 let span = self.error_eat_until(STATEMENT_RECOVERY);
@@ -46,5 +47,11 @@ impl<'cache, 'source> Parser<'cache, 'source> {
                 None
             },
         }
+    }
+
+    fn r_semicolon(&mut self) -> Option<CompletedMarker> {
+        let marker = self.start();
+        self.expect(T![;]);
+        Some(marker.complete(self, T![;]))
     }
 }
