@@ -1,17 +1,25 @@
 use std::{borrow::Borrow, hash::Hash};
 
-use hashbrown::{hash_map::DefaultHashBuilder, HashMap};
+use fxhash::FxBuildHasher;
+use hashbrown::HashMap;
 
-use super::{super::Heap, Value};
+use super::{
+    super::{
+        gc::{Trace, Visitor},
+        Heap,
+    },
+    RefValue,
+    Value,
+};
 
 pub struct Table {
-    inner: HashMap<Value, Value, DefaultHashBuilder, Heap>,
+    inner: HashMap<Value, Value, FxBuildHasher, Heap>,
 }
 
 impl Table {
     pub fn new(heap: Heap) -> Self {
         Table {
-            inner: HashMap::with_capacity_in(0, heap),
+            inner: HashMap::with_hasher_in(FxBuildHasher::default(), heap),
         }
     }
 
@@ -37,5 +45,14 @@ impl Table {
 
     pub fn remove(&mut self, key: &Value) -> Option<Value> {
         self.inner.remove(key)
+    }
+}
+
+impl Trace<RefValue> for Table {
+    fn visit(&self, visitor: &mut Visitor<RefValue>) {
+        self.inner.iter().for_each(|(key, value)| {
+            key.visit(visitor);
+            value.visit(visitor);
+        });
     }
 }

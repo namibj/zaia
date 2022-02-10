@@ -1,19 +1,18 @@
-mod function;
+mod closure;
 mod table;
 
-use std::{borrow::Borrow, cmp, hash};
+use std::{cmp, hash};
 
-pub use function::Function;
+pub use closure::Closure;
 pub use table::Table;
 
-use super::gc::Handle;
+use super::gc::{Handle, Trace, Visitor};
 
 #[derive(Clone)]
 pub enum Value {
     Boolean(bool),
     Integer(i32),
     Float(f32),
-    String(Vec<u8>),
     Ref(Handle<RefValue>),
 }
 
@@ -23,7 +22,6 @@ impl cmp::PartialEq for Value {
             (Value::Boolean(a), Value::Boolean(b)) => a == b,
             (Value::Integer(a), Value::Integer(b)) => a == b,
             (Value::Float(a), Value::Float(b)) => a == b,
-            (Value::String(a), Value::String(b)) => a == b,
             (Value::Ref(a), Value::Ref(b)) => a == b,
             _ => false,
         }
@@ -38,7 +36,6 @@ impl cmp::PartialOrd for Value {
             (Value::Boolean(a), Value::Boolean(b)) => a.partial_cmp(b),
             (Value::Integer(a), Value::Integer(b)) => a.partial_cmp(b),
             (Value::Float(a), Value::Float(b)) => a.partial_cmp(b),
-            (Value::String(a), Value::String(b)) => a.partial_cmp(b),
             (Value::Ref(_), Value::Ref(_)) => None,
             _ => None,
         }
@@ -51,7 +48,6 @@ impl cmp::Ord for Value {
             (Value::Boolean(a), Value::Boolean(b)) => a.cmp(b),
             (Value::Integer(a), Value::Integer(b)) => a.cmp(b),
             (Value::Float(a), Value::Float(b)) => float_cmp(*a, *b),
-            (Value::String(a), Value::String(b)) => a.cmp(b),
             (Value::Ref(_), Value::Ref(_)) => cmp::Ordering::Equal,
             _ => cmp::Ordering::Equal,
         }
@@ -64,24 +60,44 @@ impl hash::Hash for Value {
             Value::Boolean(a) => a.hash(state),
             Value::Integer(a) => a.hash(state),
             Value::Float(a) => a.to_ne_bytes().hash(state),
-            Value::String(ref a) => a.hash(state),
             Value::Ref(ref a) => a.hash(state),
         }
     }
 }
 
-impl Borrow<[u8]> for Value {
-    fn borrow(&self) -> &[u8] {
-        match self {
-            Value::String(a) => a,
-            _ => panic!("Value::borrow() called on non-string value"),
+impl Trace<RefValue> for Value {
+    fn visit(&self, visitor: &mut Visitor<RefValue>) {
+        if let Value::Ref(value) = self {
+            unsafe {
+                value.get_unchecked().visit(visitor);
+            }
         }
     }
 }
 
 pub enum RefValue {
-    Function(Function),
+    String(Vec<u8>),
+    Closure(Closure),
     Table(Table),
+}
+
+impl RefValue {
+    pub fn cast_string(&self) -> &[u8] {
+        match self {
+            RefValue::String(a) => a,
+            _ => unreachable!(),
+        }
+    }
+}
+
+impl Trace<RefValue> for RefValue {
+    fn visit(&self, visitor: &mut Visitor<RefValue>) {
+        match self {
+            RefValue::String(_a) => (),
+            RefValue::Closure(_a) => (),
+            RefValue::Table(a) => a.visit(visitor),
+        }
+    }
 }
 
 fn float_cmp(a: f32, b: f32) -> cmp::Ordering {

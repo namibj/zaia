@@ -1,17 +1,17 @@
-use super::token::Token;
+use super::kind::SyntaxKind;
 use crate::T;
 
 pub const INDEX_BINDING_POWER: i32 = 22;
 pub const CALL_BINDING_POWER: i32 = 22;
 
-pub fn prefix_binding_power(op: Token) -> ((), i32) {
+pub fn prefix_binding_power(op: SyntaxKind) -> ((), i32) {
     match op {
         T![not] | T![+] | T![-] | T![#] | T![~] => ((), 21),
         _ => unreachable!(),
     }
 }
 
-pub fn infix_binding_power(op: Token) -> Option<(i32, i32)> {
+pub fn infix_binding_power(op: SyntaxKind) -> Option<(i32, i32)> {
     Some(match op {
         T![or] => (1, 2),
         T![and] => (3, 4),

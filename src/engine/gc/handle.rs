@@ -1,4 +1,4 @@
-use std::{cmp, hash};
+use std::{cmp, fmt, hash};
 
 pub struct Handle<T> {
     ptr: *mut T,
@@ -25,6 +25,12 @@ impl<T> Handle<T> {
 
     pub unsafe fn destroy(self) {
         Box::from_raw(self.ptr);
+    }
+}
+
+impl<T> fmt::Debug for Handle<T> {
+    fn fmt(&self, f: &mut fmt::Formatter) -> fmt::Result {
+        write!(f, "Handle({:p})", self.ptr)
     }
 }
 
