@@ -23,7 +23,7 @@ impl<'cache, 'source> State<'cache, 'source> {
                 .spanned()
                 .map(|(kind, range)| (kind, Span::from_range(range))),
         );
-        
+
         tokens.push((T![eof], Span::from_range(0..0)));
         let estimated_events = source.len() / 4;
 

@@ -92,12 +92,11 @@ mod tests {
         };
     }
 
-    //parse_and_verify!(function, "test-files/function.lua");
-    //parse_and_verify!(op_prec, "test-files/op_prec.lua");
-    //parse_and_verify!(if, "test-files/if.lua");
-    //parse_and_verify!(declare, "test-files/declare.lua");
+    parse_and_verify!(function, "test-files/function.lua");
+    parse_and_verify!(op_prec, "test-files/op_prec.lua");
+    parse_and_verify!(if, "test-files/if.lua");
+    parse_and_verify!(declare, "test-files/declare.lua");
     parse_and_verify!(literal, "test-files/literal.lua");
-    //parse_and_verify!(comment, "test-files/comment.lua");
-    //parse_and_verify!(mixed, "test-files/mixed.lua");
-    //parse_and_verify!(teal, "test-files/teal.lua");
+    parse_and_verify!(comment, "test-files/comment.lua");
+    parse_and_verify!(mixed, "test-files/mixed.lua");
 }
