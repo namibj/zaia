@@ -310,6 +310,10 @@ fn skip_long_comment(lexer: &mut Lexer<SyntaxKind>, delim_len: usize) {
 }
 
 fn starts_with_long_delimiter(slice: &str, delim: char) -> Option<usize> {
+    if !slice.starts_with("[[") && !slice.starts_with("[=]") {
+        return None;
+    }
+
     for (i, _) in slice.char_indices() {
         if is_long_delimiter(&slice[..i], delim) {
             return Some(i);
