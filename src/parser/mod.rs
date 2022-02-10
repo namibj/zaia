@@ -84,7 +84,7 @@ mod tests {
                     let mut cache = NodeCache::new();
                     let source = fs::read_to_string($path).unwrap();
                     let (syntax_tree, reports) = parse(&mut cache, &source);
-                    let syntax_tree_debug = syntax_tree_debug(&mut cache, &syntax_tree);
+                    let syntax_tree_debug = syntax_tree_debug(&cache, &syntax_tree);
                     assert!(reports.is_empty());
                     assert_snapshot!(syntax_tree_debug);
                 }
