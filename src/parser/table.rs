@@ -35,7 +35,6 @@ impl<'cache, 'source> Parser<'cache, 'source> {
         match self.at() {
             T![ident] if self.peek() == T![=] => self.r_table_elem_map(),
             T!['['] => self.r_table_elem_generic(),
-            T![...] => self.r_table_elem_variadic(),
             t if token_is_expr_start(t) => self.r_table_elem_array(),
             _ => unreachable!(),
         }
@@ -63,11 +62,5 @@ impl<'cache, 'source> Parser<'cache, 'source> {
         self.expect(T![=]);
         self.r_expr();
         Some(marker.complete(self, T![table_generic_elem]))
-    }
-
-    fn r_table_elem_variadic(&mut self) -> Option<CompletedMarker> {
-        let marker = self.start();
-        self.expect(T![...]);
-        Some(marker.complete(self, T![table_variadic_elem]))
     }
 }

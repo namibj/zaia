@@ -23,6 +23,7 @@ pub fn token_is_expr_start(token: SyntaxKind) -> bool {
         || token_is_unary_op(token)
         || token == T!['{']
         || token == T![function]
+        || token == T![...]
 }
 
 pub fn token_is_unary_op(token: SyntaxKind) -> bool {
