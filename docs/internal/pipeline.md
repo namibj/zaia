@@ -10,6 +10,7 @@ Please see the index for the internal documentation for links detailing the vari
 https://arxiv.org/abs/1912.05036
 sea of nodes
 equality saturation
+https://arxiv.org/abs/2111.13040
 
 ## Interpreter Pipeline
 
