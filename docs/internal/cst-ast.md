@@ -1,1 +1,1 @@
-# Concrete and abstract syntax trres (CST and AST)
+# Concrete and Abstract Syntax Trees (CST and AST)
