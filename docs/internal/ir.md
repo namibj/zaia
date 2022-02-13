@@ -10,9 +10,15 @@ The IR combines multiple approaches from recent advancement in compiler theory a
 
 The IR is based on a [Sea-of-Nodes](https://darksi.de/d.sea-of-nodes/) like structure which combines useful properties from control flow graphs and data flow graphs. The IR is organized into basic blocks, each basic block being a block non-branching statements which may have one branch at the end. To facilitate common optimizations, the IR is also in SSA form. This means that a variable is only assigned to once and reassignments are translated into new variabless.
 
-## Type inference 
+In addition, each SSA variable also stores a set of constraints about the value that be deduced from constant evaluation. For example, an integer variable may have a constraint that defines it to be in the range `1..10`. Similarly, a dynamically typed value may have a constraint that it must be a string or an integer. This enables features like flow-typing and scalar evolution analysis.
+
+## Type inference
+
+Type inference is done on the SSA form variables in the IR, they can be mapped back to AST for LSP purposes. The type inference algorithm is is based on Typescript and is a variation of the classic Hindley-Miller algorithm.
 
 ## Type checking
+
+After type inference, the IR is checked for type errors. This is done by checking the constraints on the SSA variables and matching argument types against expected types.
 
 ## Optimization
 
