@@ -9,7 +9,6 @@ Below is a list of links to pages that contain further documentation about vario
 - [Pipeline](/docs/internal/pipeline.md)
 - [Parser](/docs/internal/parser.md)
 - [CST and AST](/docs/internal/cst-ast.md)
-- [HIR](/docs/internal/hir.md)
-- [LIR](/docs/internal/lir.md)
+- [IR](/docs/internal/ir.md)
 - [Bytecode](/docs/internal/bytecode.md)
 - [Virtual Machine](/docs/internal/virtual-machine.md)
