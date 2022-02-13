@@ -7,6 +7,10 @@ There are two primary pipelines, the initial pipeline that transforms source cod
 
 Please see the index for the internal documentation for links detailing the various stages and representations used.
 
+https://arxiv.org/abs/1912.05036
+sea of nodes
+equality saturation
+
 ## Interpreter Pipeline
 
 ```
