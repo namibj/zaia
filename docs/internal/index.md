@@ -11,4 +11,6 @@ Below is a list of links to pages that contain further documentation about vario
 - [CST and AST](/docs/internal/cst-ast.md)
 - [IR](/docs/internal/ir.md)
 - [Bytecode](/docs/internal/bytecode.md)
-- [Virtual Machine](/docs/internal/virtual-machine.md)
+- [Virtual machine](/docs/internal/virtual-machine.md)
+- [Memory management](/docs/internal/memory-management.md)
+- [Value representation](/docs/internal/value-representation.md)
