@@ -1,1 +1,1 @@
-# High-level intermediate representation (HIR)
+# High-level Intermediate Representation (HIR)
