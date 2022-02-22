@@ -4,6 +4,8 @@ use super::gc::{Handle, Trace, Visitor};
 #[cfg(not(target_endian = "little"))]
 compile_error!("zaia currently only supports little-endian platforms");
 
+// TODO: Investigate WebKit Strategy https://brionv.com/log/2018/05/17/javascript-engine-internals-nan-boxing/
+
 const BOOL_MASK: u64 = 0x7FFE000000000002;
 const INTEGER_MASK: u64 = 0x7FFC000000000000;
 const FLOAT_MASK: u64 = 0xFFFF000000000000;
