@@ -4,6 +4,7 @@ use super::gc::{Handle, Trace, Visitor};
 #[cfg(not(target_endian = "little"))]
 compile_error!("zaia currently only supports little-endian platforms");
 
+// The NaN-boxing encoding used is loosely based off https://piotrduperas.com/posts/nan-boxing which is in turned based off SpiderMonkey.
 // TODO: Investigate WebKit Strategy https://brionv.com/log/2018/05/17/javascript-engine-internals-nan-boxing/
 
 const BOOL_MASK: u64 = 0x7FFE000000000002;
