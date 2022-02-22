@@ -1,11 +1,41 @@
 use std::{cmp, hash};
 use super::gc::{Handle, Trace, Visitor};
 
-#[cfg(target_endian = "big")]
-compile_error!("zaia does not yet support big-endian platforms");
+#[cfg(not(target_endian = "little"))]
+compile_error!("zaia currently only supports little-endian platforms");
 
-fn is_smi(x: usize) -> bool {
-    return false
+const BOOL_MASK: u64 = 0x7FFE000000000002;
+const INTEGER_MASK: u64 = 0x7FFC000000000000;
+const FLOAT_MASK: u64 = 0xFFFF000000000000;
+const TABLE_MASK: u64 = 0xFFFC000000000000;
+const STRING_MASK: u64 = 0xFFFE000000000000;
+
+const NIL_VALUE: u64 = 0x7FFE000000000000;
+const TRUE_VALUE: u64 = BOOL_MASK | 3;
+const FALSE_VALUE: u64 = BOOL_MASK | 2;
+
+fn is_nil(x: u64) -> bool {
+    x == NIL_VALUE
+}
+
+fn is_bool(x: u64) -> bool {
+    (x & BOOL_MASK) == BOOL_MASK
+}
+
+fn is_int(x: u64) -> bool {
+    (x & FLOAT_MASK) == INTEGER_MASK
+}
+
+fn is_float(x: u64) -> bool {
+    (x & FLOAT_MASK) != FLOAT_MASK
+}
+
+fn is_table(x: u64) -> bool {
+    (x & FLOAT_MASK) == TABLE_MASK
+}
+
+fn is_string(x: u64) -> bool {
+    (x & FLOAT_MASK) == STRING_MASK
 }
 
 // Value represents runtime values such as integers and strings.
@@ -13,16 +43,19 @@ fn is_smi(x: usize) -> bool {
 //
 // We define the following types:
 // Value
-//   - Integer: a signed 31-bit integer
-//   - Float: a 32-bit IEEE-754 floating point number
+//   - Nil
+//   - True
+//   - False
+//   - Integer: a signed 32-bit integer
+//   - Float: a 64-bit IEEE-754 floating point number
 //   - Object
-//     - String: a heap-allocated UTF-8 string
 //     - Table: a Lua table
+//     - String: a heap-allocated UTF-8 string
 //     - Function: a Lua function, possibly with captured upvalues
 //     - Userdata: a custom type defined outside of Lua
 #[derive(Clone)]
 pub struct Value {
-    data: usize,
+    data: u64,
 }
 
 impl Value {
@@ -30,7 +63,7 @@ impl Value {
         todo!()
     }
 
-    pub fn float(value: f32) -> Self {
+    pub fn float(value: f64) -> Self {
         todo!()
     }
 }
