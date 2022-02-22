@@ -26,7 +26,6 @@ pub enum SyntaxKind {
     ForGenStmt,
     FuncStmt,
     FuncArgs,
-    SimpleExpr,
     Expr,
     VarArgExpr,
     BinOp,
@@ -347,7 +346,6 @@ macro_rules! T {
     [for_gen_stmt] => { $crate::parser::machinery::kind::SyntaxKind::ForGenStmt };
     [func_stmt] => { $crate::parser::machinery::kind::SyntaxKind::FuncStmt };
     [func_args] => { $crate::parser::machinery::kind::SyntaxKind::FuncArgs };
-    [simple_expr] => { $crate::parser::machinery::kind::SyntaxKind::SimpleExpr };
     [expr] => { $crate::parser::machinery::kind::SyntaxKind::Expr };
     [vararg_expr] => { $crate::parser::machinery::kind::SyntaxKind::VarArgExpr };
     [bin_op] => { $crate::parser::machinery::kind::SyntaxKind::BinOp };

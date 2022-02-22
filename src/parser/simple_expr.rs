@@ -4,9 +4,7 @@ use crate::T;
 impl<'cache, 'source> Parser<'cache, 'source> {
     pub(super) fn r_simple_expr(&mut self, allow_call: bool) -> Option<CompletedMarker> {
         if self.at() == T!['('] {
-            let marker = self.start();
-            self.r_expr();
-            return Some(marker.complete(self, T![simple_expr]));
+            return self.r_expr();
         }
 
         let mut lhs = self.r_ident()?;
