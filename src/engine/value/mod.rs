@@ -38,6 +38,38 @@ fn is_string(x: u64) -> bool {
     (x & FLOAT_MASK) == STRING_MASK
 }
 
+fn is_function(x: u64) -> bool {
+    todo!()
+}
+
+fn is_userdata(x: u64) -> bool {
+    todo!()
+}
+
+// For optimal code generation the dispatch order should be:
+//   - int
+//   - bool
+//   - nil
+//   - table
+//   - string
+//   - float
+//   - function
+//   - userdata
+macro_rules! dispatch {
+    ($x:expr, $($guard:ident => $arm:expr),*) => {{
+        match $x {
+            $(v if $guard(v) => $arm),*,
+            _ => unsafe {
+                #[cfg(debug_assertions)]
+                unreachable!();
+
+                #[cfg(not(debug_assertions))]
+                std::hint::unreachable_unchecked();
+            },
+        }
+    }}
+}
+
 // Value represents runtime values such as integers and strings.
 // This uses a complex format loosely based off NaN-boxing.
 //
