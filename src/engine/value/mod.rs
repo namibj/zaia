@@ -1,115 +1,36 @@
-mod closure;
-mod table;
-
 use std::{cmp, hash};
-
-pub use closure::Closure;
-pub use table::Table;
-
 use super::gc::{Handle, Trace, Visitor};
 
+#[cfg(target_endian = "big")]
+compile_error!("zaia does not yet support big-endian platforms");
+
+fn is_smi(x: usize) -> bool {
+    return false
+}
+
+// Value represents runtime values such as integers and strings.
+// This uses a complex format loosely based off NaN-boxing.
+//
+// We define the following types:
+// Value
+//   - Integer: a signed 31-bit integer
+//   - Float: a 32-bit IEEE-754 floating point number
+//   - Object
+//     - String: a heap-allocated UTF-8 string
+//     - Table: a Lua table
+//     - Function: a Lua function, possibly with captured upvalues
+//     - Userdata: a custom type defined outside of Lua
 #[derive(Clone)]
-pub enum Value {
-    Boolean(bool),
-    Integer(i32),
-    Float(f32),
-    Ref(Handle<RefValue>),
+pub struct Value {
+    data: usize,
 }
 
-impl cmp::PartialEq for Value {
-    fn eq(&self, other: &Value) -> bool {
-        match (self, other) {
-            (Value::Boolean(a), Value::Boolean(b)) => a == b,
-            (Value::Integer(a), Value::Integer(b)) => a == b,
-            (Value::Float(a), Value::Float(b)) => a == b,
-            (Value::Ref(a), Value::Ref(b)) => a == b,
-            _ => false,
-        }
+impl Value {
+    pub fn integer(value: i32) -> Self {
+        todo!()
     }
-}
 
-impl cmp::Eq for Value {}
-
-impl cmp::PartialOrd for Value {
-    fn partial_cmp(&self, other: &Value) -> Option<cmp::Ordering> {
-        match (self, other) {
-            (Value::Boolean(a), Value::Boolean(b)) => a.partial_cmp(b),
-            (Value::Integer(a), Value::Integer(b)) => a.partial_cmp(b),
-            (Value::Float(a), Value::Float(b)) => a.partial_cmp(b),
-            (Value::Ref(_), Value::Ref(_)) => None,
-            _ => None,
-        }
+    pub fn float(value: f32) -> Self {
+        todo!()
     }
-}
-
-impl cmp::Ord for Value {
-    fn cmp(&self, other: &Value) -> cmp::Ordering {
-        match (self, other) {
-            (Value::Boolean(a), Value::Boolean(b)) => a.cmp(b),
-            (Value::Integer(a), Value::Integer(b)) => a.cmp(b),
-            (Value::Float(a), Value::Float(b)) => float_cmp(*a, *b),
-            (Value::Ref(_), Value::Ref(_)) => cmp::Ordering::Equal,
-            _ => cmp::Ordering::Equal,
-        }
-    }
-}
-
-impl hash::Hash for Value {
-    fn hash<H: hash::Hasher>(&self, state: &mut H) {
-        match self {
-            Value::Boolean(a) => a.hash(state),
-            Value::Integer(a) => a.hash(state),
-            Value::Float(a) => a.to_ne_bytes().hash(state),
-            Value::Ref(ref a) => a.hash(state),
-        }
-    }
-}
-
-impl Trace<RefValue> for Value {
-    fn visit(&self, visitor: &mut Visitor<RefValue>) {
-        if let Value::Ref(value) = self {
-            unsafe {
-                value.get_unchecked().visit(visitor);
-            }
-        }
-    }
-}
-
-pub enum RefValue {
-    String(Vec<u8>),
-    Closure(Closure),
-    Table(Table),
-}
-
-impl RefValue {
-    pub fn cast_string(&self) -> &[u8] {
-        match self {
-            RefValue::String(a) => a,
-            _ => unreachable!(),
-        }
-    }
-}
-
-impl Trace<RefValue> for RefValue {
-    fn visit(&self, visitor: &mut Visitor<RefValue>) {
-        match self {
-            RefValue::String(_a) => (),
-            RefValue::Closure(_a) => (),
-            RefValue::Table(a) => a.visit(visitor),
-        }
-    }
-}
-
-fn float_cmp(a: f32, b: f32) -> cmp::Ordering {
-    let convert = |f: f32| {
-        let i = f.to_bits();
-        let bit = 1 << (32 - 1);
-        if i & bit == 0 {
-            i | bit
-        } else {
-            !i
-        }
-    };
-
-    convert(a).cmp(&convert(b))
 }
