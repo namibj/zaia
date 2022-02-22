@@ -31,3 +31,5 @@
 - Elimination of uneeded results
 
 - Table templates
+
+- Inline caching/HREFK
