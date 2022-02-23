@@ -1,5 +1,4 @@
 //! The NaN-boxing encoding used is loosely based off https://piotrduperas.com/posts/nan-boxing which is in turned based off SpiderMonkey.
-//! TODO: Investigate WebKit Strategy https://brionv.com/log/2018/05/17/javascript-engine-internals-nan-boxing/
 
 // TODO: Support x86, arm, wasm32, wasm64, powerpc, powerpc64, mips, mips64
 #[cfg(not(any(target_arch = "x86_64", target_arch = "aarch64")))]
