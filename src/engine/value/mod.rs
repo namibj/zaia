@@ -45,7 +45,7 @@ macro_rules! dispatch {
 //     - String: a heap-allocated UTF-8 string
 //     - Function: a Lua function, possibly with captured upvalues
 //     - Userdata: a custom type defined outside of Lua
-#[derive(Clone)]
+#[derive(Clone, Copy)]
 pub struct Value {
     data: u64,
 }
