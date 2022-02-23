@@ -1,7 +1,8 @@
+mod encoding;
+mod string;
+
 use std::{cmp, hash};
 use super::gc::{Handle, Trace, Visitor};
-mod encoding;
-
 use encoding::*;
 
 // Customized match using NaN-boxing type guards.
