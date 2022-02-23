@@ -1,18 +1,12 @@
 use std::{cmp, fmt, hash};
 
-pub struct Handle<T> {
+pub struct Handle<T> where T:?Sized {
     ptr: *mut T,
 }
 
-impl<T> Handle<T> {
+impl<T> Handle<T> where T:?Sized {
     pub fn new(ptr: *mut T) -> Self {
         Handle { ptr }
-    }
-
-    pub fn unmanaged(item: T) -> Self {
-        Handle {
-            ptr: Box::into_raw(Box::new(item)),
-        }
     }
 
     pub unsafe fn get_unchecked<'a>(self) -> &'a T {
@@ -21,6 +15,10 @@ impl<T> Handle<T> {
 
     pub unsafe fn get_unchecked_mut<'a>(self) -> &'a mut T {
         &mut *self.ptr
+    }
+
+    pub fn as_ptr(self) -> *mut T {
+        self.ptr
     }
 
     pub unsafe fn destroy(self) {

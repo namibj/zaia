@@ -4,6 +4,7 @@ mod string;
 use std::{cmp, hash};
 use super::gc::{Handle, Trace, Visitor};
 use encoding::*;
+use string::ByteString;
 
 // Customized match using NaN-boxing type guards.
 //
@@ -72,8 +73,8 @@ impl Value {
         Value { data: make_table(x) }
     }
 
-    pub fn from_string(x: *mut u8) -> Self {
-        Value { data: make_string(x) }
+    pub fn from_string(x: Handle<ByteString>) -> Self {
+        Value { data: make_string(x.as_ptr() as *mut u8) }
     }
 
     pub fn from_function(x: *mut u8) -> Self {
