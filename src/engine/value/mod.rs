@@ -2,6 +2,8 @@ use std::{cmp, hash};
 use super::gc::{Handle, Trace, Visitor};
 mod encoding;
 
+use encoding::*;
+
 // Customized match using NaN-boxing type guards.
 //
 // For optimal code generation the dispatch order should be:
@@ -46,4 +48,38 @@ macro_rules! dispatch {
 #[derive(Clone)]
 pub struct Value {
     data: u64,
+}
+
+impl Value {
+    pub fn from_nil() -> Self {
+        Value { data: make_nil() }
+    }
+
+    pub fn from_bool(x: bool) -> Self {
+        Value { data: make_bool(x) }
+    }
+
+    pub fn from_int(x: i32) -> Self {
+        Value { data: make_int(x) }
+    }
+
+    pub fn from_float(x: f64) -> Self {
+        Value { data: make_float(x) }
+    }
+
+    pub fn from_table(x: *mut u8) -> Self {
+        Value { data: make_table(x) }
+    }
+
+    pub fn from_string(x: *mut u8) -> Self {
+        Value { data: make_string(x) }
+    }
+
+    pub fn from_function(x: *mut u8) -> Self {
+        Value { data: make_function(x) }
+    }
+
+    pub fn from_userdata(x: *mut u8) -> Self {
+        Value { data: make_userdata(x) }
+    }
 }

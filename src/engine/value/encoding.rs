@@ -15,6 +15,10 @@ const NIL_VALUE: u64 = 0x7FFE000000000000;
 const TRUE_VALUE: u64 = BOOL_MASK | 3;
 const FALSE_VALUE: u64 = BOOL_MASK | 2;
 
+fn is_ptr(x: u64) -> bool {
+    x & 7 == 0
+}
+
 pub fn is_nil(x: u64) -> bool {
     x == NIL_VALUE
 }
@@ -64,7 +68,7 @@ pub fn get_float(x: u64) -> f64 {
 }
 
 pub fn is_table(x: u64) -> bool {
-    (x & FLOAT_MASK) == TABLE_MASK
+    is_ptr(x) && (x & FLOAT_MASK) == TABLE_MASK
 }
 
 pub fn make_table(x: *mut u8) -> u64 {
@@ -76,7 +80,7 @@ pub fn get_table(x: u64) -> *mut u8 {
 }
 
 pub fn is_string(x: u64) -> bool {
-    (x & FLOAT_MASK) == STRING_MASK
+    is_ptr(x) && (x & FLOAT_MASK) == STRING_MASK
 }
 
 pub fn make_string(x: *mut u8) -> u64 {
