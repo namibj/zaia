@@ -2,9 +2,11 @@ mod encoding;
 mod string;
 
 use std::{cmp, hash};
-use super::gc::{Handle, Trace, Visitor};
+
 use encoding::*;
-use string::ByteString;
+pub use string::ByteString;
+
+use super::gc::{Handle, Trace, Visitor};
 
 // Customized match using NaN-boxing type guards.
 //
@@ -66,22 +68,32 @@ impl Value {
     }
 
     pub fn from_float(x: f64) -> Self {
-        Value { data: make_float(x) }
+        Value {
+            data: make_float(x),
+        }
     }
 
     pub fn from_table(x: *mut u8) -> Self {
-        Value { data: make_table(x) }
+        Value {
+            data: make_table(x),
+        }
     }
 
     pub fn from_string(x: Handle<ByteString>) -> Self {
-        Value { data: make_string(x.as_ptr() as *mut u8) }
+        Value {
+            data: make_string(x.as_ptr() as *mut u8),
+        }
     }
 
     pub fn from_function(x: *mut u8) -> Self {
-        Value { data: make_function(x) }
+        Value {
+            data: make_function(x),
+        }
     }
 
     pub fn from_userdata(x: *mut u8) -> Self {
-        Value { data: make_userdata(x) }
+        Value {
+            data: make_userdata(x),
+        }
     }
 }
