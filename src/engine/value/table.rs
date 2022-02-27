@@ -1,5 +1,4 @@
-//! TODO: Replace this with a butterfly-like structure.
-//! TODO: Fast array-like access.
+//! TODO(#29): Replace this with a butterfly-like structure.
 
 use hashbrown::{hash_map, HashMap};
 
