@@ -3,12 +3,16 @@ mod string;
 mod table;
 mod userdata;
 
-use std::{cmp, hash};
+use std::{
+    cmp,
+    cmp::{Eq, PartialEq},
+    hash::{self, Hash},
+};
 
 use encoding::*;
 pub use string::ByteString;
 
-use super::gc::{Handle, Trace, Visitor};
+use super::gc::{Handle, TaggedHandle, Trace, Visitor};
 
 // Customized match using NaN-boxing type guards.
 //
@@ -97,5 +101,19 @@ impl Value {
         Value {
             data: make_userdata(x),
         }
+    }
+
+    pub fn op_eq(self, other: Self) -> bool {
+        todo!()
+    }
+
+    pub fn op_hash(self) -> u64 {
+        todo!()
+    }
+}
+
+impl Trace for Value {
+    fn visit(&self, visitor: &mut Visitor) {
+        todo!()
     }
 }
