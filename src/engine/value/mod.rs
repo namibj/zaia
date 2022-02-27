@@ -1,16 +1,16 @@
 pub mod encoding;
+mod function;
 mod string;
 mod table;
 mod userdata;
-mod function;
 
 use std::cmp::PartialEq;
 
 use encoding::*;
+pub use function::Function;
 pub use string::ByteString;
 pub use table::Table;
 pub use userdata::Userdata;
-pub use function::Function;
 
 use super::gc::{Handle, TaggedHandle, Trace, Visitor};
 use crate::util::mix_u64;
