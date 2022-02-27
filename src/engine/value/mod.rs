@@ -137,9 +137,7 @@ impl Value {
             return false;
         }
 
-        match ty_1 {
-            _ => todo!()
-        }
+        self.data == other.data
     }
 
     pub fn op_hash(self) -> u64 {
