@@ -130,13 +130,6 @@ impl Value {
     }
 
     pub fn op_eq(self, other: Self) -> bool {
-        let ty_1 = self.ty();
-        let ty_2 = other.ty();
-
-        if ty_1 != ty_2 {
-            return false;
-        }
-
         self.data == other.data
     }
 
