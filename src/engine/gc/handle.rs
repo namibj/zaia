@@ -1,4 +1,5 @@
 use std::{cmp, fmt, hash};
+use crate::util;
 
 pub unsafe trait PtrTag {
     const PTR_TAG: usize;
@@ -87,6 +88,10 @@ impl TaggedHandle {
 
     pub fn value(self) -> usize {
         self.tagged
+    }
+
+    pub fn hash(self) -> u64 {
+        util::mix_u64(self.tagged as u64)
     }
 }
 

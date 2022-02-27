@@ -13,6 +13,7 @@ use encoding::*;
 pub use string::ByteString;
 
 use super::gc::{Handle, TaggedHandle, Trace, Visitor};
+use crate::util::mix_u64;
 
 #[derive(PartialEq)]
 enum ValueType {
@@ -134,7 +135,7 @@ impl Value {
     }
 
     pub fn op_hash(self) -> u64 {
-        (self.data >> 3).wrapping_add(1099511628211)
+        mix_u64(self.data)
     }
 }
 

@@ -1,4 +1,5 @@
 use hashbrown::{hash_map, HashMap};
+use crate::util::mix_u64;
 
 use super::TaggedHandle;
 
@@ -17,7 +18,7 @@ impl ObjectSet {
         &mut self,
         handle: TaggedHandle,
     ) -> hash_map::RawEntryMut<'_, TaggedHandle, (), ()> {
-        let hash = handle.value() as u64;
+        let hash = handle.hash();
 
         self.set
             .raw_entry_mut()
@@ -26,7 +27,7 @@ impl ObjectSet {
 
     pub fn insert(&mut self, handle: TaggedHandle) {
         if let hash_map::RawEntryMut::Vacant(entry) = self.entry_mut(handle) {
-            let hash = handle.value() as u64;
+            let hash = handle.hash();
             entry.insert_with_hasher(hash, handle, (), |handle| handle.value() as u64);
         } else {
             unreachable!()
@@ -36,13 +37,13 @@ impl ObjectSet {
     pub fn remove(&mut self, handle: TaggedHandle) {
         if let hash_map::RawEntryMut::Occupied(entry) = self.entry_mut(handle) {
             entry.remove();
-        } else {
-            unreachable!()
         }
+
+        unreachable!()
     }
 
     fn contains(&self, handle: TaggedHandle) -> bool {
-        let hash = handle.value() as u64;
+        let hash = handle.hash();
 
         self.set
             .raw_entry()
