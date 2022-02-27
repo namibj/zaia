@@ -10,7 +10,7 @@ use heuristics::Heuristics;
 use set::ObjectSet;
 pub use trace::{Trace, Visitor};
 
-use super::value::{encoding, ByteString};
+use super::value::{encoding, ByteString, Table, Function, Userdata};
 
 pub struct Heap {
     internal: Rc<HeapInternal>,
@@ -114,6 +114,18 @@ impl HeapInternal {
                 let ptr_nn = ptr::NonNull::new_unchecked(ptr);
                 alloc::Allocator::deallocate(self, ptr_nn, layout);
             },
+            _ if encoding::is_table(tagged) => {
+                let ptr = encoding::get_table(tagged) as *mut Table;
+                Box::from_raw_in(ptr, self);
+            }
+            _ if encoding::is_function(tagged) => {
+                let ptr = encoding::get_function(tagged) as *mut Function;
+                Box::from_raw_in(ptr, self);
+            }
+            _ if encoding::is_userdata(tagged) => {
+                let ptr = encoding::get_userdata(tagged) as *mut Userdata;
+                Box::from_raw_in(ptr, self);
+            }
             _ => panic!("unknown pointer type {:b}", tagged),
         }
     }

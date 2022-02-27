@@ -8,7 +8,9 @@ use std::cmp::PartialEq;
 
 use encoding::*;
 pub use string::ByteString;
-use table::Table;
+pub use table::Table;
+pub use userdata::Userdata;
+pub use function::Function;
 
 use super::gc::{Handle, TaggedHandle, Trace, Visitor};
 use crate::util::mix_u64;

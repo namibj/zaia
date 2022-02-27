@@ -1,6 +1,6 @@
 //! The NaN-boxing encoding used is loosely based off https://piotrduperas.com/posts/nan-boxing which is in turned based off SpiderMonkey.
 
-// TODO: Support x86, arm, wasm32, wasm64, powerpc, powerpc64, mips, mips64
+// TODO(#28): Support x86, arm, wasm32, wasm64, powerpc, powerpc64, mips, mips64
 #[cfg(not(any(target_arch = "x86_64", target_arch = "aarch64")))]
 compile_error!("zaia currently only supports x86_64 and aarch64");
 
