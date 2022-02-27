@@ -1,3 +1,5 @@
+//! TODO: Replace this with a butterfly-like structure.
+
 use hashbrown::{hash_map, HashMap};
 
 use super::{
