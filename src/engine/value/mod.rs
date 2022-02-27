@@ -1,5 +1,7 @@
 mod encoding;
 mod string;
+mod table;
+mod userdata;
 
 use std::{cmp, hash};
 
