@@ -1,12 +1,13 @@
 mod handle;
 mod heuristics;
+mod set;
 mod trace;
 
 use std::{alloc, cell::RefCell, ptr, rc::Rc};
 
 pub use handle::{Handle, PtrTag, TaggedHandle};
-use hashbrown::HashSet;
 use heuristics::Heuristics;
+use set::ObjectSet;
 pub use trace::{Trace, Visitor};
 
 use super::value::ByteString;
@@ -49,7 +50,7 @@ impl Clone for Heap {
 }
 
 struct Tree {
-    objects: HashSet<TaggedHandle>,
+    objects: ObjectSet,
     visitor: Visitor,
 }
 
@@ -63,7 +64,7 @@ impl Tree {
 
         for object in self.visitor.unmarked(&self.objects) {
             finalize(object);
-            self.objects.remove(&object);
+            self.objects.remove(object);
 
             unsafe {
                 heap.destroy(object);
@@ -82,7 +83,7 @@ struct HeapInternal {
 impl HeapInternal {
     fn new() -> Self {
         let tree = RefCell::new(Tree {
-            objects: HashSet::new(),
+            objects: ObjectSet::new(),
             visitor: Visitor::new(),
         });
 
@@ -222,7 +223,7 @@ impl Drop for HeapInternal {
     fn drop(&mut self) {
         let tree = self.tree.borrow();
         tree.objects.iter().for_each(|object| unsafe {
-            self.destroy(*object);
+            self.destroy(object);
         });
     }
 }
