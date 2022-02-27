@@ -17,7 +17,7 @@ const NIL_VALUE: u64 = 0x7FFE000000000000;
 const TRUE_VALUE: u64 = BOOL_MASK | 3;
 const FALSE_VALUE: u64 = BOOL_MASK | 2;
 
-fn is_ptr(x: u64) -> bool {
+pub fn is_ptr(x: u64) -> bool {
     is_table(x) || is_string(x) || is_function(x) || is_userdata(x)
 }
 

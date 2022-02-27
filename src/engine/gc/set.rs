@@ -1,5 +1,4 @@
 use hashbrown::{hash_map, HashMap};
-use crate::util::mix_u64;
 
 use super::TaggedHandle;
 

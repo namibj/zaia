@@ -1,16 +1,13 @@
-mod encoding;
+pub mod encoding;
 mod string;
 mod table;
 mod userdata;
 
-use std::{
-    cmp,
-    cmp::{Eq, PartialEq},
-    hash::{self, Hash},
-};
+use std::cmp::PartialEq;
 
 use encoding::*;
 pub use string::ByteString;
+use table::Table;
 
 use super::gc::{Handle, TaggedHandle, Trace, Visitor};
 use crate::util::mix_u64;
@@ -130,6 +127,10 @@ impl Value {
         )
     }
 
+    fn cast_tagged_handle(self) -> TaggedHandle {
+        TaggedHandle::new(self.data)
+    }
+
     pub fn op_eq(self, other: Self) -> bool {
         self.data == other.data
     }
@@ -141,6 +142,14 @@ impl Value {
 
 impl Trace for Value {
     fn visit(&self, visitor: &mut Visitor) {
-        todo!()
+        if is_ptr(self.data) {
+            let handle = self.cast_tagged_handle();
+            visitor.mark(handle);
+
+            if is_table(self.data) {
+                let table = unsafe { &mut *(get_table(self.data) as *mut Table) };
+                table.visit(visitor);
+            }
+        }
     }
 }

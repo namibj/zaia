@@ -1,7 +1,7 @@
 use std::{alloc, mem::MaybeUninit};
 
 // TODO: make this neater
-use super::super::gc::PtrTag;
+use super::{super::gc::PtrTag, encoding};
 
 #[repr(C)]
 pub struct ByteString {
@@ -32,5 +32,11 @@ impl ByteString {
 }
 
 unsafe impl PtrTag for ByteString {
-    const PTR_TAG: usize = 1;
+    fn is(x: u64) -> bool {
+        encoding::is_string(x)
+    }
+
+    fn tag(x: usize) -> u64 {
+        encoding::make_string(x as *mut u8)
+    }
 }

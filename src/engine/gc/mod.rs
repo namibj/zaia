@@ -10,7 +10,7 @@ use heuristics::Heuristics;
 use set::ObjectSet;
 pub use trace::{Trace, Visitor};
 
-use super::value::ByteString;
+use super::value::{encoding, ByteString};
 
 pub struct Heap {
     internal: Rc<HeapInternal>,
@@ -104,21 +104,17 @@ impl HeapInternal {
     }
 
     unsafe fn destroy(&self, handle: TaggedHandle) {
-        const TAG_MASK: usize = 0b111;
-        const CLEAR_MASK: usize = !0b111;
-
         let tagged = handle.value();
-        let tag = tagged & TAG_MASK;
-        let ptr = (tagged & CLEAR_MASK) as *mut u8;
-        let ptr_nn = ptr::NonNull::new_unchecked(ptr);
 
-        match tag {
-            ByteString::PTR_TAG => {
+        match tagged {
+            _ if encoding::is_string(tagged) => {
+                let ptr = encoding::get_string(tagged);
                 let len = ByteString::len_from_thin(ptr);
                 let layout = ByteString::layout(len);
+                let ptr_nn = ptr::NonNull::new_unchecked(ptr);
                 alloc::Allocator::deallocate(self, ptr_nn, layout);
             },
-            _ => panic!("unknown pointer tag {:b}", tag),
+            _ => panic!("unknown pointer type {:b}", tagged),
         }
     }
 

@@ -1,8 +1,10 @@
 use std::{cmp, fmt, hash};
+
 use crate::util;
 
 pub unsafe trait PtrTag {
-    const PTR_TAG: usize;
+    fn is(x: u64) -> bool;
+    fn tag(x: usize) -> u64;
 }
 
 pub struct Handle<T>
@@ -33,7 +35,8 @@ where
     }
 
     pub fn tagged(self) -> TaggedHandle {
-        TaggedHandle::new(self.ptr as *mut u8 as usize | T::PTR_TAG)
+        let tagged = T::tag(self.ptr as *mut u8 as usize);
+        TaggedHandle::new(tagged)
     }
 }
 
@@ -78,15 +81,15 @@ where
 }
 
 pub struct TaggedHandle {
-    tagged: usize,
+    tagged: u64,
 }
 
 impl TaggedHandle {
-    fn new(tagged: usize) -> Self {
+    pub fn new(tagged: u64) -> Self {
         Self { tagged }
     }
 
-    pub fn value(self) -> usize {
+    pub fn value(self) -> u64 {
         self.tagged
     }
 
