@@ -2,6 +2,7 @@ pub mod encoding;
 mod string;
 mod table;
 mod userdata;
+mod function;
 
 use std::cmp::PartialEq;
 
