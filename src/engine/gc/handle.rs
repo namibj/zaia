@@ -2,6 +2,9 @@ use std::{cmp, fmt, hash};
 
 use crate::util;
 
+/// # Safety
+/// `PtrTag` must be implemented directly using the functions
+/// found in the `encoding` submodule.
 pub unsafe trait PtrTag {
     fn is(x: u64) -> bool;
     fn tag(x: usize) -> u64;
