@@ -9,6 +9,8 @@ const INTEGER_MASK: u64 = 0x7FFC000000000000;
 const FLOAT_MASK: u64 = 0xFFFF000000000000;
 const TABLE_MASK: u64 = 0xFFFC000000000000;
 const STRING_MASK: u64 = 0xFFFE000000000000;
+const FUNCTION_MASK: u64 = 0xFFFA000000000000;
+const USERDATA_MASK: u64 = 0xFFFB000000000000;
 const PTR_MASK: u64 = 0xFFFFFFFFFFFF;
 
 const NIL_VALUE: u64 = 0x7FFE000000000000;
@@ -92,11 +94,11 @@ pub fn get_string(x: u64) -> *mut u8 {
 }
 
 pub fn is_function(x: u64) -> bool {
-    todo!()
+    is_ptr(x) && (x & FLOAT_MASK) == FUNCTION_MASK
 }
 
 pub fn make_function(x: *mut u8) -> u64 {
-    todo!()
+    x as u64 | FUNCTION_MASK
 }
 
 pub fn get_function(x: u64) -> *mut u8 {
@@ -104,11 +106,11 @@ pub fn get_function(x: u64) -> *mut u8 {
 }
 
 pub fn is_userdata(x: u64) -> bool {
-    todo!()
+    is_ptr(x) && (x & FLOAT_MASK) == USERDATA_MASK
 }
 
 pub fn make_userdata(x: *mut u8) -> u64 {
-    todo!()
+    x as u64 | USERDATA_MASK
 }
 
 pub fn get_userdata(x: u64) -> *mut u8 {
