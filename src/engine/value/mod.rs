@@ -14,6 +14,18 @@ pub use string::ByteString;
 
 use super::gc::{Handle, TaggedHandle, Trace, Visitor};
 
+#[derive(PartialEq)]
+enum ValueType {
+    Nil,
+    Bool,
+    Int,
+    Float,
+    Table,
+    String,
+    Function,
+    Userdata,
+}
+
 // Customized match using NaN-boxing type guards.
 //
 // For optimal code generation the dispatch order should be:
@@ -29,6 +41,7 @@ macro_rules! dispatch {
     ($x:expr, $($guard:ident => $arm:expr),*) => {{
         match $x {
             $(v if $guard(v) => $arm),*,
+            #[allow(unused_unsafe)]
             _ => unsafe {
                 #[cfg(debug_assertions)]
                 unreachable!();
@@ -103,12 +116,34 @@ impl Value {
         }
     }
 
+    fn ty(self) -> ValueType {
+        dispatch!(self.data,
+            is_int => ValueType::Int,
+            is_bool => ValueType::Bool,
+            is_nil => ValueType::Nil,
+            is_table => ValueType::Table,
+            is_string => ValueType::String,
+            is_float => ValueType::Float,
+            is_function => ValueType::Function,
+            is_userdata => ValueType::Userdata
+        )
+    }
+
     pub fn op_eq(self, other: Self) -> bool {
-        todo!()
+        let ty_1 = self.ty();
+        let ty_2 = other.ty();
+
+        if ty_1 != ty_2 {
+            return false;
+        }
+
+        match ty_1 {
+            _ => todo!()
+        }
     }
 
     pub fn op_hash(self) -> u64 {
-        todo!()
+        (self.data >> 3).wrapping_add(1099511628211)
     }
 }
 
