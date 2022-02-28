@@ -1,7 +1,7 @@
 use std::fs;
 
 use criterion::{black_box, criterion_group, criterion_main, Criterion, Throughput};
-use cstree::NodeCache;
+use zaia::parser::machinery::cstree::NodeCache;
 use zaia::parser::parse;
 
 fn criterion_benchmark(c: &mut Criterion) {
