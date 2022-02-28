@@ -1,6 +1,7 @@
 use std::fmt;
 
-/// Convenience type to represent tree elements which may either be a node or a token.
+/// Convenience type to represent tree elements which may either be a node or a
+/// token.
 ///
 /// Used for both red and green tree, references to elements, ...
 #[derive(Debug, Clone, Copy, PartialEq, Eq, PartialOrd, Ord, Hash)]
@@ -136,11 +137,11 @@ impl<T> Iterator for TokenAtOffset<T> {
             TokenAtOffset::Single(node) => {
                 *self = TokenAtOffset::None;
                 Some(node)
-            }
+            },
             TokenAtOffset::Between(left, right) => {
                 *self = TokenAtOffset::Single(right);
                 Some(left)
-            }
+            },
         }
     }
 

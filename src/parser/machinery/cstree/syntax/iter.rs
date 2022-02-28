@@ -4,13 +4,19 @@ use std::iter::FusedIterator;
 
 use text_size::TextSize;
 
-use super::super::{green::GreenElementRef, GreenNodeChildren, Language, SyntaxElementRef, SyntaxNode};
+use super::super::{
+    green::GreenElementRef,
+    GreenNodeChildren,
+    Language,
+    SyntaxElementRef,
+    SyntaxNode,
+};
 
 #[derive(Clone, Debug)]
 struct Iter<'n> {
-    green:  GreenNodeChildren<'n>,
+    green: GreenNodeChildren<'n>,
     offset: TextSize,
-    index:  usize,
+    index: usize,
 }
 
 impl<'n> Iter<'n> {
@@ -64,12 +70,11 @@ impl<'n> FusedIterator for Iter<'n> {}
 /// An iterator over the child nodes of a [`SyntaxNode`].
 #[derive(Clone, Debug)]
 pub struct SyntaxNodeChildren<'n, L: Language, D: 'static = ()> {
-    inner:  Iter<'n>,
+    inner: Iter<'n>,
     parent: &'n SyntaxNode<L, D>,
 }
 
 impl<'n, L: Language, D> SyntaxNodeChildren<'n, L, D> {
-    #[inline]
     pub(super) fn new(parent: &'n SyntaxNode<L, D>) -> Self {
         Self {
             inner: Iter::new(parent),
@@ -85,7 +90,12 @@ impl<'n, L: Language, D> Iterator for SyntaxNodeChildren<'n, L, D> {
     fn next(&mut self) -> Option<Self::Item> {
         for (element, index, offset) in &mut self.inner {
             if let Some(&node) = element.as_node() {
-                return Some(self.parent.get_or_add_node(node, index, offset).as_node().unwrap());
+                return Some(
+                    self.parent
+                        .get_or_add_node(node, index, offset)
+                        .as_node()
+                        .unwrap(),
+                );
             }
         }
         None
@@ -116,12 +126,11 @@ impl<'n, L: Language, D> FusedIterator for SyntaxNodeChildren<'n, L, D> {}
 /// An iterator over the children of a [`SyntaxNode`].
 #[derive(Clone, Debug)]
 pub struct SyntaxElementChildren<'n, L: Language, D: 'static = ()> {
-    inner:  Iter<'n>,
+    inner: Iter<'n>,
     parent: &'n SyntaxNode<L, D>,
 }
 
 impl<'n, L: Language, D> SyntaxElementChildren<'n, L, D> {
-    #[inline]
     pub(super) fn new(parent: &'n SyntaxNode<L, D>) -> Self {
         Self {
             inner: Iter::new(parent),

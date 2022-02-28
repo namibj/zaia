@@ -1,7 +1,6 @@
-
 //! Implementation of the inner, "green" tree.
-//! The [`GreenNodeBuilder`] is the main entry point to constructing [`GreenNode`]s and
-//! [`GreenToken`]s.
+//! The [`GreenNodeBuilder`] is the main entry point to constructing
+//! [`GreenNode`]s and [`GreenToken`]s.
 
 mod builder;
 mod element;
@@ -12,7 +11,6 @@ mod token;
 
 pub(crate) use self::element::GreenElementRef;
 use self::element::{GreenElement, PackedGreenElement};
-
 pub use self::{
     builder::{Checkpoint, GreenNodeBuilder, NodeCache},
     interner::TokenInterner,

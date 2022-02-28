@@ -6,7 +6,8 @@ type ErasedPtr = *const u8;
 
 use super::super::{
     green::{GreenNode, GreenToken, SyntaxKind},
-    NodeOrToken, TextSize,
+    NodeOrToken,
+    TextSize,
 };
 
 pub(super) type GreenElement = NodeOrToken<GreenNode, GreenToken>;
@@ -18,42 +19,36 @@ pub(crate) struct PackedGreenElement {
 }
 
 impl From<GreenNode> for GreenElement {
-    #[inline]
     fn from(node: GreenNode) -> GreenElement {
         NodeOrToken::Node(node)
     }
 }
 
 impl<'a> From<&'a GreenNode> for GreenElementRef<'a> {
-    #[inline]
     fn from(node: &'a GreenNode) -> GreenElementRef<'a> {
         NodeOrToken::Node(node)
     }
 }
 
 impl From<GreenNode> for PackedGreenElement {
-    #[inline]
     fn from(node: GreenNode) -> PackedGreenElement {
         unsafe { mem::transmute(node) }
     }
 }
 
 impl From<GreenToken> for GreenElement {
-    #[inline]
     fn from(token: GreenToken) -> GreenElement {
         NodeOrToken::Token(token)
     }
 }
 
 impl<'a> From<&'a GreenToken> for GreenElementRef<'a> {
-    #[inline]
     fn from(token: &'a GreenToken) -> GreenElementRef<'a> {
         NodeOrToken::Token(token)
     }
 }
 
 impl From<GreenToken> for PackedGreenElement {
-    #[inline]
     fn from(token: GreenToken) -> PackedGreenElement {
         unsafe { mem::transmute(token) }
     }
@@ -61,13 +56,11 @@ impl From<GreenToken> for PackedGreenElement {
 
 impl GreenElement {
     /// Returns kind of this element.
-    #[inline]
     pub fn kind(&self) -> SyntaxKind {
         self.as_ref().kind()
     }
 
     /// Returns the length of the text covered by this element.
-    #[inline]
     pub fn text_len(&self) -> TextSize {
         self.as_ref().text_len()
     }
@@ -75,7 +68,6 @@ impl GreenElement {
 
 impl GreenElementRef<'_> {
     /// Returns kind of this element.
-    #[inline]
     pub fn kind(&self) -> SyntaxKind {
         match self {
             NodeOrToken::Node(it) => it.kind(),
@@ -84,7 +76,6 @@ impl GreenElementRef<'_> {
     }
 
     /// Returns the length of the text covered by this element.
-    #[inline]
     pub fn text_len(self) -> TextSize {
         match self {
             NodeOrToken::Node(it) => it.text_len(),

@@ -21,17 +21,14 @@ impl ExactSizeIterator for GreenNodeChildren<'_> {
 impl<'a> Iterator for GreenNodeChildren<'a> {
     type Item = GreenElementRef<'a>;
 
-    #[inline]
     fn next(&mut self) -> Option<GreenElementRef<'a>> {
         self.inner.next().map(PackedGreenElement::as_ref)
     }
 
-    #[inline]
     fn size_hint(&self) -> (usize, Option<usize>) {
         self.inner.size_hint()
     }
 
-    #[inline]
     fn count(self) -> usize
     where
         Self: Sized,
@@ -39,12 +36,10 @@ impl<'a> Iterator for GreenNodeChildren<'a> {
         self.inner.count()
     }
 
-    #[inline]
     fn nth(&mut self, n: usize) -> Option<Self::Item> {
         self.inner.nth(n).map(PackedGreenElement::as_ref)
     }
 
-    #[inline]
     fn last(mut self) -> Option<Self::Item>
     where
         Self: Sized,
@@ -52,7 +47,6 @@ impl<'a> Iterator for GreenNodeChildren<'a> {
         self.next_back()
     }
 
-    #[inline]
     fn fold<Acc, Fold>(self, init: Acc, mut f: Fold) -> Acc
     where
         Fold: FnMut(Acc, Self::Item) -> Acc,
@@ -66,17 +60,14 @@ impl<'a> Iterator for GreenNodeChildren<'a> {
 }
 
 impl<'a> DoubleEndedIterator for GreenNodeChildren<'a> {
-    #[inline]
     fn next_back(&mut self) -> Option<Self::Item> {
         self.inner.next_back().map(PackedGreenElement::as_ref)
     }
 
-    #[inline]
     fn nth_back(&mut self, n: usize) -> Option<Self::Item> {
         self.inner.nth_back(n).map(PackedGreenElement::as_ref)
     }
 
-    #[inline]
     fn rfold<Acc, Fold>(mut self, init: Acc, mut f: Fold) -> Acc
     where
         Fold: FnMut(Acc, Self::Item) -> Acc,

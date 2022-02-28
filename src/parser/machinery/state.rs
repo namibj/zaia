@@ -1,9 +1,15 @@
 use std::ops::Not;
 
-use super::cstree::{GreenNode, NodeCache};
 use logos::Logos;
 
-use super::{event::Event, kind::SyntaxKind, marker::Marker, sink::Sink, span::Span};
+use super::{
+    cstree::{GreenNode, NodeCache},
+    event::Event,
+    kind::SyntaxKind,
+    marker::Marker,
+    sink::Sink,
+    span::Span,
+};
 use crate::T;
 
 pub struct State<'cache, 'source> {

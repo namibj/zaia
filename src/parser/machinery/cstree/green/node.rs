@@ -4,18 +4,18 @@ use std::{
 };
 
 use fxhash::FxHasher32;
+use triomphe::{Arc, HeaderWithLength, ThinArc};
 
 use super::super::{
     green::{iter::GreenNodeChildren, GreenElement, PackedGreenElement, SyntaxKind},
     TextSize,
 };
-use triomphe::{Arc, HeaderWithLength, ThinArc};
 
-#[repr(align(2))] //to use 1 bit for pointer tagging. NB: this is an at-least annotation
+#[repr(align(2))] // to use 1 bit for pointer tagging. NB: this is an at-least annotation
 #[derive(Debug, Clone, PartialEq, Eq, Hash)]
 pub(super) struct GreenNodeHead {
-    pub(super) kind:       SyntaxKind,
-    pub(super) text_len:   TextSize,
+    pub(super) kind: SyntaxKind,
+    pub(super) text_len: TextSize,
     pub(super) child_hash: u32,
 }
 
@@ -34,7 +34,6 @@ impl std::fmt::Debug for GreenNode {
 
 impl GreenNode {
     /// Creates a new Node.
-    #[inline]
     pub fn new<I>(kind: SyntaxKind, children: I) -> GreenNode
     where
         I: IntoIterator<Item = GreenElement>,
@@ -70,7 +69,6 @@ impl GreenNode {
     }
 
     /// Creates a new Node.
-    #[inline]
     pub(super) fn new_with_len_and_hash<I>(
         kind: SyntaxKind,
         children: I,
@@ -102,7 +100,6 @@ impl GreenNode {
         }
     }
 
-    #[inline]
     pub(super) fn from_head_and_children<I>(header: GreenNodeHead, children: I) -> GreenNode
     where
         I: IntoIterator<Item = GreenElement>,
@@ -116,24 +113,20 @@ impl GreenNode {
     }
 
     /// [`SyntaxKind`] of this node.
-    #[inline]
     pub fn kind(&self) -> SyntaxKind {
         self.data.header.header.kind
     }
 
     /// Returns the length of text covered by this node.
-    #[inline]
     pub fn text_len(&self) -> TextSize {
         self.data.header.header.text_len
     }
 
-    #[inline]
     pub(crate) fn iter(&self) -> slice::Iter<'_, PackedGreenElement> {
         self.data.slice.iter()
     }
 
     /// Iterator over all children of this node.
-    #[inline]
     pub fn children(&self) -> GreenNodeChildren<'_> {
         GreenNodeChildren {
             inner: self.data.slice.iter(),
@@ -142,7 +135,6 @@ impl GreenNode {
 }
 
 impl Hash for GreenNode {
-    #[inline]
     fn hash<H: Hasher>(&self, state: &mut H) {
         self.data.header.header.hash(state);
     }

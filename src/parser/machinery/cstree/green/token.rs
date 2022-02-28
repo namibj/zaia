@@ -1,17 +1,18 @@
 use std::{fmt, hash, mem::ManuallyDrop, ptr};
 
+use triomphe::Arc;
+
 use super::super::{
     green::SyntaxKind,
     interning::{Key, Resolver},
     TextSize,
 };
-use triomphe::Arc;
 
 #[repr(align(2))] // to use 1 bit for pointer tagging. NB: this is an at-least annotation
 #[derive(Debug, PartialEq, Eq, Hash, Copy, Clone)]
 pub(super) struct GreenTokenData {
-    pub(super) kind:     SyntaxKind,
-    pub(super) text:     Key,
+    pub(super) kind: SyntaxKind,
+    pub(super) text: Key,
     pub(super) text_len: TextSize,
 }
 
@@ -43,7 +44,6 @@ impl GreenToken {
     }
 
     /// Creates a new Token.
-    #[inline]
     pub(super) fn new(data: GreenTokenData) -> GreenToken {
         let ptr = Arc::into_raw(Arc::new(data));
         let ptr = ptr::NonNull::new(ptr as *mut _).unwrap();
@@ -53,13 +53,11 @@ impl GreenToken {
     }
 
     /// [`SyntaxKind`] of this Token.
-    #[inline]
     pub fn kind(&self) -> SyntaxKind {
         self.data().kind
     }
 
     /// The original source text of this Token.
-    #[inline]
     pub fn text<'i, I>(&self, resolver: &'i I) -> &'i str
     where
         I: Resolver + ?Sized,
@@ -68,16 +66,15 @@ impl GreenToken {
     }
 
     /// Returns the length of text covered by this token.
-    #[inline]
     pub fn text_len(&self) -> TextSize {
         self.data().text_len
     }
 
     /// Returns the interned key of text covered by this token.
-    /// This key may be used for comparisons with other keys of strings interned by the same interner.
+    /// This key may be used for comparisons with other keys of strings interned
+    /// by the same interner.
     ///
     /// See also [`text`](GreenToken::text).
-    #[inline]
     pub fn text_key(&self) -> Key {
         self.data().text
     }

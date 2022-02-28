@@ -1,27 +1,33 @@
-
-//! Efficient representation of the source text that is covered by a [`SyntaxNode`].
+//! Efficient representation of the source text that is covered by a
+//! [`SyntaxNode`].
 
 use std::fmt;
 
 use super::super::{interning::Resolver, Language, SyntaxNode, SyntaxToken, TextRange, TextSize};
 
-/// An efficient representation of the text that is covered by a [`SyntaxNode`], i.e. the combined
-/// source text of all tokens that are descendants of the node.
+/// An efficient representation of the text that is covered by a [`SyntaxNode`],
+/// i.e. the combined source text of all tokens that are descendants of the
+/// node.
 ///
-/// Offers methods to work with the text distributed across multiple [`SyntaxToken`]s while avoiding
-/// the construction of intermediate strings where possible.
-/// This includes efficient comparisons with itself and with strings and conversion `to_string()`.
+/// Offers methods to work with the text distributed across multiple
+/// [`SyntaxToken`]s while avoiding the construction of intermediate strings
+/// where possible. This includes efficient comparisons with itself and with
+/// strings and conversion `to_string()`.
 #[derive(Clone)]
 pub struct SyntaxText<'n, 'i, I: ?Sized, L: Language, D: 'static = ()> {
-    node:     &'n SyntaxNode<L, D>,
-    range:    TextRange,
+    node: &'n SyntaxNode<L, D>,
+    range: TextRange,
     resolver: &'i I,
 }
 
 impl<'n, 'i, I: Resolver + ?Sized, L: Language, D> SyntaxText<'n, 'i, I, L, D> {
     pub(crate) fn new(node: &'n SyntaxNode<L, D>, resolver: &'i I) -> Self {
         let range = node.text_range();
-        SyntaxText { node, range, resolver }
+        SyntaxText {
+            node,
+            range,
+            resolver,
+        }
     }
 
     /// The combined length of this text, in bytes.
@@ -40,8 +46,8 @@ impl<'n, 'i, I: Resolver + ?Sized, L: Language, D> SyntaxText<'n, 'i, I, L, D> {
             .is_err()
     }
 
-    /// If `self.contains_char(c)`, returns `Some(pos)`, where `pos` is the byte position of the
-    /// first appearance of `c`. Otherwise, returns `None`.
+    /// If `self.contains_char(c)`, returns `Some(pos)`, where `pos` is the byte
+    /// position of the first appearance of `c`. Otherwise, returns `None`.
     pub fn find_char(&self, c: char) -> Option<TextSize> {
         let mut acc: TextSize = 0.into();
         let res = self.try_for_each_chunk(|chunk| {
@@ -55,8 +61,8 @@ impl<'n, 'i, I: Resolver + ?Sized, L: Language, D> SyntaxText<'n, 'i, I, L, D> {
         found(res)
     }
 
-    /// If `offset < self.len()`, returns `Some(c)`, where `c` is the first `char` at or after
-    /// `offset` (in bytes). Otherwise, returns `None`.
+    /// If `offset < self.len()`, returns `Some(c)`, where `c` is the first
+    /// `char` at or after `offset` (in bytes). Otherwise, returns `None`.
     pub fn char_at(&self, offset: TextSize) -> Option<char> {
         let mut start: TextSize = 0.into();
         let res = self.try_for_each_chunk(|chunk| {
@@ -71,8 +77,8 @@ impl<'n, 'i, I: Resolver + ?Sized, L: Language, D> SyntaxText<'n, 'i, I, L, D> {
         found(res)
     }
 
-    /// Indexes this text by the given `range` and returns a `SyntaxText` that represents the
-    /// corresponding slice of this text.
+    /// Indexes this text by the given `range` and returns a `SyntaxText` that
+    /// represents the corresponding slice of this text.
     ///
     /// # Panics
     /// The end of `range` must be equal of higher than its start.
@@ -104,31 +110,36 @@ impl<'n, 'i, I: Resolver + ?Sized, L: Language, D> SyntaxText<'n, 'i, I, L, D> {
         }
     }
 
-    /// Applies the given function to text chunks (from [`SyntaxToken`]s) that are part of this text
-    /// as long as it returns `Ok`, starting from the initial value `init`.
+    /// Applies the given function to text chunks (from [`SyntaxToken`]s) that
+    /// are part of this text as long as it returns `Ok`, starting from the
+    /// initial value `init`.
     ///
     /// If `f` returns `Err`, the error is propagated immediately.
-    /// Otherwise, the result of the current call to `f` will be passed to the invocation of `f` on
-    /// the next token, producing a final value if `f` succeeds on all chunks.
+    /// Otherwise, the result of the current call to `f` will be passed to the
+    /// invocation of `f` on the next token, producing a final value if `f`
+    /// succeeds on all chunks.
     ///
-    /// See also [`fold_chunks`](SyntaxText::fold_chunks) for folds that always succeed.
+    /// See also [`fold_chunks`](SyntaxText::fold_chunks) for folds that always
+    /// succeed.
     pub fn try_fold_chunks<T, F, E>(&self, init: T, mut f: F) -> Result<T, E>
     where
         F: FnMut(T, &str) -> Result<T, E>,
     {
-        self.tokens_with_ranges().try_fold(init, move |acc, (token, range)| {
-            f(acc, &token.resolve_text(self.resolver)[range])
-        })
+        self.tokens_with_ranges()
+            .try_fold(init, move |acc, (token, range)| {
+                f(acc, &token.resolve_text(self.resolver)[range])
+            })
     }
 
-    /// Applies the given function to all text chunks (from [`SyntaxToken`]s) that are part of this
-    /// text, starting from the initial value `init`.
+    /// Applies the given function to all text chunks (from [`SyntaxToken`]s)
+    /// that are part of this text, starting from the initial value `init`.
     ///
-    /// The result of the current call to `f` will be passed to the invocation of `f` on the next
-    /// token, producing a final value after `f` was called on all chunks.
+    /// The result of the current call to `f` will be passed to the invocation
+    /// of `f` on the next token, producing a final value after `f` was
+    /// called on all chunks.
     ///
-    /// See also [`try_fold_chunks`](SyntaxText::try_fold_chunks), which performs the same operation
-    /// for fallible functions `f`.
+    /// See also [`try_fold_chunks`](SyntaxText::try_fold_chunks), which
+    /// performs the same operation for fallible functions `f`.
     pub fn fold_chunks<T, F>(&self, init: T, mut f: F) -> T
     where
         F: FnMut(T, &str) -> T,
@@ -140,18 +151,22 @@ impl<'n, 'i, I: Resolver + ?Sized, L: Language, D> SyntaxText<'n, 'i, I, L, D> {
         }
     }
 
-    /// Applies the given function to all text chunks that this text is comprised of, in order,
-    /// as long as `f` completes successfully.
+    /// Applies the given function to all text chunks that this text is
+    /// comprised of, in order, as long as `f` completes successfully.
     ///
-    /// If `f` returns `Err`, this method returns immediately and will not apply `f` to any further
-    /// chunks.
+    /// If `f` returns `Err`, this method returns immediately and will not apply
+    /// `f` to any further chunks.
     ///
     /// See also [`try_fold_chunks`](SyntaxText::try_fold_chunks).
-    pub fn try_for_each_chunk<F: FnMut(&str) -> Result<(), E>, E>(&self, mut f: F) -> Result<(), E> {
+    pub fn try_for_each_chunk<F: FnMut(&str) -> Result<(), E>, E>(
+        &self,
+        mut f: F,
+    ) -> Result<(), E> {
         self.try_fold_chunks((), move |(), chunk| f(chunk))
     }
 
-    /// Applies the given function to all text chunks that this text is comprised of, in order.
+    /// Applies the given function to all text chunks that this text is
+    /// comprised of, in order.
     ///
     /// See also [`fold_chunks`](SyntaxText::fold_chunks),
     /// [`try_for_each_chunk`](SyntaxText::try_for_each_chunk).
@@ -350,9 +365,10 @@ mod private {
 
 #[cfg(test)]
 mod tests {
-    use super::super::super::{green::SyntaxKind, GreenNodeBuilder};
-
-    use super::*;
+    use super::{
+        super::super::{green::SyntaxKind, GreenNodeBuilder},
+        *,
+    };
 
     #[derive(Debug, Copy, Clone, Eq, PartialEq, Ord, PartialOrd, Hash)]
     pub enum TestLang {}
@@ -376,7 +392,10 @@ mod tests {
         }
         builder.finish_node();
         let (node, cache) = builder.finish();
-        (SyntaxNode::new_root(node), cache.unwrap().into_interner().unwrap())
+        (
+            SyntaxNode::new_root(node),
+            cache.unwrap().into_interner().unwrap(),
+        )
     }
 
     #[test]
@@ -388,7 +407,11 @@ mod tests {
             let t2 = t2.resolve_text(&resolver);
             let expected = t1.to_string() == t2.to_string();
             let actual = t1 == t2;
-            assert_eq!(expected, actual, "`{}` (SyntaxText) `{}` (SyntaxText)", t1, t2);
+            assert_eq!(
+                expected, actual,
+                "`{}` (SyntaxText) `{}` (SyntaxText)",
+                t1, t2
+            );
             let actual = t1 == t2.to_string().as_str();
             assert_eq!(expected, actual, "`{}` (SyntaxText) `{}` (&str)", t1, t2);
         }

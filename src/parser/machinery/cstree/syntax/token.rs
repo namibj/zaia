@@ -1,4 +1,3 @@
-
 use std::{
     fmt,
     hash::{Hash, Hasher},
@@ -9,14 +8,16 @@ use std::{
 use lasso::Resolver;
 use text_size::{TextRange, TextSize};
 
-use super::*;
-use super::super::{interning::Key, Direction, GreenNode, GreenToken, Language, SyntaxKind};
+use super::{
+    super::{interning::Key, Direction, GreenNode, GreenToken, Language, SyntaxKind},
+    *,
+};
 
 /// Syntax tree token.
 #[derive(Debug)]
 pub struct SyntaxToken<L: Language, D: 'static = ()> {
     parent: SyntaxNode<L, D>,
-    index:  u32,
+    index: u32,
     offset: TextSize,
 }
 
@@ -24,7 +25,7 @@ impl<L: Language, D> Clone for SyntaxToken<L, D> {
     fn clone(&self) -> Self {
         Self {
             parent: self.parent.clone(),
-            index:  self.index,
+            index: self.index,
             offset: self.offset,
         }
     }
@@ -47,7 +48,8 @@ impl<L: Language, D> PartialEq for SyntaxToken<L, D> {
 impl<L: Language, D> Eq for SyntaxToken<L, D> {}
 
 impl<L: Language, D> SyntaxToken<L, D> {
-    /// Writes this token's [`Debug`](fmt::Debug) representation into the given `target`.
+    /// Writes this token's [`Debug`](fmt::Debug) representation into the given
+    /// `target`.
     pub fn write_debug<R>(&self, resolver: &R, target: &mut impl fmt::Write) -> fmt::Result
     where
         R: Resolver + ?Sized,
@@ -69,8 +71,8 @@ impl<L: Language, D> SyntaxToken<L, D> {
 
     /// Returns this token's [`Debug`](fmt::Debug) representation as a string.
     ///
-    /// To avoid allocating for every token, see [`write_debug`](SyntaxToken::write_debug).
-    #[inline]
+    /// To avoid allocating for every token, see
+    /// [`write_debug`](SyntaxToken::write_debug).
     pub fn debug<R>(&self, resolver: &R) -> String
     where
         R: Resolver + ?Sized,
@@ -81,8 +83,8 @@ impl<L: Language, D> SyntaxToken<L, D> {
         res
     }
 
-    /// Writes this token's [`Display`](fmt::Display) representation into the given `target`.
-    #[inline]
+    /// Writes this token's [`Display`](fmt::Display) representation into the
+    /// given `target`.
     pub fn write_display<R>(&self, resolver: &R, target: &mut impl fmt::Write) -> fmt::Result
     where
         R: Resolver + ?Sized,
@@ -90,10 +92,11 @@ impl<L: Language, D> SyntaxToken<L, D> {
         write!(target, "{}", self.resolve_text(resolver))
     }
 
-    /// Returns this token's [`Display`](fmt::Display) representation as a string.
+    /// Returns this token's [`Display`](fmt::Display) representation as a
+    /// string.
     ///
-    /// To avoid allocating for every token, see [`write_display`](SyntaxToken::write_display).
-    #[inline]
+    /// To avoid allocating for every token, see
+    /// [`write_display`](SyntaxToken::write_display).
     pub fn display<R>(&self, resolver: &R) -> String
     where
         R: Resolver + ?Sized,
@@ -102,29 +105,33 @@ impl<L: Language, D> SyntaxToken<L, D> {
     }
 
     /// If there is a resolver associated with this tree, returns it.
-    #[inline]
     pub fn resolver(&self) -> Option<&StdArc<dyn Resolver>> {
         self.parent.resolver()
     }
 
-    /// Turns this token into a [`ResolvedToken`], but only if there is a resolver associated with this tree.
-    #[inline]
+    /// Turns this token into a [`ResolvedToken`], but only if there is a
+    /// resolver associated with this tree.
     pub fn try_resolved(&self) -> Option<&ResolvedToken<L, D>> {
         // safety: we only coerce if `resolver` exists
-        self.resolver().map(|_| unsafe { ResolvedToken::coerce_ref(self) })
+        self.resolver()
+            .map(|_| unsafe { ResolvedToken::coerce_ref(self) })
     }
 
     /// Turns this token into a [`ResolvedToken`].
     /// # Panics
     /// If there is no resolver associated with this tree.
-    #[inline]
     pub fn resolved(&self) -> &ResolvedToken<L, D> {
-        self.try_resolved().expect("tried to resolve a node without resolver")
+        self.try_resolved()
+            .expect("tried to resolve a node without resolver")
     }
 }
 
 impl<L: Language, D> SyntaxToken<L, D> {
-    pub(super) fn new(parent: &SyntaxNode<L, D>, index: u32, offset: TextSize) -> SyntaxToken<L, D> {
+    pub(super) fn new(
+        parent: &SyntaxNode<L, D>,
+        index: u32,
+        offset: TextSize,
+    ) -> SyntaxToken<L, D> {
         Self {
             parent: parent.clone_uncounted(),
             index,
@@ -153,25 +160,21 @@ impl<L: Language, D> SyntaxToken<L, D> {
     }
 
     /// The internal representation of the kind of this token.
-    #[inline]
     pub fn syntax_kind(&self) -> SyntaxKind {
         self.green().kind()
     }
 
     /// The kind of this token in terms of your language.
-    #[inline]
     pub fn kind(&self) -> L::Kind {
         L::kind_from_raw(self.syntax_kind())
     }
 
     /// The range this token covers in the source text, in bytes.
-    #[inline]
     pub fn text_range(&self) -> TextRange {
         TextRange::at(self.offset, self.green().text_len())
     }
 
     /// Uses the provided resolver to return the source text of this token.
-    #[inline]
     pub fn resolve_text<'i, I>(&self, resolver: &'i I) -> &'i str
     where
         I: Resolver + ?Sized,
@@ -181,30 +184,29 @@ impl<L: Language, D> SyntaxToken<L, D> {
 
     /// Returns `true` if `self` and `other` represent equal source text.
     ///
-    /// This method is different from the `PartialEq` and `Eq` implementations in that it compares
-    /// the text and not the token position.
+    /// This method is different from the `PartialEq` and `Eq` implementations
+    /// in that it compares the text and not the token position.
     /// It is more efficient than comparing the result of
-    /// [`resolve_text`](SyntaxToken::resolve_text) because it compares the tokens' interned
-    /// [`text_key`s](SyntaxToken::text_key).
+    /// [`resolve_text`](SyntaxToken::resolve_text) because it compares the
+    /// tokens' interned [`text_key`s](SyntaxToken::text_key).
     /// Therefore, it also does not require a [`Resolver`].
-    /// **Note** that the result of the comparison may be wrong when comparing two tokens from
-    /// different trees that use different interners.
-    #[inline]
+    /// **Note** that the result of the comparison may be wrong when comparing
+    /// two tokens from different trees that use different interners.
     pub fn text_eq(&self, other: &Self) -> bool {
         self.text_key() == other.text_key()
     }
 
     /// Returns the interned key of text covered by this token.
-    /// This key may be used for comparisons with other keys of strings interned by the same interner.
+    /// This key may be used for comparisons with other keys of strings interned
+    /// by the same interner.
     ///
-    /// See also [`resolve_text`](SyntaxToken::resolve_text) and [`text_eq`](SyntaxToken::text_eq).
-    #[inline]
+    /// See also [`resolve_text`](SyntaxToken::resolve_text) and
+    /// [`text_eq`](SyntaxToken::text_eq).
     pub fn text_key(&self) -> Key {
         self.green().text_key()
     }
 
     /// Returns the unterlying green tree token of this token.
-    #[inline]
     pub fn green(&self) -> &GreenToken {
         self.parent
             .green()
@@ -216,36 +218,37 @@ impl<L: Language, D> SyntaxToken<L, D> {
     }
 
     /// The parent node of this token.
-    #[inline]
     pub fn parent(&self) -> &SyntaxNode<L, D> {
         &self.parent
     }
 
     /// Returns an iterator along the chain of parents of this token.
-    #[inline]
     pub fn ancestors(&self) -> impl Iterator<Item = &SyntaxNode<L, D>> {
         self.parent().ancestors()
     }
 
-    /// The tree element to the right of this one, i.e. the next child of this token's parent after this token.
-    #[inline]
+    /// The tree element to the right of this one, i.e. the next child of this
+    /// token's parent after this token.
     pub fn next_sibling_or_token(&self) -> Option<SyntaxElementRef<'_, L, D>> {
         self.parent()
             .next_child_or_token_after(self.index as usize, self.text_range().end())
     }
 
-    /// The tree element to the left of this one, i.e. the previous child of this token's parent after this token.
-    #[inline]
+    /// The tree element to the left of this one, i.e. the previous child of
+    /// this token's parent after this token.
     pub fn prev_sibling_or_token(&self) -> Option<SyntaxElementRef<'_, L, D>> {
         self.parent()
             .prev_child_or_token_before(self.index as usize, self.text_range().start())
     }
 
-    /// Returns an iterator over all siblings of this token in the given `direction`, i.e. all of this
-    /// token's parent's children from this token on to the left or the right.
-    /// The first item in the iterator will always be this token.
-    #[inline]
-    pub fn siblings_with_tokens(&self, direction: Direction) -> impl Iterator<Item = SyntaxElementRef<'_, L, D>> {
+    /// Returns an iterator over all siblings of this token in the given
+    /// `direction`, i.e. all of this token's parent's children from this
+    /// token on to the left or the right. The first item in the iterator
+    /// will always be this token.
+    pub fn siblings_with_tokens(
+        &self,
+        direction: Direction,
+    ) -> impl Iterator<Item = SyntaxElementRef<'_, L, D>> {
         let me: SyntaxElementRef<'_, L, D> = self.into();
         iter::successors(Some(me), move |el| match direction {
             Direction::Next => el.next_sibling_or_token(),
@@ -254,8 +257,8 @@ impl<L: Language, D> SyntaxToken<L, D> {
     }
 
     /// Returns the next token in the tree.
-    /// This is not necessary a direct sibling of this token, but will always be further right in the tree.
-    #[inline]
+    /// This is not necessary a direct sibling of this token, but will always be
+    /// further right in the tree.
     pub fn next_token(&self) -> Option<&SyntaxToken<L, D>> {
         match self.next_sibling_or_token() {
             Some(element) => element.first_token(),
@@ -268,8 +271,8 @@ impl<L: Language, D> SyntaxToken<L, D> {
     }
 
     /// Returns the previous token in the tree.
-    /// This is not necessary a direct sibling of this token, but will always be further left in the tree.
-    #[inline]
+    /// This is not necessary a direct sibling of this token, but will always be
+    /// further left in the tree.
     pub fn prev_token(&self) -> Option<&SyntaxToken<L, D>> {
         match self.prev_sibling_or_token() {
             Some(element) => element.last_token(),
