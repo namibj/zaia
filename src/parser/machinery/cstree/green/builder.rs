@@ -1,9 +1,9 @@
 use std::{
+    collections::{hash_map::RandomState, HashMap},
     convert::TryFrom,
-    hash::{Hash, Hasher},
+    hash::{BuildHasher, Hash, Hasher},
 };
 
-use fxhash::{FxHashMap, FxHasher32};
 use text_size::TextSize;
 
 use super::{
@@ -27,8 +27,8 @@ const CHILDREN_CACHE_THRESHOLD: usize = 3;
 /// [`GreenNodeBuilder::with_cache`].
 #[derive(Debug)]
 pub struct NodeCache<'i, I = TokenInterner> {
-    nodes: FxHashMap<GreenNodeHead, GreenNode>,
-    tokens: FxHashMap<GreenTokenData, GreenToken>,
+    nodes: HashMap<GreenNodeHead, GreenNode>,
+    tokens: HashMap<GreenTokenData, GreenToken>,
     interner: MaybeOwned<'i, I>,
 }
 
@@ -40,8 +40,8 @@ impl NodeCache<'static> {
     /// see [`with_interner`](NodeCache::with_interner).
     pub fn new() -> Self {
         Self {
-            nodes: FxHashMap::default(),
-            tokens: FxHashMap::default(),
+            nodes: HashMap::default(),
+            tokens: HashMap::default(),
             interner: MaybeOwned::Owned(TokenInterner::new()),
         }
     }
@@ -61,8 +61,8 @@ where
     /// deduplicate source text (strings) across tokens.
     pub fn with_interner(interner: &'i mut I) -> Self {
         Self {
-            nodes: FxHashMap::default(),
-            tokens: FxHashMap::default(),
+            nodes: HashMap::default(),
+            tokens: HashMap::default(),
             interner: MaybeOwned::Borrowed(interner),
         }
     }
@@ -71,8 +71,8 @@ where
     /// deduplicate source text (strings) across tokens.
     pub fn from_interner(interner: I) -> Self {
         Self {
-            nodes: FxHashMap::default(),
-            tokens: FxHashMap::default(),
+            nodes: HashMap::default(),
+            tokens: HashMap::default(),
             interner: MaybeOwned::Owned(interner),
         }
     }
@@ -100,7 +100,7 @@ where
     }
 
     fn node(&mut self, kind: SyntaxKind, children: &[GreenElement]) -> GreenNode {
-        let mut hasher = FxHasher32::default();
+        let mut hasher = RandomState::default().build_hasher();
         let mut text_len: TextSize = 0.into();
         for child in children {
             text_len += child.text_len();

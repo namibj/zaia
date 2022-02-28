@@ -2,7 +2,7 @@
 //!
 //! Interning functionality is provided by the [`lasso`](lasso) crate.
 
-pub use fxhash::FxBuildHasher as Hasher;
+pub use std::collections::hash_map::RandomState as Hasher;
 
 pub use super::green::TokenInterner;
 
