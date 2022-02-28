@@ -7,11 +7,10 @@ edition = "2021"
 logos = "0.12.0"
 ariadne = "0.1.5"
 hashbrown = { version = "0.12.0", default-features = false, features = ["nightly"] }
-lasso       = { version = "0.6.0", features = ["inline-more", "multi-threaded"] }
-text-size   = "1.1.0"
-fxhash      = "0.2.1"
-parking_lot = "0.12.0"
+lasso = { version = "0.6.0" } # eliminate this
 triomphe = "0.1.5"
+text-size = "1.1.0" # eliminate this
+fxhash = "0.2.1" # eliinate this
 
 [dev-dependencies]
 insta = "1.12.0"

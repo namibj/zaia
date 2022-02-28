@@ -25,8 +25,8 @@ pub fn new_interner() -> Rodeo {
 
 /// A string interner that caches strings quickly with a minimal memory
 /// footprint, returning a unique key to re-access it with `O(1)` times. By
-/// default, `ThreadedRodeo` uses an [`fxhash`] [`Hasher`].
-pub type ThreadedRodeo<S = Hasher> = lasso::ThreadedRodeo<Key, S>;
+/// default, `Rodeo` uses an [`fxhash`] [`Hasher`].
+pub type ThreadedRodeo<S = Hasher> = lasso::Rodeo<Key, S>;
 
 /// Constructs a new interner that can be used across multiple threads.
 pub fn new_threaded_interner() -> ThreadedRodeo {
