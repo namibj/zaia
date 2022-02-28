@@ -1,6 +1,4 @@
 use super::*;
-#[cfg(feature = "serialize")]
-use crate::serde_impls::{SerializeWithData, SerializeWithResolver};
 use super::super::{
     green::{GreenElementRef, SyntaxKind},
     interning::Resolver,
@@ -879,33 +877,6 @@ impl<L: Language, D> SyntaxNode<L, D> {
                 }
             };
         }
-    }
-}
-
-#[cfg(feature = "serialize")]
-impl<L, D> SyntaxNode<L, D>
-where
-    L: Language,
-{
-    /// Return an anonymous object that can be used to serialize this node,
-    /// including the data and by using an external resolver.
-    pub fn as_serialize_with_data_with_resolver<'node>(
-        &'node self,
-        resolver: &'node impl Resolver,
-    ) -> impl serde::Serialize + 'node
-    where
-        D: serde::Serialize,
-    {
-        SerializeWithData { node: self, resolver }
-    }
-
-    /// Return an anonymous object that can be used to serialize this node,
-    /// which uses the given resolver instead of the resolver inside the tree.
-    pub fn as_serialize_with_resolver<'node>(
-        &'node self,
-        resolver: &'node impl Resolver,
-    ) -> impl serde::Serialize + 'node {
-        SerializeWithResolver { node: self, resolver }
     }
 }
 

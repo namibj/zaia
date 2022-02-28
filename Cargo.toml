@@ -17,10 +17,6 @@ triomphe = "0.1.5"
 insta = "1.12.0"
 paste = "1.0.6"
 criterion = "0.3.5"
-m_lexer         = "0.0.4"
-serde_json      = "1.0.79"
-serde_test      = "1.0.136"
-crossbeam-utils = "0.8.7"
 
 [profile.bench]
 debug = true

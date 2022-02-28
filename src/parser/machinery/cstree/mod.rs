@@ -48,8 +48,6 @@
 mod green;
 mod syntax;
 
-#[cfg(feature = "serialize")]
-mod serde_impls;
 #[allow(missing_docs)]
 mod utility_types;
 

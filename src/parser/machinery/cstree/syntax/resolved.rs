@@ -215,24 +215,6 @@ impl<L: Language, D> fmt::Display for ResolvedToken<L, D> {
     }
 }
 
-#[cfg(feature = "serialize")]
-impl<L, D> ResolvedNode<L, D>
-where
-    L: Language,
-{
-    /// Return an anonymous object that can be used to serialize this node,
-    /// including the data for each node.
-    pub fn as_serialize_with_data(&self) -> impl serde::Serialize + '_
-    where
-        D: serde::Serialize,
-    {
-        crate::serde_impls::SerializeWithData {
-            node:     self,
-            resolver: self.resolver().as_ref(),
-        }
-    }
-}
-
 /* It follows: wrapping all _traversal_ methods so they return `ResolvedXY`s */
 macro_rules! forward {
     // safety: if we're starting from a `ResolvedXY`, then the tree must have a resolver
