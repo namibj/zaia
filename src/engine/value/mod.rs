@@ -15,7 +15,7 @@ pub use userdata::Userdata;
 use super::gc::{Handle, TaggedHandle, Trace, Visitor};
 use crate::util::mix_u64;
 
-#[derive(PartialEq)]
+#[derive(Debug, PartialEq)]
 enum ValueType {
     Nil,
     Bool,
@@ -130,12 +130,40 @@ impl Value {
         )
     }
 
-    fn cast_tagged_handle(self) -> TaggedHandle {
-        TaggedHandle::new(self.data)
-    }
-
     pub fn op_eq(self, other: Self) -> bool {
         self.data == other.data
+    }
+
+    pub fn op_gt(self, other: Self) -> bool {
+        let ty_1 = self.ty();
+        let ty_2 = other.ty();
+
+        if ty_1 != ty_2 {
+            return false;
+        }
+
+        match ty_1 {
+            ValueType::Int => get_int(self.data) > get_int(other.data),
+            ValueType::Float => get_float(self.data) > get_float(other.data),
+            ValueType::String => todo!(),
+            _ => panic!("attempted op_gt on unsupported type: {:?}", ty_1),
+        }
+    }
+
+    pub fn op_lt(self, other: Self) -> bool {
+        let ty_1 = self.ty();
+        let ty_2 = other.ty();
+
+        if ty_1 != ty_2 {
+            return false;
+        }
+
+        match ty_1 {
+            ValueType::Int => get_int(self.data) < get_int(other.data),
+            ValueType::Float => get_float(self.data) < get_float(other.data),
+            ValueType::String => todo!(),
+            _ => panic!("attempted op_gt on unsupported type: {:?}", ty_1),
+        }
     }
 
     pub fn op_hash(self) -> u64 {
@@ -146,7 +174,7 @@ impl Value {
 impl Trace for Value {
     fn visit(&self, visitor: &mut Visitor) {
         if is_ptr(self.data) {
-            let handle = self.cast_tagged_handle();
+            let handle = TaggedHandle::new(self.data);
             visitor.mark(handle);
 
             if is_table(self.data) {

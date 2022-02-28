@@ -1,4 +1,5 @@
 use std::{alloc, mem::MaybeUninit};
+use std::ops::Deref;
 
 // TODO: make this neater
 use super::{super::gc::PtrTag, encoding};
@@ -28,6 +29,18 @@ impl ByteString {
 
     pub unsafe fn len_from_thin(ptr: *mut u8) -> u32 {
         *(ptr as *mut u32)
+    }
+}
+
+impl Deref for ByteString {
+    type Target = [u8];
+
+    fn deref(&self) -> &Self::Target {
+        unsafe {
+            let len = self.len;
+            let ptr = self.data.as_ptr() as *const u8;
+            std::slice::from_raw_parts(ptr, len as usize)
+        }
     }
 }
 
