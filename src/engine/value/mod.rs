@@ -166,7 +166,7 @@ impl Value {
             ValueType::Int => get_int(self.data) < get_int(other.data),
             ValueType::Float => get_float(self.data) < get_float(other.data),
             ValueType::String => **self.cast_string() < **other.cast_string(),
-            _ => panic!("attempted op_gt on unsupported type: {:?}", ty_1),
+            _ => panic!("attempted op_lt on unsupported type: {:?}", ty_1),
         }
     }
 
