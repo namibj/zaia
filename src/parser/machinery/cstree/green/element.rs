@@ -32,7 +32,10 @@ impl<'a> From<&'a GreenNode> for GreenElementRef<'a> {
 
 impl From<GreenNode> for PackedGreenElement {
     fn from(node: GreenNode) -> PackedGreenElement {
-        unsafe { mem::transmute(node) }
+        #[allow(clippy::transmute_undefined_repr)]
+        unsafe {
+            mem::transmute(node)
+        }
     }
 }
 
@@ -50,7 +53,10 @@ impl<'a> From<&'a GreenToken> for GreenElementRef<'a> {
 
 impl From<GreenToken> for PackedGreenElement {
     fn from(token: GreenToken) -> PackedGreenElement {
-        unsafe { mem::transmute(token) }
+        #[allow(clippy::transmute_undefined_repr)]
+        unsafe {
+            mem::transmute(token)
+        }
     }
 }
 
@@ -134,7 +140,10 @@ impl PackedGreenElement {
 
     pub(crate) fn into_token(self) -> Option<GreenToken> {
         if !self.is_node() {
-            unsafe { Some(mem::transmute(self)) }
+            #[allow(clippy::transmute_undefined_repr)]
+            unsafe {
+                Some(mem::transmute(self))
+            }
         } else {
             None
         }
