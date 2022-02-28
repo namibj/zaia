@@ -11,8 +11,7 @@ mod table;
 
 use std::ops::{Deref, DerefMut};
 
-use cstree::NodeCache;
-use machinery::{span::Span, state::State};
+use machinery::{cstree::NodeCache, span::Span, state::State};
 use syntax::SyntaxNode;
 
 use crate::T;
@@ -66,11 +65,10 @@ pub fn parse(
 mod tests {
     use std::fs;
 
-    use cstree::NodeCache;
     use insta::assert_snapshot;
     use paste::paste;
 
-    use super::{parse, syntax::SyntaxNode};
+    use super::{machinery::cstree::NodeCache, parse, syntax::SyntaxNode};
 
     fn syntax_tree_debug(cache: &NodeCache<'static>, node: &SyntaxNode) -> String {
         node.debug(cache.interner(), true)

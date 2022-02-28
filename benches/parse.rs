@@ -1,8 +1,7 @@
 use std::fs;
 
 use criterion::{black_box, criterion_group, criterion_main, Criterion, Throughput};
-use cstree::NodeCache;
-use zaia::parser::parse;
+use zaia::parser::{machinery::cstree::NodeCache, parse};
 
 fn criterion_benchmark(c: &mut Criterion) {
     let source = fs::read_to_string("test-files/mixed.lua").unwrap();

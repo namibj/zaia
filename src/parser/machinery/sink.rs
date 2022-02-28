@@ -1,8 +1,11 @@
 use std::mem;
 
-use cstree::{GreenNode, GreenNodeBuilder, NodeCache};
-
-use super::{event::Event, kind::SyntaxKind, span::Span};
+use super::{
+    cstree::{GreenNode, GreenNodeBuilder, NodeCache},
+    event::Event,
+    kind::SyntaxKind,
+    span::Span,
+};
 use crate::T;
 
 pub struct Sink<'cache, 'source> {
