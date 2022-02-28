@@ -1,6 +1,6 @@
 use std::ops::Not;
 
-use cstree::{GreenNode, NodeCache};
+use super::cstree::{GreenNode, NodeCache};
 use logos::Logos;
 
 use super::{event::Event, kind::SyntaxKind, marker::Marker, sink::Sink, span::Span};

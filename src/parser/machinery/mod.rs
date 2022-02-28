@@ -6,3 +6,4 @@ pub mod marker;
 pub mod sink;
 pub mod span;
 pub mod state;
+pub mod cstree;

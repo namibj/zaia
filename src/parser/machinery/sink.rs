@@ -1,6 +1,6 @@
 use std::mem;
 
-use cstree::{GreenNode, GreenNodeBuilder, NodeCache};
+use super::cstree::{GreenNode, GreenNodeBuilder, NodeCache};
 
 use super::{event::Event, kind::SyntaxKind, span::Span};
 use crate::T;

@@ -11,7 +11,7 @@ mod table;
 
 use std::ops::{Deref, DerefMut};
 
-use cstree::NodeCache;
+use machinery::cstree::NodeCache;
 use machinery::{span::Span, state::State};
 use syntax::SyntaxNode;
 
@@ -66,7 +66,7 @@ pub fn parse(
 mod tests {
     use std::fs;
 
-    use cstree::NodeCache;
+    use super::machinery::cstree::NodeCache;
     use insta::assert_snapshot;
     use paste::paste;
 

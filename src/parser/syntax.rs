@@ -1,4 +1,4 @@
-use crate::{parser::machinery::kind::SyntaxKind, T};
+use crate::{parser::machinery::kind::SyntaxKind, T, parser::machinery::cstree};
 
 impl From<SyntaxKind> for cstree::SyntaxKind {
     fn from(token: SyntaxKind) -> Self {
