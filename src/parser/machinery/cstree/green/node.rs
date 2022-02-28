@@ -1,9 +1,9 @@
 use std::{
-    hash::{Hash, Hasher},
+    collections::hash_map::RandomState,
+    hash::{BuildHasher, Hash, Hasher},
     slice,
 };
 
-use fxhash::FxHasher32;
 use triomphe::{Arc, HeaderWithLength, ThinArc};
 
 use super::super::{
@@ -39,7 +39,7 @@ impl GreenNode {
         I: IntoIterator<Item = GreenElement>,
         I::IntoIter: ExactSizeIterator,
     {
-        let mut hasher = FxHasher32::default();
+        let mut hasher = RandomState::default().build_hasher();
         let mut text_len: TextSize = 0.into();
         let children = children
             .into_iter()

@@ -1,6 +1,4 @@
-use std::num::NonZeroUsize;
-
-use fxhash::FxBuildHasher;
+use std::{collections::hash_map::RandomState, num::NonZeroUsize};
 
 use super::super::interning::{
     Capacity,
@@ -26,7 +24,7 @@ impl TokenInterner {
             rodeo: Rodeo::with_capacity_and_hasher(
                 // capacity values suggested by author of `lasso`
                 Capacity::new(512, unsafe { NonZeroUsize::new_unchecked(4096) }),
-                FxBuildHasher::default(),
+                RandomState::default(),
             ),
         }
     }

@@ -7,10 +7,10 @@ use std::{
     sync::{
         atomic::{AtomicU32, Ordering},
         Arc as StdArc,
+        RwLock,
     },
 };
 
-use parking_lot::RwLock;
 use triomphe::Arc;
 
 use super::{
@@ -372,7 +372,7 @@ impl<L: Language, D> SyntaxNode<L, D> {
     /// If there was previous data associated with this node, it will be
     /// replaced.
     pub fn set_data(&self, data: D) -> Arc<D> {
-        let mut ptr = self.data().data.write();
+        let mut ptr = self.data().data.write().unwrap();
         let data = Arc::new(data);
         *ptr = Some(Arc::clone(&data));
         data
@@ -381,7 +381,7 @@ impl<L: Language, D> SyntaxNode<L, D> {
     /// Stores custom data for this node, but only if no data was previously
     /// set. If it was, the given data is returned unchanged.
     pub fn try_set_data(&self, data: D) -> Result<Arc<D>, D> {
-        let mut ptr = self.data().data.write();
+        let mut ptr = self.data().data.write().unwrap();
         if ptr.is_some() {
             return Err(data);
         }
@@ -392,13 +392,13 @@ impl<L: Language, D> SyntaxNode<L, D> {
 
     /// Returns the data associated with this node, if any.
     pub fn get_data(&self) -> Option<Arc<D>> {
-        let ptr = self.data().data.read();
+        let ptr = self.data().data.read().unwrap();
         (*ptr).as_ref().map(Arc::clone)
     }
 
     /// Removes the data associated with this node.
     pub fn clear_data(&self) {
-        let mut ptr = self.data().data.write();
+        let mut ptr = self.data().data.write().unwrap();
         *ptr = None;
     }
 
