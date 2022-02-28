@@ -108,10 +108,10 @@ impl HeapInternal {
 
         match tagged {
             _ if encoding::is_string(tagged) => {
-                let ptr = encoding::get_string(tagged);
-                let len = ByteString::len_from_thin(ptr);
-                let layout = ByteString::layout(len);
-                let ptr_nn = ptr::NonNull::new_unchecked(ptr);
+                let ptr = encoding::get_string(tagged) as *mut ByteString;
+                let len = (*ptr).len();
+                let layout = ByteString::layout(len as u32);
+                let ptr_nn = ptr::NonNull::new_unchecked(ptr as *mut u8);
                 alloc::Allocator::deallocate(self, ptr_nn, layout);
             },
             _ if encoding::is_table(tagged) => {

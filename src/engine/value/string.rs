@@ -1,13 +1,11 @@
-use std::{alloc, mem::MaybeUninit};
-use std::ops::Deref;
+use std::{alloc, mem::MaybeUninit, ops::Deref};
 
-// TODO: make this neater
 use super::{super::gc::PtrTag, encoding};
 
 #[repr(C)]
 pub struct ByteString {
     len: u32,
-    data: [MaybeUninit<u8>],
+    data: [MaybeUninit<u8>; 0],
 }
 
 impl ByteString {
@@ -25,10 +23,6 @@ impl ByteString {
         let size = std::mem::size_of::<u32>() + len as usize;
         let align = std::mem::align_of::<u32>();
         alloc::Layout::from_size_align(size, align).unwrap()
-    }
-
-    pub unsafe fn len_from_thin(ptr: *mut u8) -> u32 {
-        *(ptr as *mut u32)
     }
 }
 
