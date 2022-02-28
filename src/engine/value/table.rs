@@ -1,56 +1,71 @@
-use std::{borrow::Borrow, hash::Hash};
+//! TODO(#29): Replace this with a butterfly-like structure.
 
-use fxhash::FxBuildHasher;
-use hashbrown::HashMap;
+use hashbrown::{hash_map, HashMap};
 
 use super::{
-    super::{
-        gc::{Trace, Visitor},
-        Heap,
-    },
-    RefValue,
+    super::gc::{Heap, Trace, Visitor},
     Value,
 };
 
 pub struct Table {
-    inner: HashMap<Value, Value, FxBuildHasher, Heap>,
+    map: HashMap<Value, Value, (), Heap>,
 }
 
 impl Table {
     pub fn new(heap: Heap) -> Self {
         Table {
-            inner: HashMap::with_hasher_in(FxBuildHasher::default(), heap),
+            map: HashMap::with_hasher_in((), heap),
         }
     }
 
-    pub fn get<Q>(&self, key: &Q) -> Option<&Value>
-    where
-        Value: Borrow<Q>,
-        Q: Hash + Eq + ?Sized,
-    {
-        self.inner.get(key)
+    fn entry_mut(&mut self, key: Value) -> hash_map::RawEntryMut<'_, Value, Value, (), Heap> {
+        let hash = key.op_hash();
+
+        self.map
+            .raw_entry_mut()
+            .from_hash(hash, |other| key.op_eq(*other))
     }
 
-    pub fn get_mut<Q>(&mut self, key: &Q) -> Option<&mut Value>
-    where
-        Value: Borrow<Q>,
-        Q: Hash + Eq + ?Sized,
-    {
-        self.inner.get_mut(key)
+    pub fn get(&self, key: Value) -> Option<&Value> {
+        let hash = key.op_hash();
+
+        self.map
+            .raw_entry()
+            .from_hash(hash, |other| key.op_eq(*other))
+            .map(|(_, v)| v)
+    }
+
+    pub fn get_mut(&mut self, key: Value) -> Option<&mut Value> {
+        if let hash_map::RawEntryMut::Occupied(entry) = self.entry_mut(key) {
+            Some(entry.into_mut())
+        } else {
+            None
+        }
     }
 
     pub fn insert(&mut self, key: Value, value: Value) {
-        self.inner.insert(key, value);
+        match self.entry_mut(key) {
+            hash_map::RawEntryMut::Vacant(entry) => {
+                let hash = key.op_hash();
+                entry.insert_with_hasher(hash, key, value, |key| key.op_hash());
+            },
+
+            hash_map::RawEntryMut::Occupied(mut entry) => {
+                *entry.get_mut() = value;
+            },
+        }
     }
 
-    pub fn remove(&mut self, key: &Value) -> Option<Value> {
-        self.inner.remove(key)
+    pub fn remove(&mut self, key: Value) {
+        if let hash_map::RawEntryMut::Occupied(entry) = self.entry_mut(key) {
+            entry.remove();
+        }
     }
 }
 
-impl Trace<RefValue> for Table {
-    fn visit(&self, visitor: &mut Visitor<RefValue>) {
-        self.inner.iter().for_each(|(key, value)| {
+impl Trace for Table {
+    fn visit(&self, visitor: &mut Visitor) {
+        self.map.iter().for_each(|(key, value)| {
             key.visit(visitor);
             value.visit(visitor);
         });

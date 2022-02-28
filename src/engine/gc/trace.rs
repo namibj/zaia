@@ -1,39 +1,37 @@
-use hashbrown::HashSet;
+use super::{handle::TaggedHandle, set::ObjectSet};
 
-use super::handle::Handle;
-
-pub trait Trace<T> {
-    fn visit(&self, visitor: &mut Visitor<T>);
+pub trait Trace {
+    fn visit(&self, visitor: &mut Visitor);
 }
 
-pub struct Visitor<T> {
-    marked: HashSet<Handle<T>>,
-    stale: Vec<Handle<T>>,
+pub struct Visitor {
+    marked: ObjectSet,
+    stale: Vec<TaggedHandle>,
 }
 
-impl<T> Visitor<T> {
+impl Visitor {
     #[allow(clippy::new_without_default)]
     pub fn new() -> Self {
         Self {
-            marked: HashSet::new(),
+            marked: ObjectSet::new(),
             stale: Vec::new(),
         }
     }
 
-    pub fn mark(&mut self, handle: Handle<T>) {
+    pub fn mark(&mut self, handle: TaggedHandle) {
         self.marked.insert(handle);
     }
 
-    pub fn run(&mut self, root: &dyn Trace<T>) {
+    pub fn run(&mut self, root: &dyn Trace) {
         root.visit(self);
     }
 
     pub fn unmarked<'a>(
         &'a mut self,
-        objects: &HashSet<Handle<T>>,
-    ) -> impl Iterator<Item = &Handle<T>> + 'a {
-        self.stale.extend(objects.difference(&self.marked).copied());
-        self.stale.iter()
+        objects: &ObjectSet,
+    ) -> impl Iterator<Item = TaggedHandle> + 'a {
+        self.stale.extend(objects.difference(&self.marked));
+        self.stale.iter().copied()
     }
 
     pub fn reset(&mut self) {
