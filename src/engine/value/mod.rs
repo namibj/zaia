@@ -117,6 +117,10 @@ impl Value {
         }
     }
 
+    pub fn cast_string<'a>(self) -> &'a ByteString {
+        unsafe { &*(get_string(self.data) as *const ByteString) }
+    }
+
     fn ty(self) -> ValueType {
         dispatch!(self.data,
             is_int => ValueType::Int,
@@ -145,7 +149,7 @@ impl Value {
         match ty_1 {
             ValueType::Int => get_int(self.data) > get_int(other.data),
             ValueType::Float => get_float(self.data) > get_float(other.data),
-            ValueType::String => todo!(),
+            ValueType::String => **self.cast_string() > **other.cast_string(),
             _ => panic!("attempted op_gt on unsupported type: {:?}", ty_1),
         }
     }
@@ -161,7 +165,7 @@ impl Value {
         match ty_1 {
             ValueType::Int => get_int(self.data) < get_int(other.data),
             ValueType::Float => get_float(self.data) < get_float(other.data),
-            ValueType::String => todo!(),
+            ValueType::String => **self.cast_string() < **other.cast_string(),
             _ => panic!("attempted op_gt on unsupported type: {:?}", ty_1),
         }
     }
