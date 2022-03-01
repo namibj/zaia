@@ -72,21 +72,21 @@ pub enum Stmt {
 
 impl Stmt {
     fn cast(node: SyntaxNode) -> Option<Self> {
-        match node.kind() {
-            T![decl_stmt] => Some(Self::Decl(Decl::cast(node)?)),
-            T![assign_stmt] => Some(Self::Assign(Assign::cast(node)?)),
-            T![func_stmt] => Some(Self::Func(Func::cast(node)?)),
-            T![break_stmt] => Some(Self::Break(Break::cast(node)?)),
-            T![return_stmt] => Some(Self::Return(Return::cast(node)?)),
-            T![block_stmt] => Some(Self::Block(Block::cast(node)?)),
-            T![while_stmt] => Some(Self::While(While::cast(node)?)),
-            T![repeat_stmt] => Some(Self::Repeat(Repeat::cast(node)?)),
-            T![if_stmt] => Some(Self::If(If::cast(node)?)),
-            T![for_num_stmt] => Some(Self::ForNum(ForNum::cast(node)?)),
-            T![for_gen_stmt] => Some(Self::ForGen(ForGen::cast(node)?)),
-            kind if SimpleExpr::TOKENS.contains(&kind) => Some(Self::SimpleExpr(SimpleExpr::cast(node)?)),
-            _ => panic!(),
-        }
+        Some(match node.kind() {
+            T![decl_stmt] => Self::Decl(Decl::cast(node)?),
+            T![assign_stmt] => Self::Assign(Assign::cast(node)?),
+            T![func_stmt] => Self::Func(Func::cast(node)?),
+            T![break_stmt] => Self::Break(Break::cast(node)?),
+            T![return_stmt] => Self::Return(Return::cast(node)?),
+            T![block_stmt] => Self::Block(Block::cast(node)?),
+            T![while_stmt] => Self::While(While::cast(node)?),
+            T![repeat_stmt] => Self::Repeat(Repeat::cast(node)?),
+            T![if_stmt] => Self::If(If::cast(node)?),
+            T![for_num_stmt] => Self::ForNum(ForNum::cast(node)?),
+            T![for_gen_stmt] => Self::ForGen(ForGen::cast(node)?),
+            kind if SimpleExpr::TOKENS.contains(&kind) => Self::SimpleExpr(SimpleExpr::cast(node)?),
+            _ => unreachable!(),
+        })
     }
 }
 
@@ -97,28 +97,133 @@ impl SimpleExpr {
 
     fn cast(node: SyntaxNode) -> Option<Self> {
         match node.kind() {
-            _ => panic!(),
+            _ => unreachable!(),
+        }
+    }
+}
+
+pub enum Expr {}
+
+impl Expr {
+    const TOKENS: &'static [SyntaxKind] = &[];
+
+    fn cast(node: SyntaxNode) -> Option<Self> {
+        match node.kind() {
+            _ => unreachable!(),
         }
     }
 }
 
 ast_node!(Decl, T![decl_stmt]);
+
 ast_node!(DeclTarget, T![decl_target]);
+
 ast_node!(LiteralExpr, T![literal_expr]);
+
 ast_node!(Assign, T![assign_stmt]);
+
 ast_node!(Ident, T![ident]);
+
 ast_node!(PrefixOp, T![prefix_op]);
+
+impl PrefixOp {
+    pub fn op(&self) -> Option<PrefixOperator> {
+        PrefixOperator::cast(self.0.first_token()?)
+    }
+
+    pub fn rhs(&self) -> Option<Expr> {
+        Expr::cast(self.0.first_child()?.clone())
+    }
+}
+
+pub enum PrefixOperator {
+    None,
+    Neg,
+    Not,
+    Len,
+    BitNot,
+}
+
+impl PrefixOperator {
+    fn cast(node: &SyntaxToken) -> Option<Self> {
+        match node.kind() {
+            _ => unreachable!(),
+        }
+    }
+}
+
 ast_node!(BinaryOp, T![bin_op]);
+
+impl BinaryOp {
+    pub fn op(&self) -> Option<BinaryOperator> {
+        BinaryOperator::cast(self.0.first_token()?)
+    }
+
+    pub fn lhs(&self) -> Option<Expr> {
+        Expr::cast(self.0.first_child()?.clone())
+    }
+
+    pub fn rhs(&self) -> Option<Expr> {
+        Expr::cast(self.0.last_child()?.clone())
+    }
+}
+
+pub enum BinaryOperator {
+    And,
+    Or,
+    Add,
+    Sub,
+    Mul,
+    Div,
+    IntDiv,
+    Exp,
+    Mod,
+    BitAnd,
+    BitOr,
+    LShift,
+    RShift,
+    Eq,
+    BitXor,
+    NEq,
+    LEq,
+    GEq,
+    Gt,
+    Lt,
+    Property,
+    Method,
+    Concat,
+}
+
+impl BinaryOperator {
+    fn cast(node: &SyntaxToken) -> Option<Self> {
+        match node.kind() {
+            _ => unreachable!(),
+        }
+    }
+}
+
 ast_node!(ExprList, T![expr_list]);
+
 ast_node!(FuncCall, T![func_call]);
+
 ast_node!(Func, T![function]);
+
 ast_node!(Table, T![table_expr]);
+
 ast_node!(Break, T![break_stmt]);
+
 ast_node!(Return, T![return_stmt]);
+
 ast_node!(Block, T![block_stmt]);
+
 ast_node!(While, T![while_stmt]);
+
 ast_node!(Repeat, T![repeat_stmt]);
+
 ast_node!(If, T![if_stmt]);
+
 ast_node!(ElseChain, T![else_chain]);
+
 ast_node!(ForNum, T![for_num_stmt]);
+
 ast_node!(ForGen, T![for_gen_stmt]);

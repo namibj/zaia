@@ -1,10 +1,10 @@
 ---
 source: src/parser/mod.rs
-assertion_line: 96
+assertion_line: 94
 expression: syntax_tree_debug
 
 ---
-Root@0..13
+Root@0..19
   AssignStmt@0..13
     Ident@0..3
       Ident@0..3 "num"
@@ -27,4 +27,12 @@ Root@0..13
         Slash@11..12 "/"
         LiteralExpr@12..13
           Int@12..13 "3"
+  AssignStmt@13..19
+    Ident@13..16
+      Ident@13..16 "num"
+    Assign@16..17 "="
+    PrefixOp@17..19
+      Minus@17..18 "-"
+      LiteralExpr@18..19
+        Int@18..19 "5"
 
