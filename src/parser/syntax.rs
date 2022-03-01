@@ -48,6 +48,60 @@ macro_rules! ast_node {
 }
 
 ast_node!(Root, T![root]);
+
+impl Root {
+    pub fn stmts(&self) -> impl Iterator<Item = Stmt> + '_ {
+        self.0.children().cloned().filter_map(Stmt::cast)
+    }
+}
+
+pub enum Stmt {
+    Decl(Decl),
+    Assign(Assign),
+    Func(Func),
+    SimpleExpr(SimpleExpr),
+    Break(Break),
+    Return(Return),
+    Block(Block),
+    While(While),
+    Repeat(Repeat),
+    If(If),
+    ForNum(ForNum),
+    ForGen(ForGen),
+}
+
+impl Stmt {
+    fn cast(node: SyntaxNode) -> Option<Self> {
+        match node.kind() {
+            T![decl_stmt] => Some(Self::Decl(Decl::cast(node)?)),
+            T![assign_stmt] => Some(Self::Assign(Assign::cast(node)?)),
+            T![func_stmt] => Some(Self::Func(Func::cast(node)?)),
+            T![break_stmt] => Some(Self::Break(Break::cast(node)?)),
+            T![return_stmt] => Some(Self::Return(Return::cast(node)?)),
+            T![block_stmt] => Some(Self::Block(Block::cast(node)?)),
+            T![while_stmt] => Some(Self::While(While::cast(node)?)),
+            T![repeat_stmt] => Some(Self::Repeat(Repeat::cast(node)?)),
+            T![if_stmt] => Some(Self::If(If::cast(node)?)),
+            T![for_num_stmt] => Some(Self::ForNum(ForNum::cast(node)?)),
+            T![for_gen_stmt] => Some(Self::ForGen(ForGen::cast(node)?)),
+            kind if SimpleExpr::TOKENS.contains(&kind) => Some(Self::SimpleExpr(SimpleExpr::cast(node)?)),
+            _ => panic!(),
+        }
+    }
+}
+
+pub enum SimpleExpr {}
+
+impl SimpleExpr {
+    const TOKENS: &'static [SyntaxKind] = &[];
+
+    fn cast(node: SyntaxNode) -> Option<Self> {
+        match node.kind() {
+            _ => panic!(),
+        }
+    }
+}
+
 ast_node!(Decl, T![decl_stmt]);
 ast_node!(DeclTarget, T![decl_target]);
 ast_node!(LiteralExpr, T![literal_expr]);
