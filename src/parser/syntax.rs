@@ -304,7 +304,27 @@ impl Do {
 
 ast_node!(While, T![while_stmt]);
 
+impl While {
+    pub fn cond(&self) -> Option<Expr> {
+        Expr::cast(self.0.first_child()?.clone())
+    }
+
+    pub fn block(&self) -> Option<impl Iterator<Item = Stmt> + '_> {
+        Some(self.0.last_child()?.children().cloned().filter_map(Stmt::cast))
+    }
+}
+
 ast_node!(Repeat, T![repeat_stmt]);
+
+impl Repeat {
+    pub fn cond(&self) -> Option<Expr> {
+        Expr::cast(self.0.last_child()?.clone())
+    }
+
+    pub fn block(&self) -> Option<impl Iterator<Item = Stmt> + '_> {
+        Some(self.0.first_child()?.children().cloned().filter_map(Stmt::cast))
+    }
+}
 
 ast_node!(If, T![if_stmt]);
 
