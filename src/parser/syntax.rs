@@ -47,6 +47,11 @@ macro_rules! ast_node {
     };
 }
 
+fn expr_list(node: Option<&SyntaxNode>) -> impl Iterator<Item = Expr> + '_ {
+    node.into_iter()
+        .flat_map(|node| node.children().cloned().filter_map(Expr::cast))
+}
+
 ast_node!(Root, T![root]);
 
 impl Root {
@@ -202,8 +207,6 @@ impl BinaryOperator {
     }
 }
 
-ast_node!(ExprList, T![expr_list]);
-
 ast_node!(FuncCall, T![func_call]);
 
 ast_node!(Func, T![function]);
@@ -214,7 +217,19 @@ ast_node!(Break, T![break_stmt]);
 
 ast_node!(Return, T![return_stmt]);
 
+impl Return {
+    pub fn exprs(&self) -> impl Iterator<Item = Expr> + '_ {
+        expr_list(self.0.first_child())
+    }
+}
+
 ast_node!(Block, T![block_stmt]);
+
+impl Block {
+    pub fn stmts(&self) -> impl Iterator<Item = Stmt> + '_ {
+        self.0.children().cloned().filter_map(Stmt::cast)
+    }
+}
 
 ast_node!(While, T![while_stmt]);
 
