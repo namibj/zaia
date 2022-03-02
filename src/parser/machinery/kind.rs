@@ -16,7 +16,7 @@ pub enum SyntaxKind {
     Root,
     BreakStmt,
     ReturnStmt,
-    BlockStmt,
+    DoStmt,
     WhileStmt,
     RepeatStmt,
     StmtList,
@@ -336,7 +336,7 @@ macro_rules! T {
     [root] => { $crate::parser::machinery::kind::SyntaxKind::Root };
     [break_stmt] => { $crate::parser::machinery::kind::SyntaxKind::BreakStmt };
     [return_stmt] => { $crate::parser::machinery::kind::SyntaxKind::ReturnStmt };
-    [block_stmt] => { $crate::parser::machinery::kind::SyntaxKind::BlockStmt };
+    [do_stmt] => { $crate::parser::machinery::kind::SyntaxKind::DoStmt };
     [while_stmt] => { $crate::parser::machinery::kind::SyntaxKind::WhileStmt };
     [repeat_stmt] => { $crate::parser::machinery::kind::SyntaxKind::RepeatStmt };
     [stmt_list] => { $crate::parser::machinery::kind::SyntaxKind::StmtList };

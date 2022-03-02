@@ -47,11 +47,6 @@ macro_rules! ast_node {
     };
 }
 
-fn expr_list(node: Option<&SyntaxNode>) -> impl Iterator<Item = Expr> + '_ {
-    node.into_iter()
-        .flat_map(|node| node.children().cloned().filter_map(Expr::cast))
-}
-
 ast_node!(Root, T![root]);
 
 impl Root {
@@ -67,7 +62,7 @@ pub enum Stmt {
     SimpleExpr(SimpleExpr),
     Break(Break),
     Return(Return),
-    Block(Block),
+    Do(Do),
     While(While),
     Repeat(Repeat),
     If(If),
@@ -83,7 +78,7 @@ impl Stmt {
             T![func_stmt] => Self::Func(Func::cast(node)?),
             T![break_stmt] => Self::Break(Break::cast(node)?),
             T![return_stmt] => Self::Return(Return::cast(node)?),
-            T![block_stmt] => Self::Block(Block::cast(node)?),
+            T![do_stmt] => Self::Do(Do::cast(node)?),
             T![while_stmt] => Self::While(While::cast(node)?),
             T![repeat_stmt] => Self::Repeat(Repeat::cast(node)?),
             T![if_stmt] => Self::If(If::cast(node)?),
@@ -218,14 +213,20 @@ ast_node!(Break, T![break_stmt]);
 ast_node!(Return, T![return_stmt]);
 
 impl Return {
-    pub fn exprs(&self) -> impl Iterator<Item = Expr> + '_ {
-        expr_list(self.0.first_child())
+    pub fn exprs(&self) -> Option<impl Iterator<Item = Expr> + '_> {
+        Some(
+            self.0
+                .first_child()?
+                .children()
+                .cloned()
+                .flat_map(Expr::cast),
+        )
     }
 }
 
-ast_node!(Block, T![block_stmt]);
+ast_node!(Do, T![do_stmt]);
 
-impl Block {
+impl Do {
     pub fn stmts(&self) -> impl Iterator<Item = Stmt> + '_ {
         self.0.children().cloned().filter_map(Stmt::cast)
     }
@@ -237,7 +238,64 @@ ast_node!(Repeat, T![repeat_stmt]);
 
 ast_node!(If, T![if_stmt]);
 
+impl If {
+    pub fn cast_else(node: SyntaxNode) -> Option<Self> {
+        if node.kind() == T![elseif] {
+            Some(Self(node))
+        } else {
+            None
+        }
+    }
+
+    pub fn cond(&self) -> Option<Expr> {
+        Expr::cast(self.0.first_child()?.clone())
+    }
+
+    pub fn stmts(&self) -> Option<impl Iterator<Item = Stmt> + '_> {
+        Some(
+            self.0
+                .first_child()?
+                .next_sibling()?
+                .children()
+                .cloned()
+                .flat_map(Stmt::cast),
+        )
+    }
+
+    pub fn else_chain(&self) -> Option<ElseChain> {
+        ElseChain::cast(self.0.last_child()?.clone())
+    }
+}
+
 ast_node!(ElseChain, T![else_chain]);
+
+impl ElseChain {
+    pub fn else_block(&self) -> Option<impl Iterator<Item = Stmt> + '_> {
+        let token = self.0.first_token()?;
+
+        if token.kind() == T![else] {
+            Some(
+                self.0
+                    .first_child()?
+                    .children()
+                    .cloned()
+                    .flat_map(Stmt::cast),
+            )
+        } else {
+            None
+        }
+    }
+
+    pub fn elseif_block(&self) -> Option<If> {
+        let token = self.0.first_token()?;
+
+        if token.kind() == T![elseif] {
+            If::cast_else(self.0.first_child()?.clone())
+        } else {
+            None
+        }
+    }
+}
 
 ast_node!(ForNum, T![for_num_stmt]);
 

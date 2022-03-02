@@ -13,7 +13,7 @@ impl<'cache, 'source> Parser<'cache, 'source> {
         self.expect(T![do]);
         self.r_block(|t| t == T![end]);
         self.expect(T![end]);
-        Some(marker.complete(self, T![block_stmt]))
+        Some(marker.complete(self, T![do_stmt]))
     }
 
     pub(super) fn r_while(&mut self) -> Option<CompletedMarker> {
