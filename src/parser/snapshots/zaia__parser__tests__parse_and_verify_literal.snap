@@ -6,87 +6,101 @@ expression: syntax_tree_debug
 ---
 Root@0..174
   AssignStmt@0..5
-    Ident@0..1
-      Ident@0..1 "a"
+    AssignList@0..1
+      Ident@0..1
+        Ident@0..1 "a"
     Assign@1..2 "="
     LiteralExpr@2..5
       Int@2..5 "581"
   AssignStmt@5..11
-    Ident@5..6
-      Ident@5..6 "b"
+    AssignList@5..6
+      Ident@5..6
+        Ident@5..6 "b"
     Assign@6..7 "="
     LiteralExpr@7..11
       HexInt@7..11 "0xFF"
   AssignStmt@11..16
-    Ident@11..12
-      Ident@11..12 "c"
+    AssignList@11..12
+      Ident@11..12
+        Ident@11..12 "c"
     Assign@12..13 "="
     LiteralExpr@13..16
       Nil@13..16 "nil"
   AssignStmt@16..22
-    Ident@16..17
-      Ident@16..17 "d"
+    AssignList@16..17
+      Ident@16..17
+        Ident@16..17 "d"
     Assign@17..18 "="
     LiteralExpr@18..22
       True@18..22 "true"
   AssignStmt@22..29
-    Ident@22..23
-      Ident@22..23 "e"
+    AssignList@22..23
+      Ident@22..23
+        Ident@22..23 "e"
     Assign@23..24 "="
     LiteralExpr@24..29
       False@24..29 "false"
   AssignStmt@29..38
-    Ident@29..30
-      Ident@29..30 "f"
+    AssignList@29..30
+      Ident@29..30
+        Ident@29..30 "f"
     Assign@30..31 "="
     LiteralExpr@31..38
       String@31..38 "\"hello\""
   AssignStmt@38..47
-    Ident@38..39
-      Ident@38..39 "g"
+    AssignList@38..39
+      Ident@38..39
+        Ident@38..39 "g"
     Assign@39..40 "="
     LiteralExpr@40..47
       String@40..47 "'world'"
   AssignStmt@47..58
-    Ident@47..48
-      Ident@47..48 "h"
+    AssignList@47..48
+      Ident@47..48
+        Ident@47..48 "h"
     Assign@48..49 "="
     LiteralExpr@49..58
       LongString@49..58 "[[woosh]]"
   AssignStmt@58..71
-    Ident@58..59
-      Ident@58..59 "i"
+    AssignList@58..59
+      Ident@58..59
+        Ident@58..59 "i"
     Assign@59..60 "="
     LiteralExpr@60..71
       LongString@60..71 "[=[woosh]=]"
   AssignStmt@71..78
-    Ident@71..72
-      Ident@71..72 "l"
+    AssignList@71..72
+      Ident@71..72
+        Ident@71..72 "l"
     Assign@72..73 "="
     LiteralExpr@73..78
       Float@73..78 "0.5e5"
   AssignStmt@78..86
-    Ident@78..79
-      Ident@78..79 "j"
+    AssignList@78..79
+      Ident@78..79
+        Ident@78..79 "j"
     Assign@79..80 "="
     LiteralExpr@80..86
       HexFloat@80..86 "0xce.1"
   AssignStmt@86..96
-    Ident@86..87
-      Ident@86..87 "k"
+    AssignList@86..87
+      Ident@86..87
+        Ident@86..87 "k"
     Assign@87..88 "="
     LiteralExpr@88..96
       HexFloat@88..96 "0x1.9p-3"
   AssignStmt@96..100
-    Ident@96..97
-      Ident@96..97 "t"
+    AssignList@96..97
+      Ident@96..97
+        Ident@96..97 "t"
     Assign@97..98 "="
     TableExpr@98..100
       LCurly@98..99 "{"
       RCurly@99..100 "}"
   AssignStmt@100..110
-    Ident@100..102
-      Ident@100..102 "tl"
+    AssignList@100..102
+      Ident@100..102
+        Ident@100..102 "tl"
     Assign@102..103 "="
     TableExpr@103..110
       LCurly@103..104 "{"
@@ -99,8 +113,9 @@ Root@0..174
           Int@107..109 "63"
       RCurly@109..110 "}"
   AssignStmt@110..131
-    Ident@110..112
-      Ident@110..112 "tr"
+    AssignList@110..112
+      Ident@110..112
+        Ident@110..112 "tr"
     Assign@112..113 "="
     TableExpr@113..131
       LCurly@113..114 "{"
@@ -119,8 +134,9 @@ Root@0..174
           Int@128..130 "20"
       RCurly@130..131 "}"
   AssignStmt@131..169
-    Ident@131..133
-      Ident@131..133 "tg"
+    AssignList@131..133
+      Ident@131..133
+        Ident@131..133 "tg"
     Assign@133..134 "="
     TableExpr@134..169
       LCurly@134..135 "{"
@@ -152,8 +168,9 @@ Root@0..174
           String@164..168 "\"20\""
       RCurly@168..169 "}"
   AssignStmt@169..174
-    Ident@169..170
-      Ident@169..170 "y"
+    AssignList@169..170
+      Ident@169..170
+        Ident@169..170 "y"
     Assign@170..171 "="
     PrefixOp@171..174
       Minus@171..172 "-"

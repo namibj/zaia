@@ -74,12 +74,14 @@ impl<'cache, 'source> Parser<'cache, 'source> {
     pub(super) fn r_for(&mut self) -> Option<CompletedMarker> {
         let marker = self.start();
         self.expect(T![for]);
-        self.expect(T![ident]);
+        let assign_list_marker = self.start();
+        self.r_ident();
 
         if self.at() == T![=] {
+            assign_list_marker.abandon(self);
             self.r_num_for(marker)
         } else {
-            self.r_gen_for(marker)
+            self.r_gen_for(marker, assign_list_marker)
         }
     }
 
@@ -97,12 +99,17 @@ impl<'cache, 'source> Parser<'cache, 'source> {
         Some(marker.complete(self, T![for_num_stmt]))
     }
 
-    pub(super) fn r_gen_for(&mut self, marker: Marker) -> Option<CompletedMarker> {
+    pub(super) fn r_gen_for(
+        &mut self,
+        marker: Marker,
+        list_marker: Marker,
+    ) -> Option<CompletedMarker> {
         while self.at() == T![,] {
             self.expect(T![,]);
-            self.expect(T![ident]);
+            self.r_ident();
         }
 
+        list_marker.complete(self, T![assign_list]);
         self.expect(T![in]);
         self.r_expr_list();
         self.r_do();

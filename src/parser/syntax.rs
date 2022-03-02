@@ -49,7 +49,7 @@ macro_rules! ast_node {
 ast_node!(Root, T![root]);
 
 impl Root {
-    pub fn stmts(&self) -> impl Iterator<Item = Stmt> + '_ {
+    pub fn block(&self) -> impl Iterator<Item = Stmt> + '_ {
         self.0.children().cloned().filter_map(Stmt::cast)
     }
 }
@@ -219,7 +219,47 @@ impl FuncCall {
     }
 }
 
-ast_node!(Func, T![function]);
+ast_node!(Func, T![func_stmt]);
+
+impl Func {
+    pub fn target(&self) -> Option<SimpleExpr> {
+        SimpleExpr::cast(self.0.first_child()?.clone())
+    }
+
+    pub fn args(&self) -> Option<impl Iterator<Item = Ident> + '_> {
+        Some(
+            self.0
+                .children()
+                .skip(1)
+                .next()?
+                .children()
+                .cloned()
+                .filter_map(Ident::cast),
+        )
+    }
+
+    pub fn block(&self) -> Option<Stmt> {
+        Stmt::cast(self.0.last_child()?.clone())
+    }
+}
+
+ast_node!(FuncExpr, T![func_expr]);
+
+impl FuncExpr {
+    pub fn args(&self) -> Option<impl Iterator<Item = Ident> + '_> {
+        Some(
+            self.0
+                .first_child()?
+                .children()
+                .cloned()
+                .filter_map(Ident::cast),
+        )
+    }
+
+    pub fn block(&self) -> Option<Stmt> {
+        Stmt::cast(self.0.last_child()?.clone())
+    }
+}
 
 ast_node!(TableArray, T![table_array_elem]);
 
@@ -233,7 +273,7 @@ ast_node!(TableMap, T![table_map_elem]);
 
 impl TableMap {
     pub fn field(&self) -> Option<Ident> {
-       Ident::cast(self.0.first_child()?.clone())
+        Ident::cast(self.0.first_child()?.clone())
     }
 
     pub fn value(&self) -> Option<Expr> {
@@ -310,7 +350,13 @@ impl While {
     }
 
     pub fn block(&self) -> Option<impl Iterator<Item = Stmt> + '_> {
-        Some(self.0.last_child()?.children().cloned().filter_map(Stmt::cast))
+        Some(
+            self.0
+                .last_child()?
+                .children()
+                .cloned()
+                .filter_map(Stmt::cast),
+        )
     }
 }
 
@@ -322,7 +368,13 @@ impl Repeat {
     }
 
     pub fn block(&self) -> Option<impl Iterator<Item = Stmt> + '_> {
-        Some(self.0.first_child()?.children().cloned().filter_map(Stmt::cast))
+        Some(
+            self.0
+                .first_child()?
+                .children()
+                .cloned()
+                .filter_map(Stmt::cast),
+        )
     }
 }
 
@@ -390,4 +442,61 @@ impl ElseChain {
 
 ast_node!(ForNum, T![for_num_stmt]);
 
+impl ForNum {
+    pub fn counter(&self) -> Option<(Ident, Expr)> {
+        let mut children = self.0.children().cloned();
+        let name = Ident::cast(children.next()?)?;
+        let value = Expr::cast(children.next()?)?;
+        Some((name, value))
+    }
+
+    pub fn end(&self) -> Option<Expr> {
+        Expr::cast(self.0.children().skip(2).next()?.clone())
+    }
+
+    pub fn block(&self) -> Option<impl Iterator<Item = Stmt> + '_> {
+        Some(
+            self.0
+                .last_child()?
+                .children()
+                .cloned()
+                .filter_map(Stmt::cast),
+        )
+    }
+}
+
 ast_node!(ForGen, T![for_gen_stmt]);
+
+impl ForGen {
+    pub fn targets(&self) -> Option<impl Iterator<Item = Ident> + '_> {
+        Some(
+            self.0
+                .first_child()?
+                .children()
+                .cloned()
+                .filter_map(Ident::cast),
+        )
+    }
+
+    pub fn values(&self) -> Option<impl Iterator<Item = Expr> + '_> {
+        Some(
+            self.0
+                .children()
+                .skip(1)
+                .next()?
+                .children()
+                .cloned()
+                .filter_map(Expr::cast),
+        )
+    }
+
+    pub fn block(&self) -> Option<impl Iterator<Item = Stmt> + '_> {
+        Some(
+            self.0
+                .last_child()?
+                .children()
+                .cloned()
+                .filter_map(Stmt::cast),
+        )
+    }
+}

@@ -1,6 +1,6 @@
 ---
 source: src/parser/mod.rs
-assertion_line: 95
+assertion_line: 93
 expression: syntax_tree_debug
 
 ---
@@ -11,9 +11,11 @@ Root@0..148
       Ident@8..11 "add"
     FuncArgs@11..16
       LParen@11..12 "("
-      Ident@12..13 "a"
+      Ident@12..13
+        Ident@12..13 "a"
       Comma@13..14 ","
-      Ident@14..15 "b"
+      Ident@14..15
+        Ident@14..15 "b"
       RParen@15..16 ")"
     StmtList@16..25
       ReturnStmt@16..25
@@ -31,9 +33,11 @@ Root@0..148
       Ident@36..39 "sub"
     FuncArgs@39..44
       LParen@39..40 "("
-      Ident@40..41 "a"
+      Ident@40..41
+        Ident@40..41 "a"
       Comma@41..42 ","
-      Ident@42..43 "b"
+      Ident@42..43
+        Ident@42..43 "b"
       RParen@43..44 ")"
     StmtList@44..53
       ReturnStmt@44..53
@@ -51,9 +55,11 @@ Root@0..148
       Ident@64..67 "mul"
     FuncArgs@67..72
       LParen@67..68 "("
-      Ident@68..69 "a"
+      Ident@68..69
+        Ident@68..69 "a"
       Comma@69..70 ","
-      Ident@70..71 "b"
+      Ident@70..71
+        Ident@70..71 "b"
       RParen@71..72 ")"
     StmtList@72..81
       ReturnStmt@72..81
@@ -71,9 +77,11 @@ Root@0..148
       Ident@92..95 "div"
     FuncArgs@95..100
       LParen@95..96 "("
-      Ident@96..97 "a"
+      Ident@96..97
+        Ident@96..97 "a"
       Comma@97..98 ","
-      Ident@98..99 "b"
+      Ident@98..99
+        Ident@98..99 "b"
       RParen@99..100 ")"
     StmtList@100..109
       ReturnStmt@100..109

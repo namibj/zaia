@@ -57,7 +57,7 @@ impl<'cache, 'source> Parser<'cache, 'source> {
                     self.expect(T![...]);
                 },
                 T![ident] => {
-                    self.expect(T![ident]);
+                    self.r_ident();
                 },
                 _ => unreachable!(),
             }

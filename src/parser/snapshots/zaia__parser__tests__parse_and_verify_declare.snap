@@ -1,13 +1,14 @@
 ---
 source: src/parser/mod.rs
-assertion_line: 98
+assertion_line: 96
 expression: syntax_tree_debug
 
 ---
 Root@0..175
   AssignStmt@0..3
-    Ident@0..1
-      Ident@0..1 "x"
+    AssignList@0..1
+      Ident@0..1
+        Ident@0..1 "x"
     Assign@1..2 "="
     LiteralExpr@2..3
       Int@2..3 "5"
@@ -42,11 +43,12 @@ Root@0..175
     LiteralExpr@52..57
       String@52..57 "\"abs\""
   AssignStmt@57..75
-    Ident@57..58
-      Ident@57..58 "i"
-    Comma@58..59 ","
-    Ident@59..60
-      Ident@59..60 "k"
+    AssignList@57..60
+      Ident@57..58
+        Ident@57..58 "i"
+      Comma@58..59 ","
+      Ident@59..60
+        Ident@59..60 "k"
     Assign@60..61 "="
     ExprList@61..75
       FuncCall@61..66

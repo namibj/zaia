@@ -81,82 +81,90 @@ Root@0..16908
       LCurly@196..197 "{"
       RCurly@197..198 "}"
   AssignStmt@198..218
-    BinOp@198..207
-      Ident@198..199
-        Ident@198..199 "M"
-      Dot@199..200 "."
-      Ident@200..207
-        Ident@200..207 "MAX_INT"
+    AssignList@198..207
+      BinOp@198..207
+        Ident@198..199
+          Ident@198..199 "M"
+        Dot@199..200 "."
+        Ident@200..207
+          Ident@200..207 "MAX_INT"
     Assign@207..208 "="
     LiteralExpr@208..218
       Int@208..218 "2147483645"
   AssignStmt@218..231
-    BinOp@218..227
-      Ident@218..219
-        Ident@218..219 "M"
-      Dot@219..220 "."
-      Ident@220..227
-        Ident@220..227 "MAXVARS"
+    AssignList@218..227
+      BinOp@218..227
+        Ident@218..219
+          Ident@218..219 "M"
+        Dot@219..220 "."
+        Ident@220..227
+          Ident@220..227 "MAXVARS"
     Assign@227..228 "="
     LiteralExpr@228..231
       Int@228..231 "200"
   AssignStmt@231..247
-    BinOp@231..244
-      Ident@231..232
-        Ident@231..232 "M"
-      Dot@232..233 "."
-      Ident@233..244
-        Ident@233..244 "MAXUPVALUES"
+    AssignList@231..244
+      BinOp@231..244
+        Ident@231..232
+          Ident@231..232 "M"
+        Dot@232..233 "."
+        Ident@233..244
+          Ident@233..244 "MAXUPVALUES"
     Assign@244..245 "="
     LiteralExpr@245..247
       Int@245..247 "32"
   AssignStmt@247..262
-    BinOp@247..258
-      Ident@247..248
-        Ident@247..248 "M"
-      Dot@248..249 "."
-      Ident@249..258
-        Ident@249..258 "MAXPARAMS"
+    AssignList@247..258
+      BinOp@247..258
+        Ident@247..248
+          Ident@247..248 "M"
+        Dot@248..249 "."
+        Ident@249..258
+          Ident@249..258 "MAXPARAMS"
     Assign@258..259 "="
     LiteralExpr@259..262
       Int@259..262 "100"
   AssignStmt@262..286
-    BinOp@262..282
-      Ident@262..263
-        Ident@262..263 "M"
-      Dot@263..264 "."
-      Ident@264..282
-        Ident@264..282 "LUA_MAXPARSERLEVEL"
+    AssignList@262..282
+      BinOp@262..282
+        Ident@262..263
+          Ident@262..263 "M"
+        Dot@263..264 "."
+        Ident@264..282
+          Ident@264..282 "LUA_MAXPARSERLEVEL"
     Assign@282..283 "="
     LiteralExpr@283..286
       Int@283..286 "200"
   AssignStmt@286..303
-    BinOp@286..301
-      Ident@286..287
-        Ident@286..287 "M"
-      Dot@287..288 "."
-      Ident@288..301
-        Ident@288..301 "VARARG_HASARG"
+    AssignList@286..301
+      BinOp@286..301
+        Ident@286..287
+          Ident@286..287 "M"
+        Dot@287..288 "."
+        Ident@288..301
+          Ident@288..301 "VARARG_HASARG"
     Assign@301..302 "="
     LiteralExpr@302..303
       Int@302..303 "1"
   AssignStmt@303..322
-    BinOp@303..320
-      Ident@303..304
-        Ident@303..304 "M"
-      Dot@304..305 "."
-      Ident@305..320
-        Ident@305..320 "VARARG_ISVARARG"
+    AssignList@303..320
+      BinOp@303..320
+        Ident@303..304
+          Ident@303..304 "M"
+        Dot@304..305 "."
+        Ident@305..320
+          Ident@305..320 "VARARG_ISVARARG"
     Assign@320..321 "="
     LiteralExpr@321..322
       Int@321..322 "2"
   AssignStmt@322..341
-    BinOp@322..339
-      Ident@322..323
-        Ident@322..323 "M"
-      Dot@323..324 "."
-      Ident@324..339
-        Ident@324..339 "VARARG_NEEDSARG"
+    AssignList@322..339
+      BinOp@322..339
+        Ident@322..323
+          Ident@322..323 "M"
+        Dot@323..324 "."
+        Ident@324..339
+          Ident@324..339 "VARARG_NEEDSARG"
     Assign@339..340 "="
     LiteralExpr@340..341
       Int@340..341 "4"
@@ -168,7 +176,8 @@ Root@0..16908
         Ident@354..364 "hasmultret"
       FuncArgs@364..367
         LParen@364..365 "("
-        Ident@365..366 "k"
+        Ident@365..366
+          Ident@365..366 "k"
         RParen@366..367 ")"
       StmtList@367..397
         ReturnStmt@367..397
@@ -196,7 +205,8 @@ Root@0..16908
         Ident@413..424 "ensure_list"
       FuncArgs@424..429
         LParen@424..425 "("
-        Ident@425..428 "ast"
+        Ident@425..428
+          Ident@425..428 "ast"
         RParen@428..429 ")"
       StmtList@429..471
         ReturnStmt@429..471
@@ -240,9 +250,11 @@ Root@0..16908
         Ident@487..496 "getlocvar"
       FuncArgs@496..502
         LParen@496..497 "("
-        Ident@497..499 "fs"
+        Ident@497..499
+          Ident@497..499 "fs"
         Comma@499..500 ","
-        Ident@500..501 "i"
+        Ident@500..501
+          Ident@500..501 "i"
         RParen@501..502 ")"
       StmtList@502..534
         ReturnStmt@502..534
@@ -280,9 +292,11 @@ Root@0..16908
         Ident@550..560 "removevars"
       FuncArgs@560..572
         LParen@560..561 "("
-        Ident@561..563 "fs"
+        Ident@561..563
+          Ident@561..563 "fs"
         Comma@563..564 ","
-        Ident@564..571 "tolevel"
+        Ident@564..571
+          Ident@564..571 "tolevel"
         RParen@571..572 ")"
       StmtList@572..692
         WhileStmt@572..692
@@ -301,12 +315,13 @@ Root@0..16908
             Do@595..597 "do"
             StmtList@597..689
               AssignStmt@597..620
-                BinOp@597..607
-                  Ident@597..599
-                    Ident@597..599 "fs"
-                  Dot@599..600 "."
-                  Ident@600..607
-                    Ident@600..607 "nactvar"
+                AssignList@597..607
+                  BinOp@597..607
+                    Ident@597..599
+                      Ident@597..599 "fs"
+                    Dot@599..600 "."
+                    Ident@600..607
+                      Ident@600..607 "nactvar"
                 Assign@607..608 "="
                 BinOp@608..620
                   BinOp@608..618
@@ -345,12 +360,13 @@ Root@0..16908
                 Then@664..668 "then"
                 StmtList@668..686
                   AssignStmt@668..686
-                    BinOp@668..680
-                      Ident@668..674
-                        Ident@668..674 "locvar"
-                      Dot@674..675 "."
-                      Ident@675..680
-                        Ident@675..680 "endpc"
+                    AssignList@668..680
+                      BinOp@668..680
+                        Ident@668..674
+                          Ident@668..674 "locvar"
+                        Dot@674..675 "."
+                        Ident@675..680
+                          Ident@675..680 "endpc"
                     Assign@680..681 "="
                     BinOp@681..686
                       Ident@681..683
@@ -369,9 +385,11 @@ Root@0..16908
         Ident@708..724 "registerlocalvar"
       FuncArgs@724..736
         LParen@724..725 "("
-        Ident@725..727 "fs"
+        Ident@725..727
+          Ident@725..727 "fs"
         Comma@727..728 ","
-        Ident@728..735 "varname"
+        Ident@728..735
+          Ident@728..735 "varname"
         RParen@735..736 ")"
       StmtList@736..874
         DeclStmt@736..747
@@ -386,45 +404,47 @@ Root@0..16908
             Ident@746..747
               Ident@746..747 "f"
         AssignStmt@747..772
-          Index@747..769
-            BinOp@747..756
-              Ident@747..748
-                Ident@747..748 "f"
-              Dot@748..749 "."
-              Ident@749..756
-                Ident@749..756 "locvars"
-            LBracket@756..757 "["
-            BinOp@757..768
-              Ident@757..759
-                Ident@757..759 "fs"
-              Dot@759..760 "."
-              Ident@760..768
-                Ident@760..768 "nlocvars"
-            RBracket@768..769 "]"
+          AssignList@747..769
+            Index@747..769
+              BinOp@747..756
+                Ident@747..748
+                  Ident@747..748 "f"
+                Dot@748..749 "."
+                Ident@749..756
+                  Ident@749..756 "locvars"
+              LBracket@756..757 "["
+              BinOp@757..768
+                Ident@757..759
+                  Ident@757..759 "fs"
+                Dot@759..760 "."
+                Ident@760..768
+                  Ident@760..768 "nlocvars"
+              RBracket@768..769 "]"
           Assign@769..770 "="
           TableExpr@770..772
             LCurly@770..771 "{"
             RCurly@771..772 "}"
         AssignStmt@772..810
-          BinOp@772..802
-            Index@772..794
-              BinOp@772..781
-                Ident@772..773
-                  Ident@772..773 "f"
-                Dot@773..774 "."
-                Ident@774..781
-                  Ident@774..781 "locvars"
-              LBracket@781..782 "["
-              BinOp@782..793
-                Ident@782..784
-                  Ident@782..784 "fs"
-                Dot@784..785 "."
-                Ident@785..793
-                  Ident@785..793 "nlocvars"
-              RBracket@793..794 "]"
-            Dot@794..795 "."
-            Ident@795..802
-              Ident@795..802 "varname"
+          AssignList@772..802
+            BinOp@772..802
+              Index@772..794
+                BinOp@772..781
+                  Ident@772..773
+                    Ident@772..773 "f"
+                  Dot@773..774 "."
+                  Ident@774..781
+                    Ident@774..781 "locvars"
+                LBracket@781..782 "["
+                BinOp@782..793
+                  Ident@782..784
+                    Ident@782..784 "fs"
+                  Dot@784..785 "."
+                  Ident@785..793
+                    Ident@785..793 "nlocvars"
+                RBracket@793..794 "]"
+              Dot@794..795 "."
+              Ident@795..802
+                Ident@795..802 "varname"
           Assign@802..803 "="
           Ident@803..810
             Ident@803..810 "varname"
@@ -440,12 +460,13 @@ Root@0..16908
             Ident@827..835
               Ident@827..835 "nlocvars"
         AssignStmt@835..860
-          BinOp@835..846
-            Ident@835..837
-              Ident@835..837 "fs"
-            Dot@837..838 "."
-            Ident@838..846
-              Ident@838..846 "nlocvars"
+          AssignList@835..846
+            BinOp@835..846
+              Ident@835..837
+                Ident@835..837 "fs"
+              Dot@837..838 "."
+              Ident@838..846
+                Ident@838..846 "nlocvars"
           Assign@846..847 "="
           BinOp@847..860
             BinOp@847..858
@@ -470,18 +491,21 @@ Root@0..16908
         Ident@890..905 "adjustlocalvars"
       FuncArgs@905..915
         LParen@905..906 "("
-        Ident@906..908 "fs"
+        Ident@906..908
+          Ident@906..908 "fs"
         Comma@908..909 ","
-        Ident@909..914 "nvars"
+        Ident@909..914
+          Ident@909..914 "nvars"
         RParen@914..915 ")"
       StmtList@915..1002
         AssignStmt@915..942
-          BinOp@915..925
-            Ident@915..917
-              Ident@915..917 "fs"
-            Dot@917..918 "."
-            Ident@918..925
-              Ident@918..925 "nactvar"
+          AssignList@915..925
+            BinOp@915..925
+              Ident@915..917
+                Ident@915..917 "fs"
+              Dot@917..918 "."
+              Ident@918..925
+                Ident@918..925 "nactvar"
           Assign@925..926 "="
           BinOp@926..942
             BinOp@926..936
@@ -495,7 +519,8 @@ Root@0..16908
               Ident@937..942 "nvars"
         ForNumStmt@942..1002
           For@942..945 "for"
-          Ident@945..946 "i"
+          Ident@945..946
+            Ident@945..946 "i"
           Assign@946..947 "="
           Ident@947..952
             Ident@947..952 "nvars"
@@ -511,29 +536,30 @@ Root@0..16908
             Do@957..959 "do"
             StmtList@959..999
               AssignStmt@959..999
-                BinOp@959..993
-                  FuncCall@959..985
-                    Ident@959..968
-                      Ident@959..968 "getlocvar"
-                    FuncArgs@968..985
-                      LParen@968..969 "("
-                      Ident@969..971
-                        Ident@969..971 "fs"
-                      Comma@971..972 ","
-                      BinOp@972..984
-                        BinOp@972..982
-                          Ident@972..974
-                            Ident@972..974 "fs"
-                          Dot@974..975 "."
-                          Ident@975..982
-                            Ident@975..982 "nactvar"
-                        Minus@982..983 "-"
-                        Ident@983..984
-                          Ident@983..984 "i"
-                      RParen@984..985 ")"
-                  Dot@985..986 "."
-                  Ident@986..993
-                    Ident@986..993 "startpc"
+                AssignList@959..993
+                  BinOp@959..993
+                    FuncCall@959..985
+                      Ident@959..968
+                        Ident@959..968 "getlocvar"
+                      FuncArgs@968..985
+                        LParen@968..969 "("
+                        Ident@969..971
+                          Ident@969..971 "fs"
+                        Comma@971..972 ","
+                        BinOp@972..984
+                          BinOp@972..982
+                            Ident@972..974
+                              Ident@972..974 "fs"
+                            Dot@974..975 "."
+                            Ident@975..982
+                              Ident@975..982 "nactvar"
+                          Minus@982..983 "-"
+                          Ident@983..984
+                            Ident@983..984 "i"
+                        RParen@984..985 ")"
+                    Dot@985..986 "."
+                    Ident@986..993
+                      Ident@986..993 "startpc"
                 Assign@993..994 "="
                 BinOp@994..999
                   Ident@994..996
@@ -551,11 +577,14 @@ Root@0..16908
         Ident@1018..1032 "check_conflict"
       FuncArgs@1032..1041
         LParen@1032..1033 "("
-        Ident@1033..1035 "fs"
+        Ident@1033..1035
+          Ident@1033..1035 "fs"
         Comma@1035..1036 ","
-        Ident@1036..1038 "lh"
+        Ident@1036..1038
+          Ident@1036..1038 "lh"
         Comma@1038..1039 ","
-        Ident@1039..1040 "v"
+        Ident@1039..1040
+          Ident@1039..1040 "v"
         RParen@1040..1041 ")"
       StmtList@1041..1321
         DeclStmt@1041..1062
@@ -624,22 +653,24 @@ Root@0..16908
                     Then@1133..1137 "then"
                     StmtList@1137..1165
                       AssignStmt@1137..1150
-                        Ident@1137..1145
-                          Ident@1137..1145 "conflict"
+                        AssignList@1137..1145
+                          Ident@1137..1145
+                            Ident@1137..1145 "conflict"
                         Assign@1145..1146 "="
                         LiteralExpr@1146..1150
                           True@1146..1150 "true"
                       AssignStmt@1150..1165
-                        BinOp@1150..1159
-                          BinOp@1150..1154
-                            Ident@1150..1152
-                              Ident@1150..1152 "lh"
-                            Dot@1152..1153 "."
-                            Ident@1153..1154
-                              Ident@1153..1154 "v"
-                          Dot@1154..1155 "."
-                          Ident@1155..1159
-                            Ident@1155..1159 "info"
+                        AssignList@1150..1159
+                          BinOp@1150..1159
+                            BinOp@1150..1154
+                              Ident@1150..1152
+                                Ident@1150..1152 "lh"
+                              Dot@1152..1153 "."
+                              Ident@1153..1154
+                                Ident@1153..1154 "v"
+                            Dot@1154..1155 "."
+                            Ident@1155..1159
+                              Ident@1155..1159 "info"
                         Assign@1159..1160 "="
                         Ident@1160..1165
                           Ident@1160..1165 "extra"
@@ -667,30 +698,33 @@ Root@0..16908
                     Then@1186..1190 "then"
                     StmtList@1190..1217
                       AssignStmt@1190..1203
-                        Ident@1190..1198
-                          Ident@1190..1198 "conflict"
+                        AssignList@1190..1198
+                          Ident@1190..1198
+                            Ident@1190..1198 "conflict"
                         Assign@1198..1199 "="
                         LiteralExpr@1199..1203
                           True@1199..1203 "true"
                       AssignStmt@1203..1217
-                        BinOp@1203..1211
-                          BinOp@1203..1207
-                            Ident@1203..1205
-                              Ident@1203..1205 "lh"
-                            Dot@1205..1206 "."
-                            Ident@1206..1207
-                              Ident@1206..1207 "v"
-                          Dot@1207..1208 "."
-                          Ident@1208..1211
-                            Ident@1208..1211 "aux"
+                        AssignList@1203..1211
+                          BinOp@1203..1211
+                            BinOp@1203..1207
+                              Ident@1203..1205
+                                Ident@1203..1205 "lh"
+                              Dot@1205..1206 "."
+                              Ident@1206..1207
+                                Ident@1206..1207 "v"
+                            Dot@1207..1208 "."
+                            Ident@1208..1211
+                              Ident@1208..1211 "aux"
                         Assign@1211..1212 "="
                         Ident@1212..1217
                           Ident@1212..1217 "extra"
                     End@1217..1220 "end"
                 End@1220..1223 "end"
               AssignStmt@1223..1233
-                Ident@1223..1225
-                  Ident@1223..1225 "lh"
+                AssignList@1223..1225
+                  Ident@1223..1225
+                    Ident@1223..1225 "lh"
                 Assign@1225..1226 "="
                 BinOp@1226..1233
                   Ident@1226..1228
@@ -762,41 +796,45 @@ Root@0..16908
         Ident@1337..1345 "init_exp"
       FuncArgs@1345..1352
         LParen@1345..1346 "("
-        Ident@1346..1347 "e"
+        Ident@1346..1347
+          Ident@1346..1347 "e"
         Comma@1347..1348 ","
-        Ident@1348..1349 "k"
+        Ident@1348..1349
+          Ident@1348..1349 "k"
         Comma@1349..1350 ","
-        Ident@1350..1351 "i"
+        Ident@1350..1351
+          Ident@1350..1351 "i"
         RParen@1351..1352 ")"
       StmtList@1352..1400
         AssignStmt@1352..1400
-          BinOp@1352..1355
-            Ident@1352..1353
-              Ident@1352..1353 "e"
-            Dot@1353..1354 "."
-            Ident@1354..1355
-              Ident@1354..1355 "f"
-          Comma@1355..1356 ","
-          BinOp@1356..1359
-            Ident@1356..1357
-              Ident@1356..1357 "e"
-            Dot@1357..1358 "."
-            Ident@1358..1359
-              Ident@1358..1359 "t"
-          Comma@1359..1360 ","
-          BinOp@1360..1363
-            Ident@1360..1361
-              Ident@1360..1361 "e"
-            Dot@1361..1362 "."
-            Ident@1362..1363
-              Ident@1362..1363 "k"
-          Comma@1363..1364 ","
-          BinOp@1364..1370
-            Ident@1364..1365
-              Ident@1364..1365 "e"
-            Dot@1365..1366 "."
-            Ident@1366..1370
-              Ident@1366..1370 "info"
+          AssignList@1352..1370
+            BinOp@1352..1355
+              Ident@1352..1353
+                Ident@1352..1353 "e"
+              Dot@1353..1354 "."
+              Ident@1354..1355
+                Ident@1354..1355 "f"
+            Comma@1355..1356 ","
+            BinOp@1356..1359
+              Ident@1356..1357
+                Ident@1356..1357 "e"
+              Dot@1357..1358 "."
+              Ident@1358..1359
+                Ident@1358..1359 "t"
+            Comma@1359..1360 ","
+            BinOp@1360..1363
+              Ident@1360..1361
+                Ident@1360..1361 "e"
+              Dot@1361..1362 "."
+              Ident@1362..1363
+                Ident@1362..1363 "k"
+            Comma@1363..1364 ","
+            BinOp@1364..1370
+              Ident@1364..1365
+                Ident@1364..1365 "e"
+              Dot@1365..1366 "."
+              Ident@1366..1370
+                Ident@1366..1370 "info"
           Assign@1370..1371 "="
           ExprList@1371..1400
             BinOp@1371..1383
@@ -827,11 +865,14 @@ Root@0..16908
         Ident@1416..1426 "codestring"
       FuncArgs@1426..1436
         LParen@1426..1427 "("
-        Ident@1427..1429 "fs"
+        Ident@1427..1429
+          Ident@1427..1429 "fs"
         Comma@1429..1430 ","
-        Ident@1430..1431 "e"
+        Ident@1430..1431
+          Ident@1430..1431 "e"
         Comma@1431..1432 ","
-        Ident@1432..1435 "str"
+        Ident@1432..1435
+          Ident@1432..1435 "str"
         RParen@1435..1436 ")"
       StmtList@1436..1473
         FuncCall@1436..1473
@@ -870,14 +911,17 @@ Root@0..16908
         Ident@1489..1498 "searchvar"
       FuncArgs@1498..1507
         LParen@1498..1499 "("
-        Ident@1499..1501 "fs"
+        Ident@1499..1501
+          Ident@1499..1501 "fs"
         Comma@1501..1502 ","
-        Ident@1502..1506 "name"
+        Ident@1502..1506
+          Ident@1502..1506 "name"
         RParen@1506..1507 ")"
       StmtList@1507..1614
         ForNumStmt@1507..1606
           For@1507..1510 "for"
-          Ident@1510..1511 "i"
+          Ident@1510..1511
+            Ident@1510..1511 "i"
           Assign@1511..1512 "="
           BinOp@1512..1524
             BinOp@1512..1522
@@ -966,188 +1010,206 @@ Root@0..16908
             LCurly@1647..1648 "{"
             RCurly@1648..1649 "}"
         AssignStmt@1649..1655
-          BinOp@1649..1652
-            Ident@1649..1650
-              Ident@1649..1650 "f"
-            Dot@1650..1651 "."
-            Ident@1651..1652
-              Ident@1651..1652 "k"
+          AssignList@1649..1652
+            BinOp@1649..1652
+              Ident@1649..1650
+                Ident@1649..1650 "f"
+              Dot@1650..1651 "."
+              Ident@1651..1652
+                Ident@1651..1652 "k"
           Assign@1652..1653 "="
           TableExpr@1653..1655
             LCurly@1653..1654 "{"
             RCurly@1654..1655 "}"
         AssignStmt@1655..1664
-          BinOp@1655..1662
-            Ident@1655..1656
-              Ident@1655..1656 "f"
-            Dot@1656..1657 "."
-            Ident@1657..1662
-              Ident@1657..1662 "sizek"
+          AssignList@1655..1662
+            BinOp@1655..1662
+              Ident@1655..1656
+                Ident@1655..1656 "f"
+              Dot@1656..1657 "."
+              Ident@1657..1662
+                Ident@1657..1662 "sizek"
           Assign@1662..1663 "="
           LiteralExpr@1663..1664
             Int@1663..1664 "0"
         AssignStmt@1664..1670
-          BinOp@1664..1667
-            Ident@1664..1665
-              Ident@1664..1665 "f"
-            Dot@1665..1666 "."
-            Ident@1666..1667
-              Ident@1666..1667 "p"
+          AssignList@1664..1667
+            BinOp@1664..1667
+              Ident@1664..1665
+                Ident@1664..1665 "f"
+              Dot@1665..1666 "."
+              Ident@1666..1667
+                Ident@1666..1667 "p"
           Assign@1667..1668 "="
           TableExpr@1668..1670
             LCurly@1668..1669 "{"
             RCurly@1669..1670 "}"
         AssignStmt@1670..1679
-          BinOp@1670..1677
-            Ident@1670..1671
-              Ident@1670..1671 "f"
-            Dot@1671..1672 "."
-            Ident@1672..1677
-              Ident@1672..1677 "sizep"
+          AssignList@1670..1677
+            BinOp@1670..1677
+              Ident@1670..1671
+                Ident@1670..1671 "f"
+              Dot@1671..1672 "."
+              Ident@1672..1677
+                Ident@1672..1677 "sizep"
           Assign@1677..1678 "="
           LiteralExpr@1678..1679
             Int@1678..1679 "0"
         AssignStmt@1679..1688
-          BinOp@1679..1685
-            Ident@1679..1680
-              Ident@1679..1680 "f"
-            Dot@1680..1681 "."
-            Ident@1681..1685
-              Ident@1681..1685 "code"
+          AssignList@1679..1685
+            BinOp@1679..1685
+              Ident@1679..1680
+                Ident@1679..1680 "f"
+              Dot@1680..1681 "."
+              Ident@1681..1685
+                Ident@1681..1685 "code"
           Assign@1685..1686 "="
           TableExpr@1686..1688
             LCurly@1686..1687 "{"
             RCurly@1687..1688 "}"
         AssignStmt@1688..1700
-          BinOp@1688..1698
-            Ident@1688..1689
-              Ident@1688..1689 "f"
-            Dot@1689..1690 "."
-            Ident@1690..1698
-              Ident@1690..1698 "sizecode"
+          AssignList@1688..1698
+            BinOp@1688..1698
+              Ident@1688..1689
+                Ident@1688..1689 "f"
+              Dot@1689..1690 "."
+              Ident@1690..1698
+                Ident@1690..1698 "sizecode"
           Assign@1698..1699 "="
           LiteralExpr@1699..1700
             Int@1699..1700 "0"
         AssignStmt@1700..1716
-          BinOp@1700..1714
-            Ident@1700..1701
-              Ident@1700..1701 "f"
-            Dot@1701..1702 "."
-            Ident@1702..1714
-              Ident@1702..1714 "sizelineinfo"
+          AssignList@1700..1714
+            BinOp@1700..1714
+              Ident@1700..1701
+                Ident@1700..1701 "f"
+              Dot@1701..1702 "."
+              Ident@1702..1714
+                Ident@1702..1714 "sizelineinfo"
           Assign@1714..1715 "="
           LiteralExpr@1715..1716
             Int@1715..1716 "0"
         AssignStmt@1716..1732
-          BinOp@1716..1730
-            Ident@1716..1717
-              Ident@1716..1717 "f"
-            Dot@1717..1718 "."
-            Ident@1718..1730
-              Ident@1718..1730 "sizeupvalues"
+          AssignList@1716..1730
+            BinOp@1716..1730
+              Ident@1716..1717
+                Ident@1716..1717 "f"
+              Dot@1717..1718 "."
+              Ident@1718..1730
+                Ident@1718..1730 "sizeupvalues"
           Assign@1730..1731 "="
           LiteralExpr@1731..1732
             Int@1731..1732 "0"
         AssignStmt@1732..1740
-          BinOp@1732..1738
-            Ident@1732..1733
-              Ident@1732..1733 "f"
-            Dot@1733..1734 "."
-            Ident@1734..1738
-              Ident@1734..1738 "nups"
+          AssignList@1732..1738
+            BinOp@1732..1738
+              Ident@1732..1733
+                Ident@1732..1733 "f"
+              Dot@1733..1734 "."
+              Ident@1734..1738
+                Ident@1734..1738 "nups"
           Assign@1738..1739 "="
           LiteralExpr@1739..1740
             Int@1739..1740 "0"
         AssignStmt@1740..1753
-          BinOp@1740..1750
-            Ident@1740..1741
-              Ident@1740..1741 "f"
-            Dot@1741..1742 "."
-            Ident@1742..1750
-              Ident@1742..1750 "upvalues"
+          AssignList@1740..1750
+            BinOp@1740..1750
+              Ident@1740..1741
+                Ident@1740..1741 "f"
+              Dot@1741..1742 "."
+              Ident@1742..1750
+                Ident@1742..1750 "upvalues"
           Assign@1750..1751 "="
           TableExpr@1751..1753
             LCurly@1751..1752 "{"
             RCurly@1752..1753 "}"
         AssignStmt@1753..1766
-          BinOp@1753..1764
-            Ident@1753..1754
-              Ident@1753..1754 "f"
-            Dot@1754..1755 "."
-            Ident@1755..1764
-              Ident@1755..1764 "numparams"
+          AssignList@1753..1764
+            BinOp@1753..1764
+              Ident@1753..1754
+                Ident@1753..1754 "f"
+              Dot@1754..1755 "."
+              Ident@1755..1764
+                Ident@1755..1764 "numparams"
           Assign@1764..1765 "="
           LiteralExpr@1765..1766
             Int@1765..1766 "0"
         AssignStmt@1766..1779
-          BinOp@1766..1777
-            Ident@1766..1767
-              Ident@1766..1767 "f"
-            Dot@1767..1768 "."
-            Ident@1768..1777
-              Ident@1768..1777 "is_vararg"
+          AssignList@1766..1777
+            BinOp@1766..1777
+              Ident@1766..1767
+                Ident@1766..1767 "f"
+              Dot@1767..1768 "."
+              Ident@1768..1777
+                Ident@1768..1777 "is_vararg"
           Assign@1777..1778 "="
           LiteralExpr@1778..1779
             Int@1778..1779 "0"
         AssignStmt@1779..1795
-          BinOp@1779..1793
-            Ident@1779..1780
-              Ident@1779..1780 "f"
-            Dot@1780..1781 "."
-            Ident@1781..1793
-              Ident@1781..1793 "maxstacksize"
+          AssignList@1779..1793
+            BinOp@1779..1793
+              Ident@1779..1780
+                Ident@1779..1780 "f"
+              Dot@1780..1781 "."
+              Ident@1781..1793
+                Ident@1781..1793 "maxstacksize"
           Assign@1793..1794 "="
           LiteralExpr@1794..1795
             Int@1794..1795 "0"
         AssignStmt@1795..1808
-          BinOp@1795..1805
-            Ident@1795..1796
-              Ident@1795..1796 "f"
-            Dot@1796..1797 "."
-            Ident@1797..1805
-              Ident@1797..1805 "lineinfo"
+          AssignList@1795..1805
+            BinOp@1795..1805
+              Ident@1795..1796
+                Ident@1795..1796 "f"
+              Dot@1796..1797 "."
+              Ident@1797..1805
+                Ident@1797..1805 "lineinfo"
           Assign@1805..1806 "="
           TableExpr@1806..1808
             LCurly@1806..1807 "{"
             RCurly@1807..1808 "}"
         AssignStmt@1808..1823
-          BinOp@1808..1821
-            Ident@1808..1809
-              Ident@1808..1809 "f"
-            Dot@1809..1810 "."
-            Ident@1810..1821
-              Ident@1810..1821 "sizelocvars"
+          AssignList@1808..1821
+            BinOp@1808..1821
+              Ident@1808..1809
+                Ident@1808..1809 "f"
+              Dot@1809..1810 "."
+              Ident@1810..1821
+                Ident@1810..1821 "sizelocvars"
           Assign@1821..1822 "="
           LiteralExpr@1822..1823
             Int@1822..1823 "0"
         AssignStmt@1823..1835
-          BinOp@1823..1832
-            Ident@1823..1824
-              Ident@1823..1824 "f"
-            Dot@1824..1825 "."
-            Ident@1825..1832
-              Ident@1825..1832 "locvars"
+          AssignList@1823..1832
+            BinOp@1823..1832
+              Ident@1823..1824
+                Ident@1823..1824 "f"
+              Dot@1824..1825 "."
+              Ident@1825..1832
+                Ident@1825..1832 "locvars"
           Assign@1832..1833 "="
           TableExpr@1833..1835
             LCurly@1833..1834 "{"
             RCurly@1834..1835 "}"
         AssignStmt@1835..1850
-          BinOp@1835..1848
-            Ident@1835..1836
-              Ident@1835..1836 "f"
-            Dot@1836..1837 "."
-            Ident@1837..1848
-              Ident@1837..1848 "lineDefined"
+          AssignList@1835..1848
+            BinOp@1835..1848
+              Ident@1835..1836
+                Ident@1835..1836 "f"
+              Dot@1836..1837 "."
+              Ident@1837..1848
+                Ident@1837..1848 "lineDefined"
           Assign@1848..1849 "="
           LiteralExpr@1849..1850
             Int@1849..1850 "0"
         AssignStmt@1850..1862
-          BinOp@1850..1858
-            Ident@1850..1851
-              Ident@1850..1851 "f"
-            Dot@1851..1852 "."
-            Ident@1852..1858
-              Ident@1852..1858 "source"
+          AssignList@1850..1858
+            BinOp@1850..1858
+              Ident@1850..1851
+                Ident@1850..1851 "f"
+              Dot@1851..1852 "."
+              Ident@1852..1858
+                Ident@1852..1858 "source"
           Assign@1858..1859 "="
           LiteralExpr@1859..1862
             Nil@1859..1862 "nil"
@@ -1164,7 +1226,8 @@ Root@0..16908
         Ident@1885..1894 "open_func"
       FuncArgs@1894..1902
         LParen@1894..1895 "("
-        Ident@1895..1901 "old_fs"
+        Ident@1895..1901
+          Ident@1895..1901 "old_fs"
         RParen@1901..1902 ")"
       StmtList@1902..2273
         DeclStmt@1902..1916
@@ -1176,23 +1239,25 @@ Root@0..16908
             LCurly@1914..1915 "{"
             RCurly@1915..1916 "}"
         AssignStmt@1916..1934
-          BinOp@1916..1931
-            Ident@1916..1922
-              Ident@1916..1922 "new_fs"
-            Dot@1922..1923 "."
-            Ident@1923..1931
-              Ident@1923..1931 "upvalues"
+          AssignList@1916..1931
+            BinOp@1916..1931
+              Ident@1916..1922
+                Ident@1916..1922 "new_fs"
+              Dot@1922..1923 "."
+              Ident@1923..1931
+                Ident@1923..1931 "upvalues"
           Assign@1931..1932 "="
           TableExpr@1932..1934
             LCurly@1932..1933 "{"
             RCurly@1933..1934 "}"
         AssignStmt@1934..1950
-          BinOp@1934..1947
-            Ident@1934..1940
-              Ident@1934..1940 "new_fs"
-            Dot@1940..1941 "."
-            Ident@1941..1947
-              Ident@1941..1947 "actvar"
+          AssignList@1934..1947
+            BinOp@1934..1947
+              Ident@1934..1940
+                Ident@1934..1940 "new_fs"
+              Dot@1940..1941 "."
+              Ident@1941..1947
+                Ident@1941..1947 "actvar"
           Assign@1947..1948 "="
           TableExpr@1948..1950
             LCurly@1948..1949 "{"
@@ -1209,54 +1274,59 @@ Root@0..16908
               LParen@1965..1966 "("
               RParen@1966..1967 ")"
         AssignStmt@1967..1977
-          BinOp@1967..1975
-            Ident@1967..1973
-              Ident@1967..1973 "new_fs"
-            Dot@1973..1974 "."
-            Ident@1974..1975
-              Ident@1974..1975 "f"
+          AssignList@1967..1975
+            BinOp@1967..1975
+              Ident@1967..1973
+                Ident@1967..1973 "new_fs"
+              Dot@1973..1974 "."
+              Ident@1974..1975
+                Ident@1974..1975 "f"
           Assign@1975..1976 "="
           Ident@1976..1977
             Ident@1976..1977 "f"
         AssignStmt@1977..1995
-          BinOp@1977..1988
-            Ident@1977..1983
-              Ident@1977..1983 "new_fs"
-            Dot@1983..1984 "."
-            Ident@1984..1988
-              Ident@1984..1988 "prev"
+          AssignList@1977..1988
+            BinOp@1977..1988
+              Ident@1977..1983
+                Ident@1977..1983 "new_fs"
+              Dot@1983..1984 "."
+              Ident@1984..1988
+                Ident@1984..1988 "prev"
           Assign@1988..1989 "="
           Ident@1989..1995
             Ident@1989..1995 "old_fs"
         AssignStmt@1995..2006
-          BinOp@1995..2004
-            Ident@1995..2001
-              Ident@1995..2001 "new_fs"
-            Dot@2001..2002 "."
-            Ident@2002..2004
-              Ident@2002..2004 "pc"
+          AssignList@1995..2004
+            BinOp@1995..2004
+              Ident@1995..2001
+                Ident@1995..2001 "new_fs"
+              Dot@2001..2002 "."
+              Ident@2002..2004
+                Ident@2002..2004 "pc"
           Assign@2004..2005 "="
           LiteralExpr@2005..2006
             Int@2005..2006 "0"
         AssignStmt@2006..2026
-          BinOp@2006..2023
-            Ident@2006..2012
-              Ident@2006..2012 "new_fs"
-            Dot@2012..2013 "."
-            Ident@2013..2023
-              Ident@2013..2023 "lasttarget"
+          AssignList@2006..2023
+            BinOp@2006..2023
+              Ident@2006..2012
+                Ident@2006..2012 "new_fs"
+              Dot@2012..2013 "."
+              Ident@2013..2023
+                Ident@2013..2023 "lasttarget"
           Assign@2023..2024 "="
           PrefixOp@2024..2026
             Minus@2024..2025 "-"
             LiteralExpr@2025..2026
               Int@2025..2026 "1"
         AssignStmt@2026..2049
-          BinOp@2026..2036
-            Ident@2026..2032
-              Ident@2026..2032 "new_fs"
-            Dot@2032..2033 "."
-            Ident@2033..2036
-              Ident@2033..2036 "jpc"
+          AssignList@2026..2036
+            BinOp@2026..2036
+              Ident@2026..2032
+                Ident@2026..2032 "new_fs"
+              Dot@2032..2033 "."
+              Ident@2033..2036
+                Ident@2033..2036 "jpc"
           Assign@2036..2037 "="
           BinOp@2037..2049
             Ident@2037..2041
@@ -1265,83 +1335,91 @@ Root@0..16908
             Ident@2042..2049
               Ident@2042..2049 "NO_JUMP"
         AssignStmt@2049..2065
-          BinOp@2049..2063
-            Ident@2049..2055
-              Ident@2049..2055 "new_fs"
-            Dot@2055..2056 "."
-            Ident@2056..2063
-              Ident@2056..2063 "freereg"
+          AssignList@2049..2063
+            BinOp@2049..2063
+              Ident@2049..2055
+                Ident@2049..2055 "new_fs"
+              Dot@2055..2056 "."
+              Ident@2056..2063
+                Ident@2056..2063 "freereg"
           Assign@2063..2064 "="
           LiteralExpr@2064..2065
             Int@2064..2065 "0"
         AssignStmt@2065..2076
-          BinOp@2065..2074
-            Ident@2065..2071
-              Ident@2065..2071 "new_fs"
-            Dot@2071..2072 "."
-            Ident@2072..2074
-              Ident@2072..2074 "nk"
+          AssignList@2065..2074
+            BinOp@2065..2074
+              Ident@2065..2071
+                Ident@2065..2071 "new_fs"
+              Dot@2071..2072 "."
+              Ident@2072..2074
+                Ident@2072..2074 "nk"
           Assign@2074..2075 "="
           LiteralExpr@2075..2076
             Int@2075..2076 "0"
         AssignStmt@2076..2087
-          BinOp@2076..2084
-            Ident@2076..2082
-              Ident@2076..2082 "new_fs"
-            Dot@2082..2083 "."
-            Ident@2083..2084
-              Ident@2083..2084 "h"
+          AssignList@2076..2084
+            BinOp@2076..2084
+              Ident@2076..2082
+                Ident@2076..2082 "new_fs"
+              Dot@2082..2083 "."
+              Ident@2083..2084
+                Ident@2083..2084 "h"
           Assign@2084..2085 "="
           TableExpr@2085..2087
             LCurly@2085..2086 "{"
             RCurly@2086..2087 "}"
         AssignStmt@2087..2098
-          BinOp@2087..2096
-            Ident@2087..2093
-              Ident@2087..2093 "new_fs"
-            Dot@2093..2094 "."
-            Ident@2094..2096
-              Ident@2094..2096 "np"
+          AssignList@2087..2096
+            BinOp@2087..2096
+              Ident@2087..2093
+                Ident@2087..2093 "new_fs"
+              Dot@2093..2094 "."
+              Ident@2094..2096
+                Ident@2094..2096 "np"
           Assign@2096..2097 "="
           LiteralExpr@2097..2098
             Int@2097..2098 "0"
         AssignStmt@2098..2115
-          BinOp@2098..2113
-            Ident@2098..2104
-              Ident@2098..2104 "new_fs"
-            Dot@2104..2105 "."
-            Ident@2105..2113
-              Ident@2105..2113 "nlocvars"
+          AssignList@2098..2113
+            BinOp@2098..2113
+              Ident@2098..2104
+                Ident@2098..2104 "new_fs"
+              Dot@2104..2105 "."
+              Ident@2105..2113
+                Ident@2105..2113 "nlocvars"
           Assign@2113..2114 "="
           LiteralExpr@2114..2115
             Int@2114..2115 "0"
         AssignStmt@2115..2131
-          BinOp@2115..2129
-            Ident@2115..2121
-              Ident@2115..2121 "new_fs"
-            Dot@2121..2122 "."
-            Ident@2122..2129
-              Ident@2122..2129 "nactvar"
+          AssignList@2115..2129
+            BinOp@2115..2129
+              Ident@2115..2121
+                Ident@2115..2121 "new_fs"
+              Dot@2121..2122 "."
+              Ident@2122..2129
+                Ident@2122..2129 "nactvar"
           Assign@2129..2130 "="
           LiteralExpr@2130..2131
             Int@2130..2131 "0"
         AssignStmt@2131..2144
-          BinOp@2131..2140
-            Ident@2131..2137
-              Ident@2131..2137 "new_fs"
-            Dot@2137..2138 "."
-            Ident@2138..2140
-              Ident@2138..2140 "bl"
+          AssignList@2131..2140
+            BinOp@2131..2140
+              Ident@2131..2137
+                Ident@2131..2137 "new_fs"
+              Dot@2137..2138 "."
+              Ident@2138..2140
+                Ident@2138..2140 "bl"
           Assign@2140..2141 "="
           LiteralExpr@2141..2144
             Nil@2141..2144 "nil"
         AssignStmt@2144..2189
-          BinOp@2144..2160
-            Ident@2144..2150
-              Ident@2144..2150 "new_fs"
-            Dot@2150..2151 "."
-            Ident@2151..2160
-              Ident@2151..2160 "nestlevel"
+          AssignList@2144..2160
+            BinOp@2144..2160
+              Ident@2144..2150
+                Ident@2144..2150 "new_fs"
+              Dot@2150..2151 "."
+              Ident@2151..2160
+                Ident@2151..2160 "nestlevel"
           Assign@2160..2161 "="
           BinOp@2161..2189
             BinOp@2161..2186
@@ -1358,43 +1436,47 @@ Root@0..16908
             LiteralExpr@2188..2189
               Int@2188..2189 "0"
         AssignStmt@2189..2205
-          BinOp@2189..2203
-            Ident@2189..2190
-              Ident@2189..2190 "f"
-            Dot@2190..2191 "."
-            Ident@2191..2203
-              Ident@2191..2203 "maxstacksize"
+          AssignList@2189..2203
+            BinOp@2189..2203
+              Ident@2189..2190
+                Ident@2189..2190 "f"
+              Dot@2190..2191 "."
+              Ident@2191..2203
+                Ident@2191..2203 "maxstacksize"
           Assign@2203..2204 "="
           LiteralExpr@2204..2205
             Int@2204..2205 "2"
         AssignStmt@2205..2222
-          BinOp@2205..2220
-            Ident@2205..2211
-              Ident@2205..2211 "new_fs"
-            Dot@2211..2212 "."
-            Ident@2212..2220
-              Ident@2212..2220 "lastline"
+          AssignList@2205..2220
+            BinOp@2205..2220
+              Ident@2205..2211
+                Ident@2205..2211 "new_fs"
+              Dot@2211..2212 "."
+              Ident@2212..2220
+                Ident@2212..2220 "lastline"
           Assign@2220..2221 "="
           LiteralExpr@2221..2222
             Int@2221..2222 "0"
         AssignStmt@2222..2245
-          BinOp@2222..2242
-            Ident@2222..2228
-              Ident@2222..2228 "new_fs"
-            Dot@2228..2229 "."
-            Ident@2229..2242
-              Ident@2229..2242 "forward_gotos"
+          AssignList@2222..2242
+            BinOp@2222..2242
+              Ident@2222..2228
+                Ident@2222..2228 "new_fs"
+              Dot@2228..2229 "."
+              Ident@2229..2242
+                Ident@2229..2242 "forward_gotos"
           Assign@2242..2243 "="
           TableExpr@2243..2245
             LCurly@2243..2244 "{"
             RCurly@2244..2245 "}"
         AssignStmt@2245..2261
-          BinOp@2245..2258
-            Ident@2245..2251
-              Ident@2245..2251 "new_fs"
-            Dot@2251..2252 "."
-            Ident@2252..2258
-              Ident@2252..2258 "labels"
+          AssignList@2245..2258
+            BinOp@2245..2258
+              Ident@2245..2251
+                Ident@2245..2251 "new_fs"
+              Dot@2251..2252 "."
+              Ident@2252..2258
+                Ident@2252..2258 "labels"
           Assign@2258..2259 "="
           TableExpr@2259..2261
             LCurly@2259..2260 "{"
@@ -1412,7 +1494,8 @@ Root@0..16908
         Ident@2289..2299 "close_func"
       FuncArgs@2299..2303
         LParen@2299..2300 "("
-        Ident@2300..2302 "fs"
+        Ident@2300..2302
+          Ident@2300..2302 "fs"
         RParen@2302..2303 ")"
       StmtList@2303..2568
         DeclStmt@2303..2314
@@ -1456,12 +1539,13 @@ Root@0..16908
               Int@2344..2345 "0"
             RParen@2345..2346 ")"
         AssignStmt@2346..2362
-          BinOp@2346..2356
-            Ident@2346..2347
-              Ident@2346..2347 "f"
-            Dot@2347..2348 "."
-            Ident@2348..2356
-              Ident@2348..2356 "sizecode"
+          AssignList@2346..2356
+            BinOp@2346..2356
+              Ident@2346..2347
+                Ident@2346..2347 "f"
+              Dot@2347..2348 "."
+              Ident@2348..2356
+                Ident@2348..2356 "sizecode"
           Assign@2356..2357 "="
           BinOp@2357..2362
             Ident@2357..2359
@@ -1470,12 +1554,13 @@ Root@0..16908
             Ident@2360..2362
               Ident@2360..2362 "pc"
         AssignStmt@2362..2382
-          BinOp@2362..2376
-            Ident@2362..2363
-              Ident@2362..2363 "f"
-            Dot@2363..2364 "."
-            Ident@2364..2376
-              Ident@2364..2376 "sizelineinfo"
+          AssignList@2362..2376
+            BinOp@2362..2376
+              Ident@2362..2363
+                Ident@2362..2363 "f"
+              Dot@2363..2364 "."
+              Ident@2364..2376
+                Ident@2364..2376 "sizelineinfo"
           Assign@2376..2377 "="
           BinOp@2377..2382
             Ident@2377..2379
@@ -1484,12 +1569,13 @@ Root@0..16908
             Ident@2380..2382
               Ident@2380..2382 "pc"
         AssignStmt@2382..2395
-          BinOp@2382..2389
-            Ident@2382..2383
-              Ident@2382..2383 "f"
-            Dot@2383..2384 "."
-            Ident@2384..2389
-              Ident@2384..2389 "sizek"
+          AssignList@2382..2389
+            BinOp@2382..2389
+              Ident@2382..2383
+                Ident@2382..2383 "f"
+              Dot@2383..2384 "."
+              Ident@2384..2389
+                Ident@2384..2389 "sizek"
           Assign@2389..2390 "="
           BinOp@2390..2395
             Ident@2390..2392
@@ -1498,12 +1584,13 @@ Root@0..16908
             Ident@2393..2395
               Ident@2393..2395 "nk"
         AssignStmt@2395..2408
-          BinOp@2395..2402
-            Ident@2395..2396
-              Ident@2395..2396 "f"
-            Dot@2396..2397 "."
-            Ident@2397..2402
-              Ident@2397..2402 "sizep"
+          AssignList@2395..2402
+            BinOp@2395..2402
+              Ident@2395..2396
+                Ident@2395..2396 "f"
+              Dot@2396..2397 "."
+              Ident@2397..2402
+                Ident@2397..2402 "sizep"
           Assign@2402..2403 "="
           BinOp@2403..2408
             Ident@2403..2405
@@ -1512,12 +1599,13 @@ Root@0..16908
             Ident@2406..2408
               Ident@2406..2408 "np"
         AssignStmt@2408..2433
-          BinOp@2408..2421
-            Ident@2408..2409
-              Ident@2408..2409 "f"
-            Dot@2409..2410 "."
-            Ident@2410..2421
-              Ident@2410..2421 "sizelocvars"
+          AssignList@2408..2421
+            BinOp@2408..2421
+              Ident@2408..2409
+                Ident@2408..2409 "f"
+              Dot@2409..2410 "."
+              Ident@2410..2421
+                Ident@2410..2421 "sizelocvars"
           Assign@2421..2422 "="
           BinOp@2422..2433
             Ident@2422..2424
@@ -1526,12 +1614,13 @@ Root@0..16908
             Ident@2425..2433
               Ident@2425..2433 "nlocvars"
         AssignStmt@2433..2454
-          BinOp@2433..2447
-            Ident@2433..2434
-              Ident@2433..2434 "f"
-            Dot@2434..2435 "."
-            Ident@2435..2447
-              Ident@2435..2447 "sizeupvalues"
+          AssignList@2433..2447
+            BinOp@2433..2447
+              Ident@2433..2434
+                Ident@2433..2434 "f"
+              Dot@2434..2435 "."
+              Ident@2435..2447
+                Ident@2435..2447 "sizeupvalues"
           Assign@2447..2448 "="
           BinOp@2448..2454
             Ident@2448..2449
@@ -1614,11 +1703,14 @@ Root@0..16908
         Ident@2584..2595 "pushclosure"
       FuncArgs@2595..2606
         LParen@2595..2596 "("
-        Ident@2596..2598 "fs"
+        Ident@2596..2598
+          Ident@2596..2598 "fs"
         Comma@2598..2599 ","
-        Ident@2599..2603 "func"
+        Ident@2599..2603
+          Ident@2599..2603 "func"
         Comma@2603..2604 ","
-        Ident@2604..2605 "v"
+        Ident@2604..2605
+          Ident@2604..2605 "v"
         RParen@2605..2606 ")"
       StmtList@2606..2844
         DeclStmt@2606..2617
@@ -1633,21 +1725,22 @@ Root@0..16908
             Ident@2616..2617
               Ident@2616..2617 "f"
         AssignStmt@2617..2634
-          Index@2617..2627
-            BinOp@2617..2620
-              Ident@2617..2618
-                Ident@2617..2618 "f"
-              Dot@2618..2619 "."
-              Ident@2619..2620
-                Ident@2619..2620 "p"
-            LBracket@2620..2621 "["
-            BinOp@2621..2626
-              Ident@2621..2623
-                Ident@2621..2623 "fs"
-              Dot@2623..2624 "."
-              Ident@2624..2626
-                Ident@2624..2626 "np"
-            RBracket@2626..2627 "]"
+          AssignList@2617..2627
+            Index@2617..2627
+              BinOp@2617..2620
+                Ident@2617..2618
+                  Ident@2617..2618 "f"
+                Dot@2618..2619 "."
+                Ident@2619..2620
+                  Ident@2619..2620 "p"
+              LBracket@2620..2621 "["
+              BinOp@2621..2626
+                Ident@2621..2623
+                  Ident@2621..2623 "fs"
+                Dot@2623..2624 "."
+                Ident@2624..2626
+                  Ident@2624..2626 "np"
+              RBracket@2626..2627 "]"
           Assign@2627..2628 "="
           BinOp@2628..2634
             Ident@2628..2632
@@ -1656,12 +1749,13 @@ Root@0..16908
             Ident@2633..2634
               Ident@2633..2634 "f"
         AssignStmt@2634..2647
-          BinOp@2634..2639
-            Ident@2634..2636
-              Ident@2634..2636 "fs"
-            Dot@2636..2637 "."
-            Ident@2637..2639
-              Ident@2637..2639 "np"
+          AssignList@2634..2639
+            BinOp@2634..2639
+              Ident@2634..2636
+                Ident@2634..2636 "fs"
+              Dot@2636..2637 "."
+              Ident@2637..2639
+                Ident@2637..2639 "np"
           Assign@2639..2640 "="
           BinOp@2640..2647
             BinOp@2640..2645
@@ -1716,7 +1810,8 @@ Root@0..16908
             RParen@2710..2711 ")"
         ForNumStmt@2711..2844
           For@2711..2714 "for"
-          Ident@2714..2715 "i"
+          Ident@2714..2715
+            Ident@2714..2715 "i"
           Assign@2715..2716 "="
           LiteralExpr@2716..2717
             Int@2716..2717 "0"
@@ -1820,11 +1915,14 @@ Root@0..16908
         Ident@2860..2872 "indexupvalue"
       FuncArgs@2872..2883
         LParen@2872..2873 "("
-        Ident@2873..2875 "fs"
+        Ident@2873..2875
+          Ident@2873..2875 "fs"
         Comma@2875..2876 ","
-        Ident@2876..2880 "name"
+        Ident@2876..2880
+          Ident@2876..2880 "name"
         Comma@2880..2881 ","
-        Ident@2881..2882 "v"
+        Ident@2881..2882
+          Ident@2881..2882 "v"
         RParen@2882..2883 ")"
       StmtList@2883..3150
         DeclStmt@2883..2894
@@ -1840,7 +1938,8 @@ Root@0..16908
               Ident@2893..2894 "f"
         ForNumStmt@2894..3011
           For@2894..2897 "for"
-          Ident@2897..2898 "i"
+          Ident@2897..2898
+            Ident@2897..2898 "i"
           Assign@2898..2899 "="
           LiteralExpr@2899..2900
             Int@2899..2900 "0"
@@ -1942,21 +2041,22 @@ Root@0..16908
                 End@3005..3008 "end"
             End@3008..3011 "end"
         AssignStmt@3011..3034
-          Index@3011..3029
-            BinOp@3011..3021
-              Ident@3011..3012
-                Ident@3011..3012 "f"
-              Dot@3012..3013 "."
-              Ident@3013..3021
-                Ident@3013..3021 "upvalues"
-            LBracket@3021..3022 "["
-            BinOp@3022..3028
-              Ident@3022..3023
-                Ident@3022..3023 "f"
-              Dot@3023..3024 "."
-              Ident@3024..3028
-                Ident@3024..3028 "nups"
-            RBracket@3028..3029 "]"
+          AssignList@3011..3029
+            Index@3011..3029
+              BinOp@3011..3021
+                Ident@3011..3012
+                  Ident@3011..3012 "f"
+                Dot@3012..3013 "."
+                Ident@3013..3021
+                  Ident@3013..3021 "upvalues"
+              LBracket@3021..3022 "["
+              BinOp@3022..3028
+                Ident@3022..3023
+                  Ident@3022..3023 "f"
+                Dot@3023..3024 "."
+                Ident@3024..3028
+                  Ident@3024..3028 "nups"
+              RBracket@3028..3029 "]"
           Assign@3029..3030 "="
           Ident@3030..3034
             Ident@3030..3034 "name"
@@ -1989,21 +2089,22 @@ Root@0..16908
                   String@3061..3069 "\"VUPVAL\""
             RParen@3069..3070 ")"
         AssignStmt@3070..3109
-          Index@3070..3089
-            BinOp@3070..3081
-              Ident@3070..3072
-                Ident@3070..3072 "fs"
-              Dot@3072..3073 "."
-              Ident@3073..3081
-                Ident@3073..3081 "upvalues"
-            LBracket@3081..3082 "["
-            BinOp@3082..3088
-              Ident@3082..3083
-                Ident@3082..3083 "f"
-              Dot@3083..3084 "."
-              Ident@3084..3088
-                Ident@3084..3088 "nups"
-            RBracket@3088..3089 "]"
+          AssignList@3070..3089
+            Index@3070..3089
+              BinOp@3070..3081
+                Ident@3070..3072
+                  Ident@3070..3072 "fs"
+                Dot@3072..3073 "."
+                Ident@3073..3081
+                  Ident@3073..3081 "upvalues"
+              LBracket@3081..3082 "["
+              BinOp@3082..3088
+                Ident@3082..3083
+                  Ident@3082..3083 "f"
+                Dot@3083..3084 "."
+                Ident@3084..3088
+                  Ident@3084..3088 "nups"
+              RBracket@3088..3089 "]"
           Assign@3089..3090 "="
           TableExpr@3090..3109
             LCurly@3090..3091 "{"
@@ -2041,12 +2142,13 @@ Root@0..16908
             Ident@3121..3125
               Ident@3121..3125 "nups"
         AssignStmt@3125..3140
-          BinOp@3125..3131
-            Ident@3125..3126
-              Ident@3125..3126 "f"
-            Dot@3126..3127 "."
-            Ident@3127..3131
-              Ident@3127..3131 "nups"
+          AssignList@3125..3131
+            BinOp@3125..3131
+              Ident@3125..3126
+                Ident@3125..3126 "f"
+              Dot@3126..3127 "."
+              Ident@3127..3131
+                Ident@3127..3131 "nups"
           Assign@3131..3132 "="
           BinOp@3132..3140
             BinOp@3132..3138
@@ -2071,9 +2173,11 @@ Root@0..16908
         Ident@3166..3175 "markupval"
       FuncArgs@3175..3185
         LParen@3175..3176 "("
-        Ident@3176..3178 "fs"
+        Ident@3176..3178
+          Ident@3176..3178 "fs"
         Comma@3178..3179 ","
-        Ident@3179..3184 "level"
+        Ident@3179..3184
+          Ident@3179..3184 "level"
         RParen@3184..3185 ")"
       StmtList@3185..3267
         DeclStmt@3185..3198
@@ -2107,8 +2211,9 @@ Root@0..16908
             Do@3224..3226 "do"
             StmtList@3226..3240
               AssignStmt@3226..3240
-                Ident@3226..3228
-                  Ident@3226..3228 "bl"
+                AssignList@3226..3228
+                  Ident@3226..3228
+                    Ident@3226..3228 "bl"
                 Assign@3228..3229 "="
                 BinOp@3229..3240
                   Ident@3229..3231
@@ -2124,12 +2229,13 @@ Root@0..16908
           Then@3247..3251 "then"
           StmtList@3251..3264
             AssignStmt@3251..3264
-              BinOp@3251..3259
-                Ident@3251..3253
-                  Ident@3251..3253 "bl"
-                Dot@3253..3254 "."
-                Ident@3254..3259
-                  Ident@3254..3259 "upval"
+              AssignList@3251..3259
+                BinOp@3251..3259
+                  Ident@3251..3253
+                    Ident@3251..3253 "bl"
+                  Dot@3253..3254 "."
+                  Ident@3254..3259
+                    Ident@3254..3259 "upval"
               Assign@3259..3260 "="
               LiteralExpr@3260..3264
                 True@3260..3264 "true"
@@ -2143,20 +2249,24 @@ Root@0..16908
         Ident@3283..3293 "enterblock"
       FuncArgs@3293..3312
         LParen@3293..3294 "("
-        Ident@3294..3296 "fs"
+        Ident@3294..3296
+          Ident@3294..3296 "fs"
         Comma@3296..3297 ","
-        Ident@3297..3299 "bl"
+        Ident@3297..3299
+          Ident@3297..3299 "bl"
         Comma@3299..3300 ","
-        Ident@3300..3311 "isbreakable"
+        Ident@3300..3311
+          Ident@3300..3311 "isbreakable"
         RParen@3311..3312 ")"
       StmtList@3312..3453
         AssignStmt@3312..3337
-          BinOp@3312..3324
-            Ident@3312..3314
-              Ident@3312..3314 "bl"
-            Dot@3314..3315 "."
-            Ident@3315..3324
-              Ident@3315..3324 "breaklist"
+          AssignList@3312..3324
+            BinOp@3312..3324
+              Ident@3312..3314
+                Ident@3312..3314 "bl"
+              Dot@3314..3315 "."
+              Ident@3315..3324
+                Ident@3315..3324 "breaklist"
           Assign@3324..3325 "="
           BinOp@3325..3337
             Ident@3325..3329
@@ -2165,22 +2275,24 @@ Root@0..16908
             Ident@3330..3337
               Ident@3330..3337 "NO_JUMP"
         AssignStmt@3337..3363
-          BinOp@3337..3351
-            Ident@3337..3339
-              Ident@3337..3339 "bl"
-            Dot@3339..3340 "."
-            Ident@3340..3351
-              Ident@3340..3351 "isbreakable"
+          AssignList@3337..3351
+            BinOp@3337..3351
+              Ident@3337..3339
+                Ident@3337..3339 "bl"
+              Dot@3339..3340 "."
+              Ident@3340..3351
+                Ident@3340..3351 "isbreakable"
           Assign@3351..3352 "="
           Ident@3352..3363
             Ident@3352..3363 "isbreakable"
         AssignStmt@3363..3384
-          BinOp@3363..3373
-            Ident@3363..3365
-              Ident@3363..3365 "bl"
-            Dot@3365..3366 "."
-            Ident@3366..3373
-              Ident@3366..3373 "nactvar"
+          AssignList@3363..3373
+            BinOp@3363..3373
+              Ident@3363..3365
+                Ident@3363..3365 "bl"
+              Dot@3365..3366 "."
+              Ident@3366..3373
+                Ident@3366..3373 "nactvar"
           Assign@3373..3374 "="
           BinOp@3374..3384
             Ident@3374..3376
@@ -2189,22 +2301,24 @@ Root@0..16908
             Ident@3377..3384
               Ident@3377..3384 "nactvar"
         AssignStmt@3384..3398
-          BinOp@3384..3392
-            Ident@3384..3386
-              Ident@3384..3386 "bl"
-            Dot@3386..3387 "."
-            Ident@3387..3392
-              Ident@3387..3392 "upval"
+          AssignList@3384..3392
+            BinOp@3384..3392
+              Ident@3384..3386
+                Ident@3384..3386 "bl"
+              Dot@3386..3387 "."
+              Ident@3387..3392
+                Ident@3387..3392 "upval"
           Assign@3392..3393 "="
           LiteralExpr@3393..3398
             False@3393..3398 "false"
         AssignStmt@3398..3415
-          BinOp@3398..3409
-            Ident@3398..3400
-              Ident@3398..3400 "bl"
-            Dot@3400..3401 "."
-            Ident@3401..3409
-              Ident@3401..3409 "previous"
+          AssignList@3398..3409
+            BinOp@3398..3409
+              Ident@3398..3400
+                Ident@3398..3400 "bl"
+              Dot@3400..3401 "."
+              Ident@3401..3409
+                Ident@3401..3409 "previous"
           Assign@3409..3410 "="
           BinOp@3410..3415
             Ident@3410..3412
@@ -2213,12 +2327,13 @@ Root@0..16908
             Ident@3413..3415
               Ident@3413..3415 "bl"
         AssignStmt@3415..3423
-          BinOp@3415..3420
-            Ident@3415..3417
-              Ident@3415..3417 "fs"
-            Dot@3417..3418 "."
-            Ident@3418..3420
-              Ident@3418..3420 "bl"
+          AssignList@3415..3420
+            BinOp@3415..3420
+              Ident@3415..3417
+                Ident@3415..3417 "fs"
+              Dot@3417..3418 "."
+              Ident@3418..3420
+                Ident@3418..3420 "bl"
           Assign@3420..3421 "="
           Ident@3421..3423
             Ident@3421..3423 "bl"
@@ -2251,7 +2366,8 @@ Root@0..16908
         Ident@3469..3479 "leaveblock"
       FuncArgs@3479..3483
         LParen@3479..3480 "("
-        Ident@3480..3482 "fs"
+        Ident@3480..3482
+          Ident@3480..3482 "fs"
         RParen@3482..3483 ")"
       StmtList@3483..3719
         DeclStmt@3483..3496
@@ -2266,12 +2382,13 @@ Root@0..16908
             Ident@3494..3496
               Ident@3494..3496 "bl"
         AssignStmt@3496..3513
-          BinOp@3496..3501
-            Ident@3496..3498
-              Ident@3496..3498 "fs"
-            Dot@3498..3499 "."
-            Ident@3499..3501
-              Ident@3499..3501 "bl"
+          AssignList@3496..3501
+            BinOp@3496..3501
+              Ident@3496..3498
+                Ident@3496..3498 "fs"
+              Dot@3498..3499 "."
+              Ident@3499..3501
+                Ident@3499..3501 "bl"
           Assign@3501..3502 "="
           BinOp@3502..3513
             Ident@3502..3504
@@ -2378,12 +2495,13 @@ Root@0..16908
                   Ident@3657..3664 "nactvar"
             RParen@3664..3665 ")"
         AssignStmt@3665..3686
-          BinOp@3665..3675
-            Ident@3665..3667
-              Ident@3665..3667 "fs"
-            Dot@3667..3668 "."
-            Ident@3668..3675
-              Ident@3668..3675 "freereg"
+          AssignList@3665..3675
+            BinOp@3665..3675
+              Ident@3665..3667
+                Ident@3665..3667 "fs"
+              Dot@3667..3668 "."
+              Ident@3668..3675
+                Ident@3668..3675 "freereg"
           Assign@3675..3676 "="
           BinOp@3676..3686
             Ident@3676..3678
@@ -2419,18 +2537,23 @@ Root@0..16908
         Ident@3735..3742 "explist"
       FuncArgs@3742..3763
         LParen@3742..3743 "("
-        Ident@3743..3745 "fs"
+        Ident@3743..3745
+          Ident@3743..3745 "fs"
         Comma@3745..3746 ","
-        Ident@3746..3753 "astlist"
+        Ident@3746..3753
+          Ident@3746..3753 "astlist"
         Comma@3753..3754 ","
-        Ident@3754..3755 "v"
+        Ident@3754..3755
+          Ident@3754..3755 "v"
         Comma@3755..3756 ","
-        Ident@3756..3762 "offset"
+        Ident@3756..3762
+          Ident@3756..3762 "offset"
         RParen@3762..3763 ")"
       StmtList@3763..3976
         AssignStmt@3763..3779
-          Ident@3763..3769
-            Ident@3763..3769 "offset"
+          AssignList@3763..3769
+            Ident@3763..3769
+              Ident@3763..3769 "offset"
           Assign@3769..3770 "="
           BinOp@3770..3779
             Ident@3770..3776
@@ -2484,7 +2607,8 @@ Root@0..16908
             RParen@3877..3878 ")"
         ForNumStmt@3878..3953
           For@3878..3881 "for"
-          Ident@3881..3882 "i"
+          Ident@3881..3882
+            Ident@3881..3882 "i"
           Assign@3882..3883 "="
           BinOp@3883..3891
             Ident@3883..3889
@@ -2562,13 +2686,17 @@ Root@0..16908
         Ident@3992..4000 "funcargs"
       FuncArgs@4000..4019
         LParen@4000..4001 "("
-        Ident@4001..4003 "fs"
+        Ident@4001..4003
+          Ident@4001..4003 "fs"
         Comma@4003..4004 ","
-        Ident@4004..4007 "ast"
+        Ident@4004..4007
+          Ident@4004..4007 "ast"
         Comma@4007..4008 ","
-        Ident@4008..4009 "v"
+        Ident@4008..4009
+          Ident@4008..4009 "v"
         Comma@4009..4010 ","
-        Ident@4010..4018 "idx_from"
+        Ident@4010..4018
+          Ident@4010..4018 "idx_from"
         RParen@4018..4019 ")"
       StmtList@4019..4477
         DeclStmt@4019..4031
@@ -2596,12 +2724,13 @@ Root@0..16908
           Then@4058..4062 "then"
           StmtList@4062..4076
             AssignStmt@4062..4076
-              BinOp@4062..4068
-                Ident@4062..4066
-                  Ident@4062..4066 "args"
-                Dot@4066..4067 "."
-                Ident@4067..4068
-                  Ident@4067..4068 "k"
+              AssignList@4062..4068
+                BinOp@4062..4068
+                  Ident@4062..4066
+                    Ident@4062..4066 "args"
+                  Dot@4066..4067 "."
+                  Ident@4067..4068
+                    Ident@4067..4068 "k"
               Assign@4068..4069 "="
               LiteralExpr@4069..4076
                 String@4069..4076 "\"VVOID\""
@@ -2685,8 +2814,9 @@ Root@0..16908
           Then@4196..4200 "then"
           StmtList@4200..4224
             AssignStmt@4200..4224
-              Ident@4200..4207
-                Ident@4200..4207 "nparams"
+              AssignList@4200..4207
+                Ident@4200..4207
+                  Ident@4200..4207 "nparams"
               Assign@4207..4208 "="
               BinOp@4208..4224
                 Ident@4208..4212
@@ -2728,8 +2858,9 @@ Root@0..16908
                       RParen@4273..4274 ")"
                 End@4274..4277 "end"
               AssignStmt@4277..4304
-                Ident@4277..4284
-                  Ident@4277..4284 "nparams"
+                AssignList@4277..4284
+                  Ident@4277..4284
+                    Ident@4277..4284 "nparams"
                 Assign@4284..4285 "="
                 BinOp@4285..4304
                   BinOp@4285..4295
@@ -2850,12 +2981,13 @@ Root@0..16908
                   RParen@4456..4457 ")"
             End@4457..4460 "end"
         AssignStmt@4460..4477
-          BinOp@4460..4470
-            Ident@4460..4462
-              Ident@4460..4462 "fs"
-            Dot@4462..4463 "."
-            Ident@4463..4470
-              Ident@4463..4470 "freereg"
+          AssignList@4460..4470
+            BinOp@4460..4470
+              Ident@4460..4462
+                Ident@4460..4462 "fs"
+              Dot@4462..4463 "."
+              Ident@4463..4470
+                Ident@4463..4470 "freereg"
           Assign@4470..4471 "="
           BinOp@4471..4477
             Ident@4471..4475
@@ -2872,7 +3004,8 @@ Root@0..16908
         Ident@4493..4497 "log2"
       FuncArgs@4497..4500
         LParen@4497..4498 "("
-        Ident@4498..4499 "x"
+        Ident@4498..4499
+          Ident@4498..4499 "x"
         RParen@4499..4500 ")"
       StmtList@4500..4534
         DeclStmt@4500..4524
@@ -2912,7 +3045,8 @@ Root@0..16908
         Ident@4550..4556 "int2fb"
       FuncArgs@4556..4559
         LParen@4556..4557 "("
-        Ident@4557..4558 "x"
+        Ident@4557..4558
+          Ident@4557..4558 "x"
         RParen@4558..4559 ")"
       StmtList@4559..4648
         DeclStmt@4559..4567
@@ -2934,8 +3068,9 @@ Root@0..16908
             Do@4577..4579 "do"
             StmtList@4579..4605
               AssignStmt@4579..4600
-                Ident@4579..4580
-                  Ident@4579..4580 "x"
+                AssignList@4579..4580
+                  Ident@4579..4580
+                    Ident@4579..4580 "x"
                 Assign@4580..4581 "="
                 FuncCall@4581..4600
                   BinOp@4581..4591
@@ -2961,8 +3096,9 @@ Root@0..16908
                         Int@4598..4599 "2"
                     RParen@4599..4600 ")"
               AssignStmt@4600..4605
-                Ident@4600..4601
-                  Ident@4600..4601 "e"
+                AssignList@4600..4601
+                  Ident@4600..4601
+                    Ident@4600..4601 "e"
                 Assign@4601..4602 "="
                 BinOp@4602..4605
                   Ident@4602..4603
@@ -3021,13 +3157,17 @@ Root@0..16908
         Ident@4664..4676 "singlevaraux"
       FuncArgs@4676..4691
         LParen@4676..4677 "("
-        Ident@4677..4679 "fs"
+        Ident@4677..4679
+          Ident@4677..4679 "fs"
         Comma@4679..4680 ","
-        Ident@4680..4681 "n"
+        Ident@4680..4681
+          Ident@4680..4681 "n"
         Comma@4681..4682 ","
-        Ident@4682..4685 "var"
+        Ident@4682..4685
+          Ident@4682..4685 "var"
         Comma@4685..4686 ","
-        Ident@4686..4690 "base"
+        Ident@4686..4690
+          Ident@4686..4690 "base"
         RParen@4690..4691 ")"
       StmtList@4691..4982
         IfStmt@4691..4982
@@ -3163,12 +3303,13 @@ Root@0..16908
                             String@4905..4914 "\"VGLOBAL\""
                       End@4914..4917 "end"
                     AssignStmt@4917..4948
-                      BinOp@4917..4925
-                        Ident@4917..4920
-                          Ident@4917..4920 "var"
-                        Dot@4920..4921 "."
-                        Ident@4921..4925
-                          Ident@4921..4925 "info"
+                      AssignList@4917..4925
+                        BinOp@4917..4925
+                          Ident@4917..4920
+                            Ident@4917..4920 "var"
+                          Dot@4920..4921 "."
+                          Ident@4921..4925
+                            Ident@4921..4925 "info"
                       Assign@4925..4926 "="
                       FuncCall@4926..4948
                         Ident@4926..4938
@@ -3185,12 +3326,13 @@ Root@0..16908
                             Ident@4944..4947 "var"
                           RParen@4947..4948 ")"
                     AssignStmt@4948..4962
-                      BinOp@4948..4953
-                        Ident@4948..4951
-                          Ident@4948..4951 "var"
-                        Dot@4951..4952 "."
-                        Ident@4952..4953
-                          Ident@4952..4953 "k"
+                      AssignList@4948..4953
+                        BinOp@4948..4953
+                          Ident@4948..4951
+                            Ident@4948..4951 "var"
+                          Dot@4951..4952 "."
+                          Ident@4952..4953
+                            Ident@4952..4953 "k"
                       Assign@4953..4954 "="
                       LiteralExpr@4954..4962
                         String@4954..4962 "\"VUPVAL\""
@@ -3209,11 +3351,14 @@ Root@0..16908
         Ident@4998..5007 "singlevar"
       FuncArgs@5007..5023
         LParen@5007..5008 "("
-        Ident@5008..5010 "fs"
+        Ident@5008..5010
+          Ident@5008..5010 "fs"
         Comma@5010..5011 ","
-        Ident@5011..5018 "varname"
+        Ident@5011..5018
+          Ident@5011..5018 "varname"
         Comma@5018..5019 ","
-        Ident@5019..5022 "var"
+        Ident@5019..5022
+          Ident@5019..5022 "var"
         RParen@5022..5023 ")"
       StmtList@5023..5109
         IfStmt@5023..5109
@@ -3242,12 +3387,13 @@ Root@0..16908
           Then@5069..5073 "then"
           StmtList@5073..5106
             AssignStmt@5073..5106
-              BinOp@5073..5081
-                Ident@5073..5076
-                  Ident@5073..5076 "var"
-                Dot@5076..5077 "."
-                Ident@5077..5081
-                  Ident@5077..5081 "info"
+              AssignList@5073..5081
+                BinOp@5073..5081
+                  Ident@5073..5076
+                    Ident@5073..5076 "var"
+                  Dot@5076..5077 "."
+                  Ident@5077..5081
+                    Ident@5077..5081 "info"
               Assign@5081..5082 "="
               FuncCall@5082..5106
                 BinOp@5082..5094
@@ -3274,11 +3420,14 @@ Root@0..16908
         Ident@5125..5137 "new_localvar"
       FuncArgs@5137..5148
         LParen@5137..5138 "("
-        Ident@5138..5140 "fs"
+        Ident@5138..5140
+          Ident@5138..5140 "fs"
         Comma@5140..5141 ","
-        Ident@5141..5145 "name"
+        Ident@5141..5145
+          Ident@5141..5145 "name"
         Comma@5145..5146 ","
-        Ident@5146..5147 "n"
+        Ident@5146..5147
+          Ident@5146..5147 "n"
         RParen@5147..5148 ")"
       StmtList@5148..5284
         FuncCall@5148..5176
@@ -3331,25 +3480,26 @@ Root@0..16908
                 RParen@5231..5232 ")"
           End@5232..5235 "end"
         AssignStmt@5235..5284
-          Index@5235..5258
-            BinOp@5235..5244
-              Ident@5235..5237
-                Ident@5235..5237 "fs"
-              Dot@5237..5238 "."
-              Ident@5238..5244
-                Ident@5238..5244 "actvar"
-            LBracket@5244..5245 "["
-            BinOp@5245..5257
-              BinOp@5245..5255
-                Ident@5245..5247
-                  Ident@5245..5247 "fs"
-                Dot@5247..5248 "."
-                Ident@5248..5255
-                  Ident@5248..5255 "nactvar"
-              Plus@5255..5256 "+"
-              Ident@5256..5257
-                Ident@5256..5257 "n"
-            RBracket@5257..5258 "]"
+          AssignList@5235..5258
+            Index@5235..5258
+              BinOp@5235..5244
+                Ident@5235..5237
+                  Ident@5235..5237 "fs"
+                Dot@5237..5238 "."
+                Ident@5238..5244
+                  Ident@5238..5244 "actvar"
+              LBracket@5244..5245 "["
+              BinOp@5245..5257
+                BinOp@5245..5255
+                  Ident@5245..5247
+                    Ident@5245..5247 "fs"
+                  Dot@5247..5248 "."
+                  Ident@5248..5255
+                    Ident@5248..5255 "nactvar"
+                Plus@5255..5256 "+"
+                Ident@5256..5257
+                  Ident@5256..5257 "n"
+              RBracket@5257..5258 "]"
           Assign@5258..5259 "="
           FuncCall@5259..5284
             Ident@5259..5275
@@ -3371,9 +3521,11 @@ Root@0..16908
         Ident@5300..5307 "parlist"
       FuncArgs@5307..5322
         LParen@5307..5308 "("
-        Ident@5308..5310 "fs"
+        Ident@5308..5310
+          Ident@5308..5310 "fs"
         Comma@5310..5311 ","
-        Ident@5311..5321 "ast_params"
+        Ident@5311..5321
+          Ident@5311..5321 "ast_params"
         RParen@5321..5322 ")"
       StmtList@5322..5702
         DeclStmt@5322..5385
@@ -3436,7 +3588,8 @@ Root@0..16908
                 Ident@5421..5431 "ast_params"
         ForNumStmt@5431..5552
           For@5431..5434 "for"
-          Ident@5434..5435 "i"
+          Ident@5434..5435
+            Ident@5434..5435 "i"
           Assign@5435..5436 "="
           LiteralExpr@5436..5437
             Int@5436..5437 "1"
@@ -3500,16 +3653,17 @@ Root@0..16908
                   RParen@5548..5549 ")"
             End@5549..5552 "end"
         AssignStmt@5552..5577
-          BinOp@5552..5566
-            BinOp@5552..5556
-              Ident@5552..5554
-                Ident@5552..5554 "fs"
-              Dot@5554..5555 "."
-              Ident@5555..5556
-                Ident@5555..5556 "f"
-            Dot@5556..5557 "."
-            Ident@5557..5566
-              Ident@5557..5566 "numparams"
+          AssignList@5552..5566
+            BinOp@5552..5566
+              BinOp@5552..5556
+                Ident@5552..5554
+                  Ident@5552..5554 "fs"
+                Dot@5554..5555 "."
+                Ident@5555..5556
+                  Ident@5555..5556 "f"
+              Dot@5556..5557 "."
+              Ident@5557..5566
+                Ident@5557..5566 "numparams"
           Assign@5566..5567 "="
           BinOp@5567..5577
             Ident@5567..5569
@@ -3518,16 +3672,17 @@ Root@0..16908
             Ident@5570..5577
               Ident@5570..5577 "nactvar"
         AssignStmt@5577..5619
-          BinOp@5577..5591
-            BinOp@5577..5581
-              Ident@5577..5579
-                Ident@5577..5579 "fs"
-              Dot@5579..5580 "."
-              Ident@5580..5581
-                Ident@5580..5581 "f"
-            Dot@5581..5582 "."
-            Ident@5582..5591
-              Ident@5582..5591 "is_vararg"
+          AssignList@5577..5591
+            BinOp@5577..5591
+              BinOp@5577..5581
+                Ident@5577..5579
+                  Ident@5577..5579 "fs"
+                Dot@5579..5580 "."
+                Ident@5580..5581
+                  Ident@5580..5581 "f"
+              Dot@5581..5582 "."
+              Ident@5582..5591
+                Ident@5582..5591 "is_vararg"
           Assign@5591..5592 "="
           BinOp@5592..5619
             BinOp@5592..5616
@@ -3555,16 +3710,17 @@ Root@0..16908
               Ident@5638..5645 "nparams"
             RParen@5645..5646 ")"
         AssignStmt@5646..5671
-          BinOp@5646..5660
-            BinOp@5646..5650
-              Ident@5646..5648
-                Ident@5646..5648 "fs"
-              Dot@5648..5649 "."
-              Ident@5649..5650
-                Ident@5649..5650 "f"
-            Dot@5650..5651 "."
-            Ident@5651..5660
-              Ident@5651..5660 "numparams"
+          AssignList@5646..5660
+            BinOp@5646..5660
+              BinOp@5646..5650
+                Ident@5646..5648
+                  Ident@5646..5648 "fs"
+                Dot@5648..5649 "."
+                Ident@5649..5650
+                  Ident@5649..5650 "f"
+              Dot@5650..5651 "."
+              Ident@5651..5660
+                Ident@5651..5660 "numparams"
           Assign@5660..5661 "="
           BinOp@5661..5671
             Ident@5661..5663
@@ -3600,13 +3756,17 @@ Root@0..16908
         Ident@5718..5731 "adjust_assign"
       FuncArgs@5731..5749
         LParen@5731..5732 "("
-        Ident@5732..5734 "fs"
+        Ident@5732..5734
+          Ident@5732..5734 "fs"
         Comma@5734..5735 ","
-        Ident@5735..5740 "nvars"
+        Ident@5735..5740
+          Ident@5735..5740 "nvars"
         Comma@5740..5741 ","
-        Ident@5741..5746 "nexps"
+        Ident@5741..5746
+          Ident@5741..5746 "nexps"
         Comma@5746..5747 ","
-        Ident@5747..5748 "e"
+        Ident@5747..5748
+          Ident@5747..5748 "e"
         RParen@5748..5749 ")"
       StmtList@5749..6034
         DeclStmt@5749..5771
@@ -3637,8 +3797,9 @@ Root@0..16908
           Then@5788..5792 "then"
           StmtList@5792..5900
             AssignStmt@5792..5805
-              Ident@5792..5797
-                Ident@5792..5797 "extra"
+              AssignList@5792..5797
+                Ident@5792..5797
+                  Ident@5792..5797 "extra"
               Assign@5797..5798 "="
               BinOp@5798..5805
                 Ident@5798..5803
@@ -3657,8 +3818,9 @@ Root@0..16908
               Then@5815..5819 "then"
               StmtList@5819..5826
                 AssignStmt@5819..5826
-                  Ident@5819..5824
-                    Ident@5819..5824 "extra"
+                  AssignList@5819..5824
+                    Ident@5819..5824
+                      Ident@5819..5824 "extra"
                   Assign@5824..5825 "="
                   LiteralExpr@5825..5826
                     Int@5825..5826 "0"
@@ -3809,16 +3971,18 @@ Root@0..16908
         Ident@6050..6060 "enterlevel"
       FuncArgs@6060..6064
         LParen@6060..6061 "("
-        Ident@6061..6063 "fs"
+        Ident@6061..6063
+          Ident@6061..6063 "fs"
         RParen@6063..6064 ")"
       StmtList@6064..6158
         AssignStmt@6064..6091
-          BinOp@6064..6076
-            Ident@6064..6066
-              Ident@6064..6066 "fs"
-            Dot@6066..6067 "."
-            Ident@6067..6076
-              Ident@6067..6076 "nestlevel"
+          AssignList@6064..6076
+            BinOp@6064..6076
+              Ident@6064..6066
+                Ident@6064..6066 "fs"
+              Dot@6066..6067 "."
+              Ident@6067..6076
+                Ident@6067..6076 "nestlevel"
           Assign@6076..6077 "="
           BinOp@6077..6091
             BinOp@6077..6089
@@ -3862,16 +4026,18 @@ Root@0..16908
         Ident@6174..6184 "leavelevel"
       FuncArgs@6184..6188
         LParen@6184..6185 "("
-        Ident@6185..6187 "fs"
+        Ident@6185..6187
+          Ident@6185..6187 "fs"
         RParen@6187..6188 ")"
       StmtList@6188..6215
         AssignStmt@6188..6215
-          BinOp@6188..6200
-            Ident@6188..6190
-              Ident@6188..6190 "fs"
-            Dot@6190..6191 "."
-            Ident@6191..6200
-              Ident@6191..6200 "nestlevel"
+          AssignList@6188..6200
+            BinOp@6188..6200
+              Ident@6188..6190
+                Ident@6188..6190 "fs"
+              Dot@6190..6191 "."
+              Ident@6191..6200
+                Ident@6191..6200 "nestlevel"
           Assign@6200..6201 "="
           BinOp@6201..6215
             BinOp@6201..6213
@@ -3892,9 +4058,11 @@ Root@0..16908
         Ident@6231..6235 "cond"
       FuncArgs@6235..6243
         LParen@6235..6236 "("
-        Ident@6236..6238 "fs"
+        Ident@6236..6238
+          Ident@6236..6238 "fs"
         Comma@6238..6239 ","
-        Ident@6239..6242 "ast"
+        Ident@6239..6242
+          Ident@6239..6242 "ast"
         RParen@6242..6243 ")"
       StmtList@6243..6331
         DeclStmt@6243..6252
@@ -3938,12 +4106,13 @@ Root@0..16908
           Then@6284..6288 "then"
           StmtList@6288..6300
             AssignStmt@6288..6300
-              BinOp@6288..6291
-                Ident@6288..6289
-                  Ident@6288..6289 "v"
-                Dot@6289..6290 "."
-                Ident@6290..6291
-                  Ident@6290..6291 "k"
+              AssignList@6288..6291
+                BinOp@6288..6291
+                  Ident@6288..6289
+                    Ident@6288..6289 "v"
+                  Dot@6289..6290 "."
+                  Ident@6290..6291
+                    Ident@6290..6291 "k"
               Assign@6291..6292 "="
               LiteralExpr@6292..6300
                 String@6292..6300 "\"VFALSE\""
@@ -3980,9 +4149,11 @@ Root@0..16908
         Ident@6347..6352 "chunk"
       FuncArgs@6352..6360
         LParen@6352..6353 "("
-        Ident@6353..6355 "fs"
+        Ident@6353..6355
+          Ident@6353..6355 "fs"
         Comma@6355..6356 ","
-        Ident@6356..6359 "ast"
+        Ident@6356..6359
+          Ident@6356..6359 "ast"
         RParen@6359..6360 ")"
       StmtList@6360..6464
         FuncCall@6360..6374
@@ -4009,7 +4180,8 @@ Root@0..16908
             RParen@6391..6392 ")"
         ForNumStmt@6392..6450
           For@6392..6395 "for"
-          Ident@6395..6396 "i"
+          Ident@6395..6396
+            Ident@6395..6396 "i"
           Assign@6396..6397 "="
           LiteralExpr@6397..6398
             Int@6397..6398 "1"
@@ -4044,12 +4216,13 @@ Root@0..16908
               Semicolon@6425..6426
                 Semicolon@6425..6426 ";"
               AssignStmt@6426..6447
-                BinOp@6426..6436
-                  Ident@6426..6428
-                    Ident@6426..6428 "fs"
-                  Dot@6428..6429 "."
-                  Ident@6429..6436
-                    Ident@6429..6436 "freereg"
+                AssignList@6426..6436
+                  BinOp@6426..6436
+                    Ident@6426..6428
+                      Ident@6426..6428 "fs"
+                    Dot@6428..6429 "."
+                    Ident@6429..6436
+                      Ident@6429..6436 "freereg"
                 Assign@6436..6437 "="
                 BinOp@6437..6447
                   Ident@6437..6439
@@ -4075,9 +4248,11 @@ Root@0..16908
         Ident@6480..6485 "block"
       FuncArgs@6485..6493
         LParen@6485..6486 "("
-        Ident@6486..6488 "fs"
+        Ident@6486..6488
+          Ident@6486..6488 "fs"
         Comma@6488..6489 ","
-        Ident@6489..6492 "ast"
+        Ident@6489..6492
+          Ident@6489..6492 "ast"
         RParen@6492..6493 ")"
       StmtList@6493..6631
         DeclStmt@6493..6503
@@ -4104,7 +4279,8 @@ Root@0..16908
             RParen@6525..6526 ")"
         ForNumStmt@6526..6583
           For@6526..6529 "for"
-          Ident@6529..6530 "i"
+          Ident@6529..6530
+            Ident@6529..6530 "i"
           Assign@6530..6531 "="
           LiteralExpr@6531..6532
             Int@6531..6532 "1"
@@ -4137,12 +4313,13 @@ Root@0..16908
                     RBracket@6557..6558 "]"
                   RParen@6558..6559 ")"
               AssignStmt@6559..6580
-                BinOp@6559..6569
-                  Ident@6559..6561
-                    Ident@6559..6561 "fs"
-                  Dot@6561..6562 "."
-                  Ident@6562..6569
-                    Ident@6562..6569 "freereg"
+                AssignList@6559..6569
+                  BinOp@6559..6569
+                    Ident@6559..6561
+                      Ident@6559..6561 "fs"
+                    Dot@6561..6562 "."
+                    Ident@6562..6569
+                      Ident@6562..6569 "freereg"
                 Assign@6569..6570 "="
                 BinOp@6570..6580
                   Ident@6570..6572
@@ -4188,15 +4365,20 @@ Root@0..16908
         Ident@6647..6654 "forbody"
       FuncArgs@6654..6684
         LParen@6654..6655 "("
-        Ident@6655..6657 "fs"
+        Ident@6655..6657
+          Ident@6655..6657 "fs"
         Comma@6657..6658 ","
-        Ident@6658..6666 "ast_body"
+        Ident@6658..6666
+          Ident@6658..6666 "ast_body"
         Comma@6666..6667 ","
-        Ident@6667..6671 "base"
+        Ident@6667..6671
+          Ident@6667..6671 "base"
         Comma@6671..6672 ","
-        Ident@6672..6677 "nvars"
+        Ident@6672..6677
+          Ident@6672..6677 "nvars"
         Comma@6677..6678 ","
-        Ident@6678..6683 "isnum"
+        Ident@6678..6683
+          Ident@6678..6683 "isnum"
         RParen@6683..6684 ")"
       StmtList@6684..7125
         DeclStmt@6684..6694
@@ -4468,11 +4650,14 @@ Root@0..16908
         Ident@7141..7149 "recfield"
       FuncArgs@7149..7160
         LParen@7149..7150 "("
-        Ident@7150..7152 "fs"
+        Ident@7150..7152
+          Ident@7150..7152 "fs"
         Comma@7152..7153 ","
-        Ident@7153..7156 "ast"
+        Ident@7153..7156
+          Ident@7153..7156 "ast"
         Comma@7156..7157 ","
-        Ident@7157..7159 "cc"
+        Ident@7157..7159
+          Ident@7157..7159 "cc"
         RParen@7159..7160 ")"
       StmtList@7160..7409
         DeclStmt@7160..7179
@@ -4503,12 +4688,13 @@ Root@0..16908
               LCurly@7195..7196 "{"
               RCurly@7196..7197 "}"
         AssignStmt@7197..7210
-          BinOp@7197..7202
-            Ident@7197..7199
-              Ident@7197..7199 "cc"
-            Dot@7199..7200 "."
-            Ident@7200..7202
-              Ident@7200..7202 "nh"
+          AssignList@7197..7202
+            BinOp@7197..7202
+              Ident@7197..7199
+                Ident@7197..7199 "cc"
+              Dot@7199..7200 "."
+              Ident@7200..7202
+                Ident@7200..7202 "nh"
           Assign@7202..7203 "="
           BinOp@7203..7210
             BinOp@7203..7208
@@ -4656,12 +4842,13 @@ Root@0..16908
               Ident@7388..7394 "valreg"
             RParen@7394..7395 ")"
         AssignStmt@7395..7409
-          BinOp@7395..7405
-            Ident@7395..7397
-              Ident@7395..7397 "fs"
-            Dot@7397..7398 "."
-            Ident@7398..7405
-              Ident@7398..7405 "freereg"
+          AssignList@7395..7405
+            BinOp@7395..7405
+              Ident@7395..7397
+                Ident@7395..7397 "fs"
+              Dot@7397..7398 "."
+              Ident@7398..7405
+                Ident@7398..7405 "freereg"
           Assign@7405..7406 "="
           Ident@7406..7409
             Ident@7406..7409 "reg"
@@ -4674,11 +4861,14 @@ Root@0..16908
         Ident@7425..7434 "listfield"
       FuncArgs@7434..7445
         LParen@7434..7435 "("
-        Ident@7435..7437 "fs"
+        Ident@7435..7437
+          Ident@7435..7437 "fs"
         Comma@7437..7438 ","
-        Ident@7438..7441 "ast"
+        Ident@7438..7441
+          Ident@7438..7441 "ast"
         Comma@7441..7442 ","
-        Ident@7442..7444 "cc"
+        Ident@7442..7444
+          Ident@7442..7444 "cc"
         RParen@7444..7445 ")"
       StmtList@7445..7532
         FuncCall@7445..7467
@@ -4724,12 +4914,13 @@ Root@0..16908
                   Ident@7486..7495 "MAXARG_Bx"
             RParen@7495..7496 ")"
         AssignStmt@7496..7509
-          BinOp@7496..7501
-            Ident@7496..7498
-              Ident@7496..7498 "cc"
-            Dot@7498..7499 "."
-            Ident@7499..7501
-              Ident@7499..7501 "na"
+          AssignList@7496..7501
+            BinOp@7496..7501
+              Ident@7496..7498
+                Ident@7496..7498 "cc"
+              Dot@7498..7499 "."
+              Ident@7499..7501
+                Ident@7499..7501 "na"
           Assign@7501..7502 "="
           BinOp@7502..7509
             BinOp@7502..7507
@@ -4742,12 +4933,13 @@ Root@0..16908
             LiteralExpr@7508..7509
               Int@7508..7509 "1"
         AssignStmt@7509..7532
-          BinOp@7509..7519
-            Ident@7509..7511
-              Ident@7509..7511 "cc"
-            Dot@7511..7512 "."
-            Ident@7512..7519
-              Ident@7512..7519 "tostore"
+          AssignList@7509..7519
+            BinOp@7509..7519
+              Ident@7509..7511
+                Ident@7509..7511 "cc"
+              Dot@7511..7512 "."
+              Ident@7512..7519
+                Ident@7512..7519 "tostore"
           Assign@7519..7520 "="
           BinOp@7520..7532
             BinOp@7520..7530
@@ -4768,9 +4960,11 @@ Root@0..16908
         Ident@7548..7562 "closelistfield"
       FuncArgs@7562..7569
         LParen@7562..7563 "("
-        Ident@7563..7565 "fs"
+        Ident@7563..7565
+          Ident@7563..7565 "fs"
         Comma@7565..7566 ","
-        Ident@7566..7568 "cc"
+        Ident@7566..7568
+          Ident@7566..7568 "cc"
         RParen@7568..7569 ")"
       StmtList@7569..7736
         IfStmt@7569..7599
@@ -4814,16 +5008,17 @@ Root@0..16908
                 Ident@7622..7623 "v"
             RParen@7623..7624 ")"
         AssignStmt@7624..7638
-          BinOp@7624..7630
-            BinOp@7624..7628
-              Ident@7624..7626
-                Ident@7624..7626 "cc"
-              Dot@7626..7627 "."
-              Ident@7627..7628
-                Ident@7627..7628 "v"
-            Dot@7628..7629 "."
-            Ident@7629..7630
-              Ident@7629..7630 "k"
+          AssignList@7624..7630
+            BinOp@7624..7630
+              BinOp@7624..7628
+                Ident@7624..7626
+                  Ident@7624..7626 "cc"
+                Dot@7626..7627 "."
+                Ident@7627..7628
+                  Ident@7627..7628 "v"
+              Dot@7628..7629 "."
+              Ident@7629..7630
+                Ident@7629..7630 "k"
           Assign@7630..7631 "="
           LiteralExpr@7631..7638
             String@7631..7638 "\"VVOID\""
@@ -4883,12 +5078,13 @@ Root@0..16908
                     Ident@7713..7720 "tostore"
                 RParen@7720..7721 ")"
             AssignStmt@7721..7733
-              BinOp@7721..7731
-                Ident@7721..7723
-                  Ident@7721..7723 "cc"
-                Dot@7723..7724 "."
-                Ident@7724..7731
-                  Ident@7724..7731 "tostore"
+              AssignList@7721..7731
+                BinOp@7721..7731
+                  Ident@7721..7723
+                    Ident@7721..7723 "cc"
+                  Dot@7723..7724 "."
+                  Ident@7724..7731
+                    Ident@7724..7731 "tostore"
               Assign@7731..7732 "="
               LiteralExpr@7732..7733
                 Int@7732..7733 "0"
@@ -4902,9 +5098,11 @@ Root@0..16908
         Ident@7752..7765 "lastlistfield"
       FuncArgs@7765..7772
         LParen@7765..7766 "("
-        Ident@7766..7768 "fs"
+        Ident@7766..7768
+          Ident@7766..7768 "fs"
         Comma@7768..7769 ","
-        Ident@7769..7771 "cc"
+        Ident@7769..7771
+          Ident@7769..7771 "cc"
         RParen@7771..7772 ")"
       StmtList@7772..8009
         IfStmt@7772..7800
@@ -5001,12 +5199,13 @@ Root@0..16908
                     Ident@7885..7896 "LUA_MULTRET"
                 RParen@7896..7897 ")"
             AssignStmt@7897..7910
-              BinOp@7897..7902
-                Ident@7897..7899
-                  Ident@7897..7899 "cc"
-                Dot@7899..7900 "."
-                Ident@7900..7902
-                  Ident@7900..7902 "na"
+              AssignList@7897..7902
+                BinOp@7897..7902
+                  Ident@7897..7899
+                    Ident@7897..7899 "cc"
+                  Dot@7899..7900 "."
+                  Ident@7900..7902
+                    Ident@7900..7902 "na"
               Assign@7902..7903 "="
               BinOp@7903..7910
                 BinOp@7903..7908
@@ -5108,9 +5307,11 @@ Root@0..16908
         Ident@8025..8029 "stat"
     FuncArgs@8029..8037
       LParen@8029..8030 "("
-      Ident@8030..8032 "fs"
+      Ident@8030..8032
+        Ident@8030..8032 "fs"
       Comma@8032..8033 ","
-      Ident@8033..8036 "ast"
+      Ident@8033..8036
+        Ident@8033..8036 "ast"
       RParen@8036..8037 ")"
     StmtList@8037..8232
       IfStmt@8037..8092
@@ -5124,12 +5325,13 @@ Root@0..16908
         Then@8051..8055 "then"
         StmtList@8055..8089
           AssignStmt@8055..8089
-            BinOp@8055..8066
-              Ident@8055..8057
-                Ident@8055..8057 "fs"
-              Dot@8057..8058 "."
-              Ident@8058..8066
-                Ident@8058..8066 "lastline"
+            AssignList@8055..8066
+              BinOp@8055..8066
+                Ident@8055..8057
+                  Ident@8055..8057 "fs"
+                Dot@8057..8058 "."
+                Ident@8058..8066
+                  Ident@8058..8066 "lastline"
             Assign@8066..8067 "="
             BinOp@8067..8089
               Ident@8067..8070
@@ -5227,12 +5429,13 @@ Root@0..16908
           End@8229..8232 "end"
     End@8232..8235 "end"
   AssignStmt@8235..8248
-    BinOp@8235..8242
-      Ident@8235..8239
-        Ident@8235..8239 "stat"
-      Dot@8239..8240 "."
-      Ident@8240..8242
-        Ident@8240..8242 "Do"
+    AssignList@8235..8242
+      BinOp@8235..8242
+        Ident@8235..8239
+          Ident@8235..8239 "stat"
+        Dot@8239..8240 "."
+        Ident@8240..8242
+          Ident@8240..8242 "Do"
     Assign@8242..8243 "="
     Ident@8243..8248
       Ident@8243..8248 "block"
@@ -5246,9 +5449,11 @@ Root@0..16908
         Ident@8261..8266 "Break"
     FuncArgs@8266..8274
       LParen@8266..8267 "("
-      Ident@8267..8269 "fs"
+      Ident@8267..8269
+        Ident@8267..8269 "fs"
       Comma@8269..8270 ","
-      Ident@8270..8273 "ast"
+      Ident@8270..8273
+        Ident@8270..8273 "ast"
       RParen@8273..8274 ")"
     StmtList@8274..8512
       DeclStmt@8274..8299
@@ -5297,15 +5502,17 @@ Root@0..16908
               Then@8338..8342 "then"
               StmtList@8342..8352
                 AssignStmt@8342..8352
-                  Ident@8342..8347
-                    Ident@8342..8347 "upval"
+                  AssignList@8342..8347
+                    Ident@8342..8347
+                      Ident@8342..8347 "upval"
                   Assign@8347..8348 "="
                   LiteralExpr@8348..8352
                     True@8348..8352 "true"
               End@8352..8355 "end"
             AssignStmt@8355..8369
-              Ident@8355..8357
-                Ident@8355..8357 "bl"
+              AssignList@8355..8357
+                Ident@8355..8357
+                  Ident@8355..8357 "bl"
               Assign@8357..8358 "="
               BinOp@8358..8369
                 Ident@8358..8360
@@ -5361,12 +5568,13 @@ Root@0..16908
               RParen@8453..8454 ")"
         End@8454..8457 "end"
       AssignStmt@8457..8512
-        BinOp@8457..8469
-          Ident@8457..8459
-            Ident@8457..8459 "bl"
-          Dot@8459..8460 "."
-          Ident@8460..8469
-            Ident@8460..8469 "breaklist"
+        AssignList@8457..8469
+          BinOp@8457..8469
+            Ident@8457..8459
+              Ident@8457..8459 "bl"
+            Dot@8459..8460 "."
+            Ident@8460..8469
+              Ident@8460..8469 "breaklist"
         Assign@8469..8470 "="
         FuncCall@8470..8512
           BinOp@8470..8481
@@ -5411,9 +5619,11 @@ Root@0..16908
         Ident@8528..8534 "Return"
     FuncArgs@8534..8542
       LParen@8534..8535 "("
-      Ident@8535..8537 "fs"
+      Ident@8535..8537
+        Ident@8535..8537 "fs"
       Comma@8537..8538 ","
-      Ident@8538..8541 "ast"
+      Ident@8538..8541
+        Ident@8538..8541 "ast"
       RParen@8541..8542 ")"
     StmtList@8542..8973
       DeclStmt@8542..8551
@@ -5448,8 +5658,9 @@ Root@0..16908
         Then@8584..8588 "then"
         StmtList@8588..8595
           AssignStmt@8588..8595
-            Ident@8588..8593
-              Ident@8588..8593 "first"
+            AssignList@8588..8593
+              Ident@8588..8593
+                Ident@8588..8593 "first"
             Assign@8593..8594 "="
             LiteralExpr@8594..8595
               Int@8594..8595 "0"
@@ -5592,8 +5803,9 @@ Root@0..16908
                         RParen@8787..8788 ")"
                   End@8788..8791 "end"
                 AssignStmt@8791..8807
-                  Ident@8791..8796
-                    Ident@8791..8796 "first"
+                  AssignList@8791..8796
+                    Ident@8791..8796
+                      Ident@8791..8796 "first"
                   Assign@8796..8797 "="
                   BinOp@8797..8807
                     Ident@8797..8799
@@ -5602,8 +5814,9 @@ Root@0..16908
                     Ident@8800..8807
                       Ident@8800..8807 "nactvar"
                 AssignStmt@8807..8828
-                  Ident@8807..8811
-                    Ident@8807..8811 "nret"
+                  AssignList@8807..8811
+                    Ident@8807..8811
+                      Ident@8807..8811 "nret"
                   Assign@8811..8812 "="
                   BinOp@8812..8828
                     Ident@8812..8816
@@ -5623,8 +5836,9 @@ Root@0..16908
                   Then@8841..8845 "then"
                   StmtList@8845..8872
                     AssignStmt@8845..8872
-                      Ident@8845..8850
-                        Ident@8845..8850 "first"
+                      AssignList@8845..8850
+                        Ident@8845..8850
+                          Ident@8845..8850 "first"
                       Assign@8850..8851 "="
                       FuncCall@8851..8872
                         BinOp@8851..8866
@@ -5660,8 +5874,9 @@ Root@0..16908
                             Ident@8896..8897 "e"
                           RParen@8897..8898 ")"
                       AssignStmt@8898..8914
-                        Ident@8898..8903
-                          Ident@8898..8903 "first"
+                        AssignList@8898..8903
+                          Ident@8898..8903
+                            Ident@8898..8903 "first"
                         Assign@8903..8904 "="
                         BinOp@8904..8914
                           Ident@8904..8906
@@ -5720,9 +5935,11 @@ Root@0..16908
         Ident@8989..8994 "Local"
     FuncArgs@8994..9002
       LParen@8994..8995 "("
-      Ident@8995..8997 "fs"
+      Ident@8995..8997
+        Ident@8995..8997 "fs"
       Comma@8997..8998 ","
-      Ident@8998..9001 "ast"
+      Ident@8998..9001
+        Ident@8998..9001 "ast"
       RParen@9001..9002 ")"
     StmtList@9002..9210
       DeclStmt@9002..9037
@@ -5756,7 +5973,8 @@ Root@0..16908
               RCurly@9036..9037 "}"
       ForNumStmt@9037..9087
         For@9037..9040 "for"
-        Ident@9040..9041 "i"
+        Ident@9040..9041
+          Ident@9040..9041 "i"
         Assign@9041..9042 "="
         LiteralExpr@9042..9043
           Int@9042..9043 "1"
@@ -5818,12 +6036,13 @@ Root@0..16908
         Then@9108..9112 "then"
         StmtList@9112..9123
           AssignStmt@9112..9123
-            BinOp@9112..9115
-              Ident@9112..9113
-                Ident@9112..9113 "e"
-              Dot@9113..9114 "."
-              Ident@9114..9115
-                Ident@9114..9115 "k"
+            AssignList@9112..9115
+              BinOp@9112..9115
+                Ident@9112..9113
+                  Ident@9112..9113 "e"
+                Dot@9113..9114 "."
+                Ident@9114..9115
+                  Ident@9114..9115 "k"
             Assign@9115..9116 "="
             LiteralExpr@9116..9123
               String@9116..9123 "\"VVOID\""
@@ -5890,9 +6109,11 @@ Root@0..16908
         Ident@9226..9234 "Localrec"
     FuncArgs@9234..9242
       LParen@9234..9235 "("
-      Ident@9235..9237 "fs"
+      Ident@9235..9237
+        Ident@9235..9237 "fs"
       Comma@9237..9238 ","
-      Ident@9238..9241 "ast"
+      Ident@9238..9241
+        Ident@9238..9241 "ast"
       RParen@9241..9242 ")"
     StmtList@9242..9573
       FuncCall@9242..9312
@@ -6080,29 +6301,30 @@ Root@0..16908
             Ident@9527..9532 "e_val"
           RParen@9532..9533 ")"
       AssignStmt@9533..9573
-        BinOp@9533..9567
-          FuncCall@9533..9559
-            Ident@9533..9542
-              Ident@9533..9542 "getlocvar"
-            FuncArgs@9542..9559
-              LParen@9542..9543 "("
-              Ident@9543..9545
-                Ident@9543..9545 "fs"
-              Comma@9545..9546 ","
-              BinOp@9546..9558
-                BinOp@9546..9556
-                  Ident@9546..9548
-                    Ident@9546..9548 "fs"
-                  Dot@9548..9549 "."
-                  Ident@9549..9556
-                    Ident@9549..9556 "nactvar"
-                Minus@9556..9557 "-"
-                LiteralExpr@9557..9558
-                  Int@9557..9558 "1"
-              RParen@9558..9559 ")"
-          Dot@9559..9560 "."
-          Ident@9560..9567
-            Ident@9560..9567 "startpc"
+        AssignList@9533..9567
+          BinOp@9533..9567
+            FuncCall@9533..9559
+              Ident@9533..9542
+                Ident@9533..9542 "getlocvar"
+              FuncArgs@9542..9559
+                LParen@9542..9543 "("
+                Ident@9543..9545
+                  Ident@9543..9545 "fs"
+                Comma@9545..9546 ","
+                BinOp@9546..9558
+                  BinOp@9546..9556
+                    Ident@9546..9548
+                      Ident@9546..9548 "fs"
+                    Dot@9548..9549 "."
+                    Ident@9549..9556
+                      Ident@9549..9556 "nactvar"
+                  Minus@9556..9557 "-"
+                  LiteralExpr@9557..9558
+                    Int@9557..9558 "1"
+                RParen@9558..9559 ")"
+            Dot@9559..9560 "."
+            Ident@9560..9567
+              Ident@9560..9567 "startpc"
         Assign@9567..9568 "="
         BinOp@9568..9573
           Ident@9568..9570
@@ -6121,9 +6343,11 @@ Root@0..16908
         Ident@9589..9591 "If"
     FuncArgs@9591..9599
       LParen@9591..9592 "("
-      Ident@9592..9594 "fs"
+      Ident@9592..9594
+        Ident@9592..9594 "fs"
       Comma@9594..9595 ","
-      Ident@9595..9598 "ast"
+      Ident@9595..9598
+        Ident@9595..9598 "ast"
       RParen@9598..9599 ")"
     StmtList@9599..10194
       DeclStmt@9599..9615
@@ -6197,11 +6421,14 @@ Root@0..16908
             Ident@9704..9719 "test_then_block"
           FuncArgs@9719..9733
             LParen@9719..9720 "("
-            Ident@9720..9722 "fs"
+            Ident@9720..9722
+              Ident@9720..9722 "fs"
             Comma@9722..9723 ","
-            Ident@9723..9727 "test"
+            Ident@9723..9727
+              Ident@9723..9727 "test"
             Comma@9727..9728 ","
-            Ident@9728..9732 "body"
+            Ident@9728..9732
+              Ident@9728..9732 "body"
             RParen@9732..9733 ")"
           StmtList@9733..9789
             DeclStmt@9733..9760
@@ -6280,7 +6507,8 @@ Root@0..16908
             RParen@9863..9864 ")"
       ForNumStmt@9864..10002
         For@9864..9867 "for"
-        Ident@9867..9868 "i"
+        Ident@9867..9868
+          Ident@9867..9868 "i"
         Assign@9868..9869 "="
         LiteralExpr@9869..9870
           Int@9869..9870 "3"
@@ -6300,8 +6528,9 @@ Root@0..16908
           Do@9879..9881 "do"
           StmtList@9881..9999
             AssignStmt@9881..9932
-              Ident@9881..9891
-                Ident@9881..9891 "escapelist"
+              AssignList@9881..9891
+                Ident@9881..9891
+                  Ident@9881..9891 "escapelist"
               Assign@9891..9892 "="
               FuncCall@9892..9932
                 BinOp@9892..9903
@@ -6347,8 +6576,9 @@ Root@0..16908
                   Ident@9952..9957 "flist"
                 RParen@9957..9958 ")"
             AssignStmt@9958..9999
-              Ident@9958..9963
-                Ident@9958..9963 "flist"
+              AssignList@9958..9963
+                Ident@9958..9963
+                  Ident@9958..9963 "flist"
               Assign@9963..9964 "="
               FuncCall@9964..9999
                 Ident@9964..9979
@@ -6396,8 +6626,9 @@ Root@0..16908
         Then@10013..10017 "then"
         StmtList@10017..10113
           AssignStmt@10017..10068
-            Ident@10017..10027
-              Ident@10017..10027 "escapelist"
+            AssignList@10017..10027
+              Ident@10017..10027
+                Ident@10017..10027 "escapelist"
             Assign@10027..10028 "="
             FuncCall@10028..10068
               BinOp@10028..10039
@@ -6464,8 +6695,9 @@ Root@0..16908
           Else@10113..10117 "else"
           StmtList@10117..10160
             AssignStmt@10117..10160
-              Ident@10117..10127
-                Ident@10117..10127 "escapelist"
+              AssignList@10117..10127
+                Ident@10117..10127
+                  Ident@10117..10127 "escapelist"
               Assign@10127..10128 "="
               FuncCall@10128..10160
                 BinOp@10128..10139
@@ -6512,9 +6744,11 @@ Root@0..16908
         Ident@10210..10215 "Forin"
     FuncArgs@10215..10223
       LParen@10215..10216 "("
-      Ident@10216..10218 "fs"
+      Ident@10216..10218
+        Ident@10216..10218 "fs"
       Comma@10218..10219 ","
-      Ident@10219..10222 "ast"
+      Ident@10219..10222
+        Ident@10219..10222 "ast"
       RParen@10222..10223 ")"
     StmtList@10223..10583
       DeclStmt@10223..10263
@@ -6637,7 +6871,8 @@ Root@0..16908
           RParen@10421..10422 ")"
       ForNumStmt@10422..10470
         For@10422..10425 "for"
-        Ident@10425..10426 "i"
+        Ident@10425..10426
+          Ident@10425..10426 "i"
         Assign@10426..10427 "="
         LiteralExpr@10427..10428
           Int@10427..10428 "1"
@@ -6767,9 +7002,11 @@ Root@0..16908
         Ident@10599..10605 "Fornum"
     FuncArgs@10605..10613
       LParen@10605..10606 "("
-      Ident@10606..10608 "fs"
+      Ident@10606..10608
+        Ident@10606..10608 "fs"
       Comma@10608..10609 ","
-      Ident@10609..10612 "ast"
+      Ident@10609..10612
+        Ident@10609..10612 "ast"
       RParen@10612..10613 ")"
     StmtList@10613..11049
       DeclStmt@10613..10692
@@ -6780,7 +7017,8 @@ Root@0..16908
             Ident@10626..10630 "exp1"
           FuncArgs@10630..10637
             LParen@10630..10631 "("
-            Ident@10631..10636 "ast_e"
+            Ident@10631..10636
+              Ident@10631..10636 "ast_e"
             RParen@10636..10637 ")"
           StmtList@10637..10689
             DeclStmt@10637..10646
@@ -7078,9 +7316,11 @@ Root@0..16908
         Ident@11065..11071 "Repeat"
     FuncArgs@11071..11079
       LParen@11071..11072 "("
-      Ident@11072..11074 "fs"
+      Ident@11072..11074
+        Ident@11072..11074 "fs"
       Comma@11074..11075 ","
-      Ident@11075..11078 "ast"
+      Ident@11075..11078
+        Ident@11075..11078 "ast"
       RParen@11078..11079 ")"
     StmtList@11079..11416
       DeclStmt@11079..11113
@@ -7305,9 +7545,11 @@ Root@0..16908
         Ident@11432..11437 "While"
     FuncArgs@11437..11445
       LParen@11437..11438 "("
-      Ident@11438..11440 "fs"
+      Ident@11438..11440
+        Ident@11438..11440 "fs"
       Comma@11440..11441 ","
-      Ident@11441..11444 "ast"
+      Ident@11441..11444
+        Ident@11441..11444 "ast"
       RParen@11444..11445 ")"
     StmtList@11445..11640
       DeclStmt@11445..11477
@@ -7450,9 +7692,11 @@ Root@0..16908
         Ident@11656..11659 "Set"
     FuncArgs@11659..11667
       LParen@11659..11660 "("
-      Ident@11660..11662 "fs"
+      Ident@11660..11662
+        Ident@11660..11662 "fs"
       Comma@11662..11663 ","
-      Ident@11663..11666 "ast"
+      Ident@11663..11666
+        Ident@11663..11666 "ast"
       RParen@11666..11667 ")"
     StmtList@11667..12381
       DeclStmt@11667..11707
@@ -7494,9 +7738,11 @@ Root@0..16908
             Ident@11720..11727 "let_aux"
           FuncArgs@11727..11738
             LParen@11727..11728 "("
-            Ident@11728..11731 "lhs"
+            Ident@11728..11731
+              Ident@11728..11731 "lhs"
             Comma@11731..11732 ","
-            Ident@11732..11737 "nvars"
+            Ident@11732..11737
+              Ident@11732..11737 "nvars"
             RParen@11737..11738 ")"
           StmtList@11738..12310
             DeclStmt@11738..11789
@@ -7776,12 +8022,13 @@ Root@0..16908
                                 Ident@12149..12150 "e"
                               RParen@12150..12151 ")"
                           AssignStmt@12151..12188
-                            BinOp@12151..12161
-                              Ident@12151..12153
-                                Ident@12151..12153 "fs"
-                              Dot@12153..12154 "."
-                              Ident@12154..12161
-                                Ident@12154..12161 "freereg"
+                            AssignList@12151..12161
+                              BinOp@12151..12161
+                                Ident@12151..12153
+                                  Ident@12151..12153 "fs"
+                                Dot@12153..12154 "."
+                                Ident@12154..12161
+                                  Ident@12154..12161 "freereg"
                             Assign@12161..12162 "="
                             BinOp@12162..12188
                               BinOp@12162..12182
@@ -7959,9 +8206,11 @@ Root@0..16908
         Ident@12397..12401 "Call"
     FuncArgs@12401..12409
       LParen@12401..12402 "("
-      Ident@12402..12404 "fs"
+      Ident@12402..12404
+        Ident@12402..12404 "fs"
       Comma@12404..12405 ","
-      Ident@12405..12408 "ast"
+      Ident@12405..12408
+        Ident@12405..12408 "ast"
       RParen@12408..12409 ")"
     StmtList@12409..12472
       DeclStmt@12409..12418
@@ -8029,9 +8278,11 @@ Root@0..16908
         Ident@12488..12494 "Invoke"
     FuncArgs@12494..12502
       LParen@12494..12495 "("
-      Ident@12495..12497 "fs"
+      Ident@12495..12497
+        Ident@12495..12497 "fs"
       Comma@12497..12498 ","
-      Ident@12498..12501 "ast"
+      Ident@12498..12501
+        Ident@12498..12501 "ast"
       RParen@12501..12502 ")"
     StmtList@12502..12567
       DeclStmt@12502..12511
@@ -8097,11 +8348,14 @@ Root@0..16908
         Ident@12583..12593 "patch_goto"
       FuncArgs@12593..12605
         LParen@12593..12594 "("
-        Ident@12594..12596 "fs"
+        Ident@12594..12596
+          Ident@12594..12596 "fs"
         Comma@12596..12597 ","
-        Ident@12597..12600 "src"
+        Ident@12597..12600
+          Ident@12597..12600 "src"
         Comma@12600..12601 ","
-        Ident@12601..12604 "dst"
+        Ident@12601..12604
+          Ident@12601..12604 "dst"
         RParen@12604..12605 ")"
       StmtList@12605..12605
       End@12605..12608 "end"
@@ -8115,9 +8369,11 @@ Root@0..16908
         Ident@12621..12626 "Label"
     FuncArgs@12626..12634
       LParen@12626..12627 "("
-      Ident@12627..12629 "fs"
+      Ident@12627..12629
+        Ident@12627..12629 "fs"
       Comma@12629..12630 ","
-      Ident@12630..12633 "ast"
+      Ident@12630..12633
+        Ident@12630..12633 "ast"
       RParen@12633..12634 ")"
     StmtList@12634..13161
       DeclStmt@12634..12654
@@ -8149,8 +8405,9 @@ Root@0..16908
         Then@12679..12683 "then"
         StmtList@12683..12703
           AssignStmt@12683..12703
-            Ident@12683..12691
-              Ident@12683..12691 "label_id"
+            AssignList@12683..12691
+              Ident@12683..12691
+                Ident@12683..12691 "label_id"
             Assign@12691..12692 "="
             Index@12692..12703
               Ident@12692..12700
@@ -8187,17 +8444,18 @@ Root@0..16908
           Else@12767..12771 "else"
           StmtList@12771..12820
             AssignStmt@12771..12820
-              Index@12771..12790
-                BinOp@12771..12780
-                  Ident@12771..12773
-                    Ident@12771..12773 "fs"
-                  Dot@12773..12774 "."
-                  Ident@12774..12780
-                    Ident@12774..12780 "labels"
-                LBracket@12780..12781 "["
-                Ident@12781..12789
-                  Ident@12781..12789 "label_id"
-                RBracket@12789..12790 "]"
+              AssignList@12771..12790
+                Index@12771..12790
+                  BinOp@12771..12780
+                    Ident@12771..12773
+                      Ident@12771..12773 "fs"
+                    Dot@12773..12774 "."
+                    Ident@12774..12780
+                      Ident@12774..12780 "labels"
+                  LBracket@12780..12781 "["
+                  Ident@12781..12789
+                    Ident@12781..12789 "label_id"
+                  RBracket@12789..12790 "]"
               Assign@12790..12791 "="
               TableExpr@12791..12820
                 LCurly@12791..12792 "{"
@@ -8248,9 +8506,12 @@ Root@0..16908
         StmtList@12871..13158
           ForGenStmt@12871..13128
             For@12871..12874 "for"
-            Ident@12874..12875 "_"
-            Comma@12875..12876 ","
-            Ident@12876..12883 "goto_pc"
+            AssignList@12874..12883
+              Ident@12874..12875
+                Ident@12874..12875 "_"
+              Comma@12875..12876 ","
+              Ident@12876..12883
+                Ident@12876..12883 "goto_pc"
             In@12883..12885 "in"
             FuncCall@12885..12898
               Ident@12885..12891
@@ -8387,17 +8648,18 @@ Root@0..16908
                     RParen@13124..13125 ")"
               End@13125..13128 "end"
           AssignStmt@13128..13158
-            Index@13128..13154
-              BinOp@13128..13144
-                Ident@13128..13130
-                  Ident@13128..13130 "fs"
-                Dot@13130..13131 "."
-                Ident@13131..13144
-                  Ident@13131..13144 "forward_gotos"
-              LBracket@13144..13145 "["
-              Ident@13145..13153
-                Ident@13145..13153 "label_id"
-              RBracket@13153..13154 "]"
+            AssignList@13128..13154
+              Index@13128..13154
+                BinOp@13128..13144
+                  Ident@13128..13130
+                    Ident@13128..13130 "fs"
+                  Dot@13130..13131 "."
+                  Ident@13131..13144
+                    Ident@13131..13144 "forward_gotos"
+                LBracket@13144..13145 "["
+                Ident@13145..13153
+                  Ident@13145..13153 "label_id"
+                RBracket@13153..13154 "]"
             Assign@13154..13155 "="
             LiteralExpr@13155..13158
               Nil@13155..13158 "nil"
@@ -8413,9 +8675,11 @@ Root@0..16908
         Ident@13177..13181 "Goto"
     FuncArgs@13181..13189
       LParen@13181..13182 "("
-      Ident@13182..13184 "fs"
+      Ident@13182..13184
+        Ident@13182..13184 "fs"
       Comma@13184..13185 ","
-      Ident@13185..13188 "ast"
+      Ident@13185..13188
+        Ident@13185..13188 "ast"
       RParen@13188..13189 ")"
     StmtList@13189..13646
       DeclStmt@13189..13209
@@ -8447,8 +8711,9 @@ Root@0..16908
         Then@13234..13238 "then"
         StmtList@13238..13258
           AssignStmt@13238..13258
-            Ident@13238..13246
-              Ident@13238..13246 "label_id"
+            AssignList@13238..13246
+              Ident@13238..13246
+                Ident@13238..13246 "label_id"
             Assign@13246..13247 "="
             Index@13247..13258
               Ident@13247..13255
@@ -8592,17 +8857,18 @@ Root@0..16908
               Then@13478..13482 "then"
               StmtList@13482..13511
                 AssignStmt@13482..13511
-                  Index@13482..13508
-                    BinOp@13482..13498
-                      Ident@13482..13484
-                        Ident@13482..13484 "fs"
-                      Dot@13484..13485 "."
-                      Ident@13485..13498
-                        Ident@13485..13498 "forward_gotos"
-                    LBracket@13498..13499 "["
-                    Ident@13499..13507
-                      Ident@13499..13507 "label_id"
-                    RBracket@13507..13508 "]"
+                  AssignList@13482..13508
+                    Index@13482..13508
+                      BinOp@13482..13498
+                        Ident@13482..13484
+                          Ident@13482..13484 "fs"
+                        Dot@13484..13485 "."
+                        Ident@13485..13498
+                          Ident@13485..13498 "forward_gotos"
+                      LBracket@13498..13499 "["
+                      Ident@13499..13507
+                        Ident@13499..13507 "label_id"
+                      RBracket@13507..13508 "]"
                   Assign@13508..13509 "="
                   TableExpr@13509..13511
                     LCurly@13509..13510 "{"
@@ -8701,11 +8967,14 @@ Root@0..16908
         Ident@13662..13666 "expr"
     FuncArgs@13666..13676
       LParen@13666..13667 "("
-      Ident@13667..13669 "fs"
+      Ident@13667..13669
+        Ident@13667..13669 "fs"
       Comma@13669..13670 ","
-      Ident@13670..13673 "ast"
+      Ident@13670..13673
+        Ident@13670..13673 "ast"
       Comma@13673..13674 ","
-      Ident@13674..13675 "v"
+      Ident@13674..13675
+        Ident@13674..13675 "v"
       RParen@13675..13676 ")"
     StmtList@13676..14014
       IfStmt@13676..13753
@@ -8758,12 +9027,13 @@ Root@0..16908
         Then@13767..13771 "then"
         StmtList@13771..13805
           AssignStmt@13771..13805
-            BinOp@13771..13782
-              Ident@13771..13773
-                Ident@13771..13773 "fs"
-              Dot@13773..13774 "."
-              Ident@13774..13782
-                Ident@13774..13782 "lastline"
+            AssignList@13771..13782
+              BinOp@13771..13782
+                Ident@13771..13773
+                  Ident@13771..13773 "fs"
+                Dot@13773..13774 "."
+                Ident@13774..13782
+                  Ident@13774..13782 "lastline"
             Assign@13782..13783 "="
             BinOp@13783..13805
               Ident@13783..13786
@@ -8906,11 +9176,14 @@ Root@0..16908
         Ident@14030..14033 "Nil"
     FuncArgs@14033..14043
       LParen@14033..14034 "("
-      Ident@14034..14036 "fs"
+      Ident@14034..14036
+        Ident@14034..14036 "fs"
       Comma@14036..14037 ","
-      Ident@14037..14040 "ast"
+      Ident@14037..14040
+        Ident@14037..14040 "ast"
       Comma@14040..14041 ","
-      Ident@14041..14042 "v"
+      Ident@14041..14042
+        Ident@14041..14042 "v"
       RParen@14042..14043 ")"
     StmtList@14043..14063
       FuncCall@14043..14063
@@ -8938,11 +9211,14 @@ Root@0..16908
         Ident@14079..14083 "True"
     FuncArgs@14083..14093
       LParen@14083..14084 "("
-      Ident@14084..14086 "fs"
+      Ident@14084..14086
+        Ident@14084..14086 "fs"
       Comma@14086..14087 ","
-      Ident@14087..14090 "ast"
+      Ident@14087..14090
+        Ident@14087..14090 "ast"
       Comma@14090..14091 ","
-      Ident@14091..14092 "v"
+      Ident@14091..14092
+        Ident@14091..14092 "v"
       RParen@14092..14093 ")"
     StmtList@14093..14114
       FuncCall@14093..14114
@@ -8970,11 +9246,14 @@ Root@0..16908
         Ident@14130..14135 "False"
     FuncArgs@14135..14145
       LParen@14135..14136 "("
-      Ident@14136..14138 "fs"
+      Ident@14136..14138
+        Ident@14136..14138 "fs"
       Comma@14138..14139 ","
-      Ident@14139..14142 "ast"
+      Ident@14139..14142
+        Ident@14139..14142 "ast"
       Comma@14142..14143 ","
-      Ident@14143..14144 "v"
+      Ident@14143..14144
+        Ident@14143..14144 "v"
       RParen@14144..14145 ")"
     StmtList@14145..14167
       FuncCall@14145..14167
@@ -9002,11 +9281,14 @@ Root@0..16908
         Ident@14183..14189 "String"
     FuncArgs@14189..14199
       LParen@14189..14190 "("
-      Ident@14190..14192 "fs"
+      Ident@14190..14192
+        Ident@14190..14192 "fs"
       Comma@14192..14193 ","
-      Ident@14193..14196 "ast"
+      Ident@14193..14196
+        Ident@14193..14196 "ast"
       Comma@14196..14197 ","
-      Ident@14197..14198 "v"
+      Ident@14197..14198
+        Ident@14197..14198 "v"
       RParen@14198..14199 ")"
     StmtList@14199..14222
       FuncCall@14199..14222
@@ -9039,11 +9321,14 @@ Root@0..16908
         Ident@14238..14244 "Number"
     FuncArgs@14244..14254
       LParen@14244..14245 "("
-      Ident@14245..14247 "fs"
+      Ident@14245..14247
+        Ident@14245..14247 "fs"
       Comma@14247..14248 ","
-      Ident@14248..14251 "ast"
+      Ident@14248..14251
+        Ident@14248..14251 "ast"
       Comma@14251..14252 ","
-      Ident@14252..14253 "v"
+      Ident@14252..14253
+        Ident@14252..14253 "v"
       RParen@14253..14254 ")"
     StmtList@14254..14288
       FuncCall@14254..14275
@@ -9061,12 +9346,13 @@ Root@0..16908
             Int@14273..14274 "0"
           RParen@14274..14275 ")"
       AssignStmt@14275..14288
-        BinOp@14275..14281
-          Ident@14275..14276
-            Ident@14275..14276 "v"
-          Dot@14276..14277 "."
-          Ident@14277..14281
-            Ident@14277..14281 "nval"
+        AssignList@14275..14281
+          BinOp@14275..14281
+            Ident@14275..14276
+              Ident@14275..14276 "v"
+            Dot@14276..14277 "."
+            Ident@14277..14281
+              Ident@14277..14281 "nval"
         Assign@14281..14282 "="
         Index@14282..14288
           Ident@14282..14285
@@ -9086,11 +9372,14 @@ Root@0..16908
         Ident@14304..14309 "Paren"
     FuncArgs@14309..14319
       LParen@14309..14310 "("
-      Ident@14310..14312 "fs"
+      Ident@14310..14312
+        Ident@14310..14312 "fs"
       Comma@14312..14313 ","
-      Ident@14313..14316 "ast"
+      Ident@14313..14316
+        Ident@14313..14316 "ast"
       Comma@14316..14317 ","
-      Ident@14317..14318 "v"
+      Ident@14317..14318
+        Ident@14317..14318 "v"
       RParen@14318..14319 ")"
     StmtList@14319..14361
       FuncCall@14319..14341
@@ -9142,11 +9431,14 @@ Root@0..16908
         Ident@14377..14381 "Dots"
     FuncArgs@14381..14391
       LParen@14381..14382 "("
-      Ident@14382..14384 "fs"
+      Ident@14382..14384
+        Ident@14382..14384 "fs"
       Comma@14384..14385 ","
-      Ident@14385..14388 "ast"
+      Ident@14385..14388
+        Ident@14385..14388 "ast"
       Comma@14388..14389 ","
-      Ident@14389..14390 "v"
+      Ident@14389..14390
+        Ident@14389..14390 "v"
       RParen@14390..14391 ")"
     StmtList@14391..14588
       FuncCall@14391..14445
@@ -9195,16 +9487,17 @@ Root@0..16908
         Then@14479..14483 "then"
         StmtList@14483..14529
           AssignStmt@14483..14529
-            BinOp@14483..14496
-              BinOp@14483..14487
-                Ident@14483..14485
-                  Ident@14483..14485 "fs"
-                Dot@14485..14486 "."
-                Ident@14486..14487
-                  Ident@14486..14487 "f"
-              Dot@14487..14488 "."
-              Ident@14488..14496
-                Ident@14488..14496 "is_varag"
+            AssignList@14483..14496
+              BinOp@14483..14496
+                BinOp@14483..14487
+                  Ident@14483..14485
+                    Ident@14483..14485 "fs"
+                  Dot@14485..14486 "."
+                  Ident@14486..14487
+                    Ident@14486..14487 "f"
+                Dot@14487..14488 "."
+                Ident@14488..14496
+                  Ident@14488..14496 "is_varag"
             Assign@14496..14497 "="
             BinOp@14497..14529
               BinOp@14497..14511
@@ -9272,11 +9565,14 @@ Root@0..16908
         Ident@14604..14609 "Table"
     FuncArgs@14609..14619
       LParen@14609..14610 "("
-      Ident@14610..14612 "fs"
+      Ident@14610..14612
+        Ident@14610..14612 "fs"
       Comma@14612..14613 ","
-      Ident@14613..14616 "ast"
+      Ident@14613..14616
+        Ident@14613..14616 "ast"
       Comma@14616..14617 ","
-      Ident@14617..14618 "v"
+      Ident@14617..14618
+        Ident@14617..14618 "v"
       RParen@14618..14619 ")"
     StmtList@14619..15009
       DeclStmt@14619..14663
@@ -9400,7 +9696,8 @@ Root@0..16908
           RParen@14773..14774 ")"
       ForNumStmt@14774..14905
         For@14774..14777 "for"
-        Ident@14777..14778 "i"
+        Ident@14777..14778
+          Ident@14777..14778 "i"
         Assign@14778..14779 "="
         LiteralExpr@14779..14780
           Int@14779..14780 "1"
@@ -9599,11 +9896,14 @@ Root@0..16908
         Ident@15025..15033 "Function"
     FuncArgs@15033..15043
       LParen@15033..15034 "("
-      Ident@15034..15036 "fs"
+      Ident@15034..15036
+        Ident@15034..15036 "fs"
       Comma@15036..15037 ","
-      Ident@15037..15040 "ast"
+      Ident@15037..15040
+        Ident@15037..15040 "ast"
       Comma@15040..15041 ","
-      Ident@15041..15042 "v"
+      Ident@15041..15042
+        Ident@15041..15042 "v"
       RParen@15042..15043 ")"
     StmtList@15043..15320
       IfStmt@15043..15098
@@ -9617,12 +9917,13 @@ Root@0..16908
         Then@15057..15061 "then"
         StmtList@15061..15095
           AssignStmt@15061..15095
-            BinOp@15061..15072
-              Ident@15061..15063
-                Ident@15061..15063 "fs"
-              Dot@15063..15064 "."
-              Ident@15064..15072
-                Ident@15064..15072 "lastline"
+            AssignList@15061..15072
+              BinOp@15061..15072
+                Ident@15061..15063
+                  Ident@15061..15063 "fs"
+                Dot@15063..15064 "."
+                Ident@15064..15072
+                  Ident@15064..15072 "lastline"
             Assign@15072..15073 "="
             BinOp@15073..15095
               Ident@15073..15076
@@ -9663,27 +9964,28 @@ Root@0..16908
         Then@15137..15141 "then"
         StmtList@15141..15233
           AssignStmt@15141..15233
-            BinOp@15141..15161
-              BinOp@15141..15149
-                Ident@15141..15147
-                  Ident@15141..15147 "new_fs"
-                Dot@15147..15148 "."
-                Ident@15148..15149
-                  Ident@15148..15149 "f"
-              Dot@15149..15150 "."
-              Ident@15150..15161
-                Ident@15150..15161 "lineDefined"
-            Comma@15161..15162 ","
-            BinOp@15162..15186
-              BinOp@15162..15170
-                Ident@15162..15168
-                  Ident@15162..15168 "new_fs"
-                Dot@15168..15169 "."
-                Ident@15169..15170
-                  Ident@15169..15170 "f"
-              Dot@15170..15171 "."
-              Ident@15171..15186
-                Ident@15171..15186 "lastLineDefined"
+            AssignList@15141..15186
+              BinOp@15141..15161
+                BinOp@15141..15149
+                  Ident@15141..15147
+                    Ident@15141..15147 "new_fs"
+                  Dot@15147..15148 "."
+                  Ident@15148..15149
+                    Ident@15148..15149 "f"
+                Dot@15149..15150 "."
+                Ident@15150..15161
+                  Ident@15150..15161 "lineDefined"
+              Comma@15161..15162 ","
+              BinOp@15162..15186
+                BinOp@15162..15170
+                  Ident@15162..15168
+                    Ident@15162..15168 "new_fs"
+                  Dot@15168..15169 "."
+                  Ident@15169..15170
+                    Ident@15169..15170 "f"
+                Dot@15170..15171 "."
+                Ident@15171..15186
+                  Ident@15171..15186 "lastLineDefined"
             Assign@15186..15187 "="
             ExprList@15187..15233
               BinOp@15187..15210
@@ -9781,11 +10083,14 @@ Root@0..16908
         Ident@15336..15338 "Op"
     FuncArgs@15338..15348
       LParen@15338..15339 "("
-      Ident@15339..15341 "fs"
+      Ident@15339..15341
+        Ident@15339..15341 "fs"
       Comma@15341..15342 ","
-      Ident@15342..15345 "ast"
+      Ident@15342..15345
+        Ident@15342..15345 "ast"
       Comma@15345..15346 ","
-      Ident@15346..15347 "v"
+      Ident@15346..15347
+        Ident@15346..15347 "v"
       RParen@15347..15348 ")"
     StmtList@15348..15618
       IfStmt@15348..15403
@@ -9799,12 +10104,13 @@ Root@0..16908
         Then@15362..15366 "then"
         StmtList@15366..15400
           AssignStmt@15366..15400
-            BinOp@15366..15377
-              Ident@15366..15368
-                Ident@15366..15368 "fs"
-              Dot@15368..15369 "."
-              Ident@15369..15377
-                Ident@15369..15377 "lastline"
+            AssignList@15366..15377
+              BinOp@15366..15377
+                Ident@15366..15368
+                  Ident@15366..15368 "fs"
+                Dot@15368..15369 "."
+                Ident@15369..15377
+                  Ident@15369..15377 "lastline"
             Assign@15377..15378 "="
             BinOp@15378..15400
               Ident@15378..15381
@@ -10015,11 +10321,14 @@ Root@0..16908
         Ident@15634..15638 "Call"
     FuncArgs@15638..15648
       LParen@15638..15639 "("
-      Ident@15639..15641 "fs"
+      Ident@15639..15641
+        Ident@15639..15641 "fs"
       Comma@15641..15642 ","
-      Ident@15642..15645 "ast"
+      Ident@15642..15645
+        Ident@15642..15645 "ast"
       Comma@15645..15646 ","
-      Ident@15646..15647 "v"
+      Ident@15646..15647
+        Ident@15646..15647 "v"
       RParen@15647..15648 ")"
     StmtList@15648..15712
       FuncCall@15648..15670
@@ -10088,11 +10397,14 @@ Root@0..16908
         Ident@15728..15734 "Invoke"
     FuncArgs@15734..15744
       LParen@15734..15735 "("
-      Ident@15735..15737 "fs"
+      Ident@15735..15737
+        Ident@15735..15737 "fs"
       Comma@15737..15738 ","
-      Ident@15738..15741 "ast"
+      Ident@15738..15741
+        Ident@15738..15741 "ast"
       Comma@15741..15742 ","
-      Ident@15742..15743 "v"
+      Ident@15742..15743
+        Ident@15742..15743 "v"
       RParen@15743..15744 ")"
     StmtList@15744..15869
       FuncCall@15744..15766
@@ -10211,11 +10523,14 @@ Root@0..16908
         Ident@15885..15890 "Index"
     FuncArgs@15890..15900
       LParen@15890..15891 "("
-      Ident@15891..15893 "fs"
+      Ident@15891..15893
+        Ident@15891..15893 "fs"
       Comma@15893..15894 ","
-      Ident@15894..15897 "ast"
+      Ident@15894..15897
+        Ident@15894..15897 "ast"
       Comma@15897..15898 ","
-      Ident@15898..15899 "v"
+      Ident@15898..15899
+        Ident@15898..15899 "v"
       RParen@15899..15900 ")"
     StmtList@15900..16167
       IfStmt@15900..16000
@@ -10270,12 +10585,13 @@ Root@0..16908
         Then@16014..16018 "then"
         StmtList@16018..16052
           AssignStmt@16018..16052
-            BinOp@16018..16029
-              Ident@16018..16020
-                Ident@16018..16020 "fs"
-              Dot@16020..16021 "."
-              Ident@16021..16029
-                Ident@16021..16029 "lastline"
+            AssignList@16018..16029
+              BinOp@16018..16029
+                Ident@16018..16020
+                  Ident@16018..16020 "fs"
+                Dot@16020..16021 "."
+                Ident@16021..16029
+                  Ident@16021..16029 "lastline"
             Assign@16029..16030 "="
             BinOp@16030..16052
               Ident@16030..16033
@@ -10405,11 +10721,14 @@ Root@0..16908
         Ident@16183..16185 "Id"
     FuncArgs@16185..16195
       LParen@16185..16186 "("
-      Ident@16186..16188 "fs"
+      Ident@16186..16188
+        Ident@16186..16188 "fs"
       Comma@16188..16189 ","
-      Ident@16189..16192 "ast"
+      Ident@16189..16192
+        Ident@16189..16192 "ast"
       Comma@16192..16193 ","
-      Ident@16193..16194 "v"
+      Ident@16193..16194
+        Ident@16193..16194 "v"
       RParen@16194..16195 ")"
     StmtList@16195..16238
       FuncCall@16195..16216
@@ -10458,11 +10777,14 @@ Root@0..16908
         Ident@16254..16258 "Stat"
     FuncArgs@16258..16268
       LParen@16258..16259 "("
-      Ident@16259..16261 "fs"
+      Ident@16259..16261
+        Ident@16259..16261 "fs"
       Comma@16261..16262 ","
-      Ident@16262..16265 "ast"
+      Ident@16262..16265
+        Ident@16262..16265 "ast"
       Comma@16265..16266 ","
-      Ident@16266..16267 "v"
+      Ident@16266..16267
+        Ident@16266..16267 "v"
       RParen@16267..16268 ")"
     StmtList@16268..16667
       DeclStmt@16268..16296
@@ -10544,19 +10866,21 @@ Root@0..16908
                       Break@16398..16403 "break"
                   End@16403..16406 "end"
                 AssignStmt@16406..16422
-                  Index@16406..16420
-                    Ident@16406..16417
-                      Ident@16406..16417 "save_actvar"
-                    LBracket@16417..16418 "["
-                    Ident@16418..16419
-                      Ident@16418..16419 "i"
-                    RBracket@16419..16420 "]"
+                  AssignList@16406..16420
+                    Index@16406..16420
+                      Ident@16406..16417
+                        Ident@16406..16417 "save_actvar"
+                      LBracket@16417..16418 "["
+                      Ident@16418..16419
+                        Ident@16418..16419 "i"
+                      RBracket@16419..16420 "]"
                   Assign@16420..16421 "="
                   Ident@16421..16422
                     Ident@16421..16422 "v"
                 AssignStmt@16422..16427
-                  Ident@16422..16423
-                    Ident@16422..16423 "i"
+                  AssignList@16422..16423
+                    Ident@16422..16423
+                      Ident@16422..16423 "i"
                   Assign@16423..16424 "="
                   BinOp@16424..16427
                     Ident@16424..16425
@@ -10567,12 +10891,13 @@ Root@0..16908
               End@16427..16430 "end"
         End@16430..16433 "end"
       AssignStmt@16433..16454
-        BinOp@16433..16443
-          Ident@16433..16435
-            Ident@16433..16435 "fs"
-          Dot@16435..16436 "."
-          Ident@16436..16443
-            Ident@16436..16443 "nactvar"
+        AssignList@16433..16443
+          BinOp@16433..16443
+            Ident@16433..16435
+              Ident@16433..16435 "fs"
+            Dot@16435..16436 "."
+            Ident@16436..16443
+              Ident@16436..16443 "nactvar"
         Assign@16443..16444 "="
         BinOp@16444..16454
           Ident@16444..16446
@@ -10676,12 +11001,13 @@ Root@0..16908
             Ident@16569..16577 "dest_reg"
           RParen@16577..16578 ")"
       AssignStmt@16578..16599
-        BinOp@16578..16588
-          Ident@16578..16580
-            Ident@16578..16580 "fs"
-          Dot@16580..16581 "."
-          Ident@16581..16588
-            Ident@16581..16588 "freereg"
+        AssignList@16578..16588
+          BinOp@16578..16588
+            Ident@16578..16580
+              Ident@16578..16580 "fs"
+            Dot@16580..16581 "."
+            Ident@16581..16588
+              Ident@16581..16588 "freereg"
         Assign@16588..16589 "="
         BinOp@16589..16599
           Ident@16589..16597
@@ -10690,20 +11016,24 @@ Root@0..16908
           LiteralExpr@16598..16599
             Int@16598..16599 "1"
       AssignStmt@16599..16622
-        BinOp@16599..16609
-          Ident@16599..16601
-            Ident@16599..16601 "fs"
-          Dot@16601..16602 "."
-          Ident@16602..16609
-            Ident@16602..16609 "nactvar"
+        AssignList@16599..16609
+          BinOp@16599..16609
+            Ident@16599..16601
+              Ident@16599..16601 "fs"
+            Dot@16601..16602 "."
+            Ident@16602..16609
+              Ident@16602..16609 "nactvar"
         Assign@16609..16610 "="
         Ident@16610..16622
           Ident@16610..16622 "save_nactvar"
       ForGenStmt@16622..16667
         For@16622..16625 "for"
-        Ident@16625..16626 "i"
-        Comma@16626..16627 ","
-        Ident@16627..16628 "j"
+        AssignList@16625..16628
+          Ident@16625..16626
+            Ident@16625..16626 "i"
+          Comma@16626..16627 ","
+          Ident@16627..16628
+            Ident@16627..16628 "j"
         In@16628..16630 "in"
         FuncCall@16630..16648
           Ident@16630..16635
@@ -10717,17 +11047,18 @@ Root@0..16908
           Do@16648..16650 "do"
           StmtList@16650..16664
             AssignStmt@16650..16664
-              Index@16650..16662
-                BinOp@16650..16659
-                  Ident@16650..16652
-                    Ident@16650..16652 "fs"
-                  Dot@16652..16653 "."
-                  Ident@16653..16659
-                    Ident@16653..16659 "actvar"
-                LBracket@16659..16660 "["
-                Ident@16660..16661
-                  Ident@16660..16661 "i"
-                RBracket@16661..16662 "]"
+              AssignList@16650..16662
+                Index@16650..16662
+                  BinOp@16650..16659
+                    Ident@16650..16652
+                      Ident@16650..16652 "fs"
+                    Dot@16652..16653 "."
+                    Ident@16653..16659
+                      Ident@16653..16659 "actvar"
+                  LBracket@16659..16660 "["
+                  Ident@16660..16661
+                    Ident@16660..16661 "i"
+                  RBracket@16661..16662 "]"
               Assign@16662..16663 "="
               Ident@16663..16664
                 Ident@16663..16664 "j"
@@ -10743,9 +11074,11 @@ Root@0..16908
         Ident@16680..16692 "ast_to_proto"
     FuncArgs@16692..16704
       LParen@16692..16693 "("
-      Ident@16693..16696 "ast"
+      Ident@16693..16696
+        Ident@16693..16696 "ast"
       Comma@16696..16697 ","
-      Ident@16697..16703 "source"
+      Ident@16697..16703
+        Ident@16697..16703 "source"
       RParen@16703..16704 ")"
     StmtList@16704..16898
       DeclStmt@16704..16726
@@ -10762,16 +11095,17 @@ Root@0..16908
               Nil@16722..16725 "nil"
             RParen@16725..16726 ")"
       AssignStmt@16726..16758
-        BinOp@16726..16740
-          BinOp@16726..16730
-            Ident@16726..16728
-              Ident@16726..16728 "fs"
-            Dot@16728..16729 "."
-            Ident@16729..16730
-              Ident@16729..16730 "f"
-          Dot@16730..16731 "."
-          Ident@16731..16740
-            Ident@16731..16740 "is_vararg"
+        AssignList@16726..16740
+          BinOp@16726..16740
+            BinOp@16726..16730
+              Ident@16726..16728
+                Ident@16726..16728 "fs"
+              Dot@16728..16729 "."
+              Ident@16729..16730
+                Ident@16729..16730 "f"
+            Dot@16730..16731 "."
+            Ident@16731..16740
+              Ident@16731..16740 "is_vararg"
         Assign@16740..16741 "="
         BinOp@16741..16758
           Ident@16741..16742
@@ -10857,16 +11191,17 @@ Root@0..16908
         Then@16856..16860 "then"
         StmtList@16860..16878
           AssignStmt@16860..16878
-            BinOp@16860..16871
-              BinOp@16860..16864
-                Ident@16860..16862
-                  Ident@16860..16862 "fs"
-                Dot@16862..16863 "."
-                Ident@16863..16864
-                  Ident@16863..16864 "f"
-              Dot@16864..16865 "."
-              Ident@16865..16871
-                Ident@16865..16871 "source"
+            AssignList@16860..16871
+              BinOp@16860..16871
+                BinOp@16860..16864
+                  Ident@16860..16862
+                    Ident@16860..16862 "fs"
+                  Dot@16862..16863 "."
+                  Ident@16863..16864
+                    Ident@16863..16864 "f"
+                Dot@16864..16865 "."
+                Ident@16865..16871
+                  Ident@16865..16871 "source"
             Assign@16871..16872 "="
             Ident@16872..16878
               Ident@16872..16878 "source"
