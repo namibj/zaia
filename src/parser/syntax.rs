@@ -204,9 +204,52 @@ impl BinaryOperator {
 
 ast_node!(FuncCall, T![func_call]);
 
+impl FuncCall {
+    pub fn target(&self) -> Option<Expr> {
+        Expr::cast(self.0.first_child()?.clone())
+    }
+
+    pub fn args(&self) -> Option<impl Iterator<Item = Expr> + '_> {
+        Some(
+            self.0
+                .last_child()?
+                .children()
+                .cloned()
+                .filter_map(Expr::cast),
+        )
+    }
+}
+
 ast_node!(Func, T![function]);
 
+ast_node!(TableArray, T![table_array_elem]);
+ast_node!(TableMap, T![table_map_elem]);
+ast_node!(TableGeneric, T![table_generic_elem]);
+
 ast_node!(Table, T![table_expr]);
+
+impl Table {
+    pub fn entries(&self) -> impl Iterator<Item = TableEntry> + '_ {
+        self.0.children().cloned().filter_map(TableEntry::cast)
+    }
+}
+
+pub enum TableEntry {
+    Array(TableArray),
+    Map(TableMap),
+    Generic(TableGeneric),
+}
+
+impl TableEntry {
+    fn cast(node: SyntaxNode) -> Option<Self> {
+        Some(match node.kind() {
+            T![table_array_elem] => Self::Array(TableArray::cast(node)?),
+            T![table_map_elem] => Self::Map(TableMap::cast(node)?),
+            T![table_generic_elem] => Self::Generic(TableGeneric::cast(node)?),
+            _ => panic!(),
+        })
+    }
+}
 
 ast_node!(Break, T![break_stmt]);
 
@@ -219,7 +262,7 @@ impl Return {
                 .first_child()?
                 .children()
                 .cloned()
-                .flat_map(Expr::cast),
+                .filter_map(Expr::cast),
         )
     }
 }
@@ -254,11 +297,12 @@ impl If {
     pub fn stmts(&self) -> Option<impl Iterator<Item = Stmt> + '_> {
         Some(
             self.0
-                .first_child()?
-                .next_sibling()?
+                .children()
+                .skip(1)
+                .next()?
                 .children()
                 .cloned()
-                .flat_map(Stmt::cast),
+                .filter_map(Stmt::cast),
         )
     }
 
@@ -279,7 +323,7 @@ impl ElseChain {
                     .first_child()?
                     .children()
                     .cloned()
-                    .flat_map(Stmt::cast),
+                    .filter_map(Stmt::cast),
             )
         } else {
             None
