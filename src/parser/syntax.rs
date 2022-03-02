@@ -1,5 +1,5 @@
 use crate::{
-    parser::machinery::{cstree, kind::SyntaxKind},
+    parser::machinery::{cstree, kind::SyntaxKind, cstree::interning::TokenInterner},
     T,
 };
 
@@ -104,8 +104,6 @@ impl SimpleExpr {
 pub enum Expr {}
 
 impl Expr {
-    const TOKENS: &'static [SyntaxKind] = &[];
-
     fn cast(node: SyntaxNode) -> Option<Self> {
         match node.kind() {
             _ => unreachable!(),
@@ -121,7 +119,23 @@ ast_node!(LiteralExpr, T![literal_expr]);
 
 ast_node!(Assign, T![assign_stmt]);
 
+impl Assign {
+    pub fn targets(&self) -> Option<impl Iterator<Item = SimpleExpr> + '_> {
+        Some(self.0.first_child()?.children().cloned().filter_map(SimpleExpr::cast))
+    }
+
+    pub fn values(&self) -> Option<impl Iterator<Item = Expr> + '_> {
+        Some(self.0.last_child()?.children().cloned().filter_map(Expr::cast))
+    }
+}
+
 ast_node!(Ident, T![ident]);
+
+impl Ident {
+    pub fn name<'a>(&self, interner: &'a TokenInterner) -> Option<&'a str> {
+        Some(self.0.first_token()?.resolve_text(interner))
+    }
+}
 
 ast_node!(PrefixOp, T![prefix_op]);
 
