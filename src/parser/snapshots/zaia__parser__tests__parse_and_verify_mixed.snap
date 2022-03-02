@@ -1,6 +1,6 @@
 ---
 source: src/parser/mod.rs
-assertion_line: 101
+assertion_line: 99
 expression: syntax_tree_debug
 
 ---
@@ -297,7 +297,7 @@ Root@0..16908
             RAngle@587..588 ">"
             Ident@588..595
               Ident@588..595 "tolevel"
-          BlockStmt@595..692
+          DoStmt@595..692
             Do@595..597 "do"
             StmtList@597..689
               AssignStmt@597..620
@@ -507,7 +507,7 @@ Root@0..16908
             Minus@955..956 "-"
             LiteralExpr@956..957
               Int@956..957 "1"
-          BlockStmt@957..1002
+          DoStmt@957..1002
             Do@957..959 "do"
             StmtList@959..999
               AssignStmt@959..999
@@ -580,7 +580,7 @@ Root@0..16908
           While@1081..1086 "while"
           Ident@1086..1088
             Ident@1086..1088 "lh"
-          BlockStmt@1088..1236
+          DoStmt@1088..1236
             Do@1088..1090 "do"
             StmtList@1090..1233
               IfStmt@1090..1223
@@ -897,7 +897,7 @@ Root@0..16908
             Minus@1527..1528 "-"
             LiteralExpr@1528..1529
               Int@1528..1529 "1"
-          BlockStmt@1529..1606
+          DoStmt@1529..1606
             Do@1529..1531 "do"
             StmtList@1531..1603
               DeclStmt@1531..1558
@@ -1735,7 +1735,7 @@ Root@0..16908
             Minus@2729..2730 "-"
             LiteralExpr@2730..2731
               Int@2730..2731 "1"
-          BlockStmt@2731..2844
+          DoStmt@2731..2844
             Do@2731..2733 "do"
             StmtList@2733..2841
               DeclStmt@2733..2797
@@ -1855,7 +1855,7 @@ Root@0..16908
             Minus@2907..2908 "-"
             LiteralExpr@2908..2909
               Int@2908..2909 "1"
-          BlockStmt@2909..3011
+          DoStmt@2909..3011
             Do@2909..2911 "do"
             StmtList@2911..3008
               IfStmt@2911..3008
@@ -2008,7 +2008,8 @@ Root@0..16908
           TableExpr@3090..3109
             LCurly@3090..3091 "{"
             TableMapElem@3091..3096
-              Ident@3091..3092 "k"
+              Ident@3091..3092
+                Ident@3091..3092 "k"
               Assign@3092..3093 "="
               BinOp@3093..3096
                 Ident@3093..3094
@@ -2018,7 +2019,8 @@ Root@0..16908
                   Ident@3095..3096 "k"
             Semicolon@3096..3097 ";"
             TableMapElem@3097..3108
-              Ident@3097..3101 "info"
+              Ident@3097..3101
+                Ident@3097..3101 "info"
               Assign@3101..3102 "="
               BinOp@3102..3108
                 Ident@3102..3103
@@ -2101,7 +2103,7 @@ Root@0..16908
               RAngle@3218..3219 ">"
               Ident@3219..3224
                 Ident@3219..3224 "level"
-          BlockStmt@3224..3243
+          DoStmt@3224..3243
             Do@3224..3226 "do"
             StmtList@3226..3240
               AssignStmt@3226..3240
@@ -2495,7 +2497,7 @@ Root@0..16908
             Hash@3892..3893 "#"
             Ident@3893..3900
               Ident@3893..3900 "astlist"
-          BlockStmt@3900..3953
+          DoStmt@3900..3953
             Do@3900..3902 "do"
             StmtList@3902..3950
               FuncCall@3902..3924
@@ -2928,7 +2930,7 @@ Root@0..16908
             GEq@4573..4575 ">="
             LiteralExpr@4575..4577
               Int@4575..4577 "16"
-          BlockStmt@4577..4608
+          DoStmt@4577..4608
             Do@4577..4579 "do"
             StmtList@4579..4605
               AssignStmt@4579..4600
@@ -3441,7 +3443,7 @@ Root@0..16908
           Comma@5437..5438 ","
           Ident@5438..5445
             Ident@5438..5445 "nparams"
-          BlockStmt@5445..5552
+          DoStmt@5445..5552
             Do@5445..5447 "do"
             StmtList@5447..5549
               FuncCall@5447..5512
@@ -4016,7 +4018,7 @@ Root@0..16908
             Hash@6399..6400 "#"
             Ident@6400..6403
               Ident@6400..6403 "ast"
-          BlockStmt@6403..6450
+          DoStmt@6403..6450
             Do@6403..6405 "do"
             StmtList@6405..6447
               FuncCall@6405..6425
@@ -4111,7 +4113,7 @@ Root@0..16908
             Hash@6533..6534 "#"
             Ident@6534..6537
               Ident@6534..6537 "ast"
-          BlockStmt@6537..6583
+          DoStmt@6537..6583
             Do@6537..6539 "do"
             StmtList@6539..6580
               FuncCall@6539..6559
@@ -5281,7 +5283,7 @@ Root@0..16908
               Dot@8314..8315 "."
               Ident@8315..8326
                 Ident@8315..8326 "isbreakable"
-        BlockStmt@8326..8372
+        DoStmt@8326..8372
           Do@8326..8328 "do"
           StmtList@8328..8369
             IfStmt@8328..8355
@@ -5763,7 +5765,7 @@ Root@0..16908
           Hash@9044..9045 "#"
           Ident@9045..9050
             Ident@9045..9050 "names"
-        BlockStmt@9050..9087
+        DoStmt@9050..9087
           Do@9050..9052 "do"
           StmtList@9052..9084
             FuncCall@9052..9084
@@ -6294,7 +6296,7 @@ Root@0..16908
         Comma@9877..9878 ","
         LiteralExpr@9878..9879
           Int@9878..9879 "2"
-        BlockStmt@9879..10002
+        DoStmt@9879..10002
           Do@9879..9881 "do"
           StmtList@9881..9999
             AssignStmt@9881..9932
@@ -6644,7 +6646,7 @@ Root@0..16908
           Hash@10429..10430 "#"
           Ident@10430..10434
             Ident@10430..10434 "vars"
-        BlockStmt@10434..10470
+        DoStmt@10434..10470
           Do@10434..10436 "do"
           StmtList@10436..10467
             FuncCall@10436..10467
@@ -7505,25 +7507,29 @@ Root@0..16908
               TableExpr@11749..11789
                 LCurly@11749..11750 "{"
                 TableMapElem@11750..11758
-                  Ident@11750..11756 "VLOCAL"
+                  Ident@11750..11756
+                    Ident@11750..11756 "VLOCAL"
                   Assign@11756..11757 "="
                   LiteralExpr@11757..11758
                     Int@11757..11758 "1"
                 Comma@11758..11759 ","
                 TableMapElem@11759..11767
-                  Ident@11759..11765 "VUPVAL"
+                  Ident@11759..11765
+                    Ident@11759..11765 "VUPVAL"
                   Assign@11765..11766 "="
                   LiteralExpr@11766..11767
                     Int@11766..11767 "1"
                 Comma@11767..11768 ","
                 TableMapElem@11768..11777
-                  Ident@11768..11775 "VGLOBAL"
+                  Ident@11768..11775
+                    Ident@11768..11775 "VGLOBAL"
                   Assign@11775..11776 "="
                   LiteralExpr@11776..11777
                     Int@11776..11777 "1"
                 Comma@11777..11778 ","
                 TableMapElem@11778..11788
-                  Ident@11778..11786 "VINDEXED"
+                  Ident@11778..11786
+                    Ident@11778..11786 "VINDEXED"
                   Assign@11786..11787 "="
                   LiteralExpr@11787..11788
                     Int@11787..11788 "1"
@@ -7592,14 +7598,16 @@ Root@0..16908
                   TableExpr@11888..11903
                     LCurly@11888..11889 "{"
                     TableMapElem@11889..11893
-                      Ident@11889..11890 "v"
+                      Ident@11889..11890
+                        Ident@11889..11890 "v"
                       Assign@11890..11891 "="
                       TableExpr@11891..11893
                         LCurly@11891..11892 "{"
                         RCurly@11892..11893 "}"
                     Comma@11893..11894 ","
                     TableMapElem@11894..11902
-                      Ident@11894..11898 "prev"
+                      Ident@11894..11898
+                        Ident@11894..11898 "prev"
                       Assign@11898..11899 "="
                       Ident@11899..11902
                         Ident@11899..11902 "lhs"
@@ -7888,14 +7896,16 @@ Root@0..16908
         TableExpr@12322..12337
           LCurly@12322..12323 "{"
           TableMapElem@12323..12327
-            Ident@12323..12324 "v"
+            Ident@12323..12324
+              Ident@12323..12324 "v"
             Assign@12324..12325 "="
             TableExpr@12325..12327
               LCurly@12325..12326 "{"
               RCurly@12326..12327 "}"
           Comma@12327..12328 ","
           TableMapElem@12328..12336
-            Ident@12328..12332 "prev"
+            Ident@12328..12332
+              Ident@12328..12332 "prev"
             Assign@12332..12333 "="
             LiteralExpr@12333..12336
               Nil@12333..12336 "nil"
@@ -8192,7 +8202,8 @@ Root@0..16908
               TableExpr@12791..12820
                 LCurly@12791..12792 "{"
                 TableMapElem@12792..12800
-                  Ident@12792..12794 "pc"
+                  Ident@12792..12794
+                    Ident@12792..12794 "pc"
                   Assign@12794..12795 "="
                   BinOp@12795..12800
                     Ident@12795..12797
@@ -8202,7 +8213,8 @@ Root@0..16908
                       Ident@12798..12800 "pc"
                 Semicolon@12800..12801 ";"
                 TableMapElem@12801..12819
-                  Ident@12801..12808 "nactvar"
+                  Ident@12801..12808
+                    Ident@12801..12808 "nactvar"
                   Assign@12808..12809 "="
                   BinOp@12809..12819
                     Ident@12809..12811
@@ -8248,7 +8260,7 @@ Root@0..16908
                 Ident@12892..12897
                   Ident@12892..12897 "gotos"
                 RParen@12897..12898 ")"
-            BlockStmt@12898..13128
+            DoStmt@12898..13128
               Do@12898..12900 "do"
               StmtList@12900..13125
                 DeclStmt@12900..12935
@@ -8841,19 +8853,22 @@ Root@0..16908
                         TableExpr@13928..13967
                           LCurly@13928..13929 "{"
                           TableMapElem@13929..13940
-                            Ident@13929..13937 "line_max"
+                            Ident@13929..13937
+                              Ident@13929..13937 "line_max"
                             Assign@13937..13938 "="
                             LiteralExpr@13938..13940
                               Int@13938..13940 "80"
                           Comma@13940..13941 ","
                           TableMapElem@13941..13952
-                            Ident@13941..13950 "hide_hash"
+                            Ident@13941..13950
+                              Ident@13941..13950 "hide_hash"
                             Assign@13950..13951 "="
                             LiteralExpr@13951..13952
                               Int@13951..13952 "1"
                           Comma@13952..13953 ","
                           TableMapElem@13953..13966
-                            Ident@13953..13964 "metalua_tag"
+                            Ident@13953..13964
+                              Ident@13953..13964 "metalua_tag"
                             Assign@13964..13965 "="
                             LiteralExpr@13965..13966
                               Int@13965..13966 "1"
@@ -9301,32 +9316,37 @@ Root@0..16908
         TableExpr@14671..14701
           LCurly@14671..14672 "{"
           TableMapElem@14672..14676
-            Ident@14672..14673 "v"
+            Ident@14672..14673
+              Ident@14672..14673 "v"
             Assign@14673..14674 "="
             TableExpr@14674..14676
               LCurly@14674..14675 "{"
               RCurly@14675..14676 "}"
           Comma@14676..14677 ","
           TableMapElem@14677..14681
-            Ident@14677..14679 "na"
+            Ident@14677..14679
+              Ident@14677..14679 "na"
             Assign@14679..14680 "="
             LiteralExpr@14680..14681
               Int@14680..14681 "0"
           Comma@14681..14682 ","
           TableMapElem@14682..14686
-            Ident@14682..14684 "nh"
+            Ident@14682..14684
+              Ident@14682..14684 "nh"
             Assign@14684..14685 "="
             LiteralExpr@14685..14686
               Int@14685..14686 "0"
           Comma@14686..14687 ","
           TableMapElem@14687..14696
-            Ident@14687..14694 "tostore"
+            Ident@14687..14694
+              Ident@14687..14694 "tostore"
             Assign@14694..14695 "="
             LiteralExpr@14695..14696
               Int@14695..14696 "0"
           Comma@14696..14697 ","
           TableMapElem@14697..14700
-            Ident@14697..14698 "t"
+            Ident@14697..14698
+              Ident@14697..14698 "t"
             Assign@14698..14699 "="
             Ident@14699..14700
               Ident@14699..14700 "v"
@@ -9389,7 +9409,7 @@ Root@0..16908
           Hash@14781..14782 "#"
           Ident@14782..14785
             Ident@14782..14785 "ast"
-        BlockStmt@14785..14905
+        DoStmt@14785..14905
           Do@14785..14787 "do"
           StmtList@14787..14902
             FuncCall@14787..14824
@@ -10475,7 +10495,7 @@ Root@0..16908
         TableExpr@16337..16339
           LCurly@16337..16338 "{"
           RCurly@16338..16339 "}"
-      BlockStmt@16339..16433
+      DoStmt@16339..16433
         Do@16339..16341 "do"
         StmtList@16341..16430
           DeclStmt@16341..16358
@@ -10493,7 +10513,7 @@ Root@0..16908
             While@16358..16363 "while"
             LiteralExpr@16363..16367
               True@16363..16367 "true"
-            BlockStmt@16367..16430
+            DoStmt@16367..16430
               Do@16367..16369 "do"
               StmtList@16369..16427
                 DeclStmt@16369..16388
@@ -10693,7 +10713,7 @@ Root@0..16908
             Ident@16636..16647
               Ident@16636..16647 "save_actvar"
             RParen@16647..16648 ")"
-        BlockStmt@16648..16667
+        DoStmt@16648..16667
           Do@16648..16650 "do"
           StmtList@16650..16664
             AssignStmt@16650..16664

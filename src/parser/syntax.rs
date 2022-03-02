@@ -32,7 +32,6 @@ pub type SyntaxElement = cstree::NodeOrToken<SyntaxNode, SyntaxToken>;
 macro_rules! ast_node {
     ($name:ident, $kind:expr) => {
         #[derive(PartialEq, Eq, Hash)]
-        #[repr(transparent)]
         pub struct $name(SyntaxNode);
         impl $name {
             #[allow(unused)]
@@ -223,8 +222,36 @@ impl FuncCall {
 ast_node!(Func, T![function]);
 
 ast_node!(TableArray, T![table_array_elem]);
+
+impl TableArray {
+    pub fn value(&self) -> Option<Expr> {
+        Expr::cast(self.0.first_child()?.clone())
+    }
+}
+
 ast_node!(TableMap, T![table_map_elem]);
+
+impl TableMap {
+    pub fn field(&self) -> Option<Ident> {
+       Ident::cast(self.0.first_child()?.clone())
+    }
+
+    pub fn value(&self) -> Option<Expr> {
+        Expr::cast(self.0.last_child()?.clone())
+    }
+}
+
 ast_node!(TableGeneric, T![table_generic_elem]);
+
+impl TableGeneric {
+    pub fn index(&self) -> Option<Expr> {
+        Expr::cast(self.0.first_child()?.clone())
+    }
+
+    pub fn value(&self) -> Option<Expr> {
+        Expr::cast(self.0.last_child()?.clone())
+    }
+}
 
 ast_node!(Table, T![table_expr]);
 

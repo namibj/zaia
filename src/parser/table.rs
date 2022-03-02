@@ -49,7 +49,7 @@ impl<'cache, 'source> Parser<'cache, 'source> {
 
     fn r_table_elem_map(&mut self) -> Option<CompletedMarker> {
         let marker = self.start();
-        self.expect(T![ident]);
+        self.r_ident();
         self.expect(T![=]);
         self.r_expr();
         Some(marker.complete(self, T![table_map_elem]))

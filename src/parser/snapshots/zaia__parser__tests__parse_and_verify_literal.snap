@@ -1,6 +1,6 @@
 ---
 source: src/parser/mod.rs
-assertion_line: 99
+assertion_line: 97
 expression: syntax_tree_debug
 
 ---
@@ -105,13 +105,15 @@ Root@0..174
     TableExpr@113..131
       LCurly@113..114 "{"
       TableMapElem@114..121
-        Ident@114..118 "anna"
+        Ident@114..118
+          Ident@114..118 "anna"
         Assign@118..119 "="
         LiteralExpr@119..121
           Int@119..121 "15"
       Comma@121..122 ","
       TableMapElem@122..130
-        Ident@122..127 "james"
+        Ident@122..127
+          Ident@122..127 "james"
         Assign@127..128 "="
         LiteralExpr@128..130
           Int@128..130 "20"
