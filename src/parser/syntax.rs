@@ -115,7 +115,28 @@ ast_node!(Decl, T![decl_stmt]);
 
 ast_node!(DeclTarget, T![decl_target]);
 
+impl DeclTarget {
+    pub fn name() -> Option<Ident> {
+        todo!()
+    }
+    
+    pub fn modifier() -> Option<DeclModifier> {
+        todo!()
+    }
+}
+
+pub enum DeclModifier {
+    Const,
+    Close,
+}
+
 ast_node!(LiteralExpr, T![literal_expr]);
+
+impl LiteralExpr {
+    pub fn value(&self) {
+        todo!()
+    }
+}
 
 ast_node!(Assign, T![assign_stmt]);
 
