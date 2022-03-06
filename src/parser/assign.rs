@@ -59,7 +59,7 @@ impl<'cache, 'source> Parser<'cache, 'source> {
 
     fn r_decl_target(&mut self) -> Option<CompletedMarker> {
         let marker = self.start();
-        self.expect(T![ident]);
+        self.r_ident();
         self.r_attrib();
         Some(marker.complete(self, T![decl_target]))
     }
