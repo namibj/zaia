@@ -392,9 +392,9 @@ impl Repeat {
 ast_node!(If, T![if_stmt]);
 
 impl If {
-    pub fn cast_else(node: SyntaxNode) -> Option<Self> {
+    pub fn cast_else(node: &SyntaxNode) -> Option<Self> {
         if node.kind() == T![elseif] {
-            Some(Self(node))
+            Some(Self(node.clone()))
         } else {
             None
         }
@@ -437,7 +437,7 @@ impl ElseChain {
         let token = self.0.first_token()?;
 
         if token.kind() == T![elseif] {
-            If::cast_else(self.0.first_child()?.clone())
+            If::cast_else(self.0.first_child()?)
         } else {
             None
         }
