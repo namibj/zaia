@@ -58,10 +58,9 @@ impl<'cache, 'source> State<'cache, 'source> {
         self.tokens[self.cursor].1
     }
 
-    pub fn start(&mut self) -> Marker {
+    pub fn start(&mut self, kind: SyntaxKind) -> Marker {
         let pos = self.events.len();
-        self.events.push(Event::tombstone());
-        Marker::new(pos)
+        Marker::new(self, pos, kind)
     }
 
     pub fn events(&mut self) -> &mut Vec<Event> {
@@ -113,14 +112,14 @@ impl<'cache, 'source> State<'cache, 'source> {
     }
 
     pub fn error_eat_until(&mut self, one_of: &[SyntaxKind]) -> Span {
-        let marker = self.start();
+        let marker = self.start(T![invalid]);
         let mut last_span = self.span();
         while !one_of.contains(&self.at()) {
             self.bump();
             last_span = self.span();
         }
 
-        marker.complete(self, T![invalid]);
+        marker.complete(self);
         last_span
     }
 

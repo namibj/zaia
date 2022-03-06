@@ -6,8 +6,8 @@ use crate::T;
 
 impl<'cache, 'source> Parser<'cache, 'source> {
     pub(super) fn r_maybe_assign(&mut self) -> Option<CompletedMarker> {
-        let assign_marker = self.start();
-        let assign_list_marker = self.start();
+        let assign_marker = self.start(T![assign_stmt]);
+        let assign_list_marker = self.start(T![assign_list]);
         let expr_marker = self.r_simple_expr(true);
         if matches!(self.at(), T![=] | T![,]) {
             self.r_assign(assign_marker, assign_list_marker)
@@ -28,14 +28,14 @@ impl<'cache, 'source> Parser<'cache, 'source> {
             self.r_simple_expr(true);
         }
 
-        list_marker.complete(self, T![assign_list]);
+        list_marker.complete(self);
         self.expect(T![=]);
         self.r_expr_list();
-        Some(assign_marker.complete(self, T![assign_stmt]))
+        Some(assign_marker.complete(self))
     }
 
     pub(super) fn r_decl(&mut self) -> Option<CompletedMarker> {
-        let marker = self.start();
+        let marker = self.start(T![decl_stmt]);
         self.expect(T![local]);
 
         if self.at() == T![function] {
@@ -54,14 +54,14 @@ impl<'cache, 'source> Parser<'cache, 'source> {
             }
         }
 
-        Some(marker.complete(self, T![decl_stmt]))
+        Some(marker.complete(self))
     }
 
     fn r_decl_target(&mut self) -> Option<CompletedMarker> {
-        let marker = self.start();
+        let marker = self.start(T![decl_target]);
         self.r_ident();
         self.r_attrib();
-        Some(marker.complete(self, T![decl_target]))
+        Some(marker.complete(self))
     }
 
     fn r_attrib(&mut self) {

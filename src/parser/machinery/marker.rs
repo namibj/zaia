@@ -3,14 +3,28 @@ use crate::T;
 
 pub struct Marker {
     position: usize,
+    kind: SyntaxKind,
 }
 
 impl Marker {
-    pub fn new(position: usize) -> Self {
-        Self { position }
+    pub fn new(state: &mut State, position: usize, kind: SyntaxKind) -> Self {
+        state.events().push(Event::Enter {
+            kind,
+            preceded_by: 0,
+        });
+
+        Self { position, kind }
     }
 
-    pub fn complete(self, state: &mut State, kind: SyntaxKind) -> CompletedMarker {
+    pub fn complete(self, state: &mut State) -> CompletedMarker {
+        state.events().push(Event::Exit);
+        CompletedMarker {
+            position: self.position,
+            kind: self.kind,
+        }
+    }
+
+    pub fn retype(self, state: &mut State, kind: SyntaxKind) -> Self {
         let event_at_pos = &mut state.events()[self.position];
         debug_assert_eq!(*event_at_pos, Event::tombstone());
 
@@ -19,11 +33,7 @@ impl Marker {
             preceded_by: 0,
         };
 
-        state.events().push(Event::Exit);
-        CompletedMarker {
-            position: self.position,
-            kind,
-        }
+        self
     }
 
     pub fn abandon(self, state: &mut State) {
@@ -38,7 +48,6 @@ impl Marker {
             _ => unreachable!(),
         }
 
-        debug_assert_eq!(state.events()[self.position], Event::tombstone());
         if self.position == state.events().len() - 1 {
             state.events().pop();
         }
@@ -52,8 +61,8 @@ pub struct CompletedMarker {
 }
 
 impl CompletedMarker {
-    pub fn precede(self, state: &mut State) -> Marker {
-        let marker = state.start();
+    pub fn precede(self, state: &mut State, kind: SyntaxKind) -> Marker {
+        let marker = state.start(kind);
 
         if let Event::Enter { preceded_by, .. } = &mut state.events()[self.position] {
             *preceded_by = marker.position - self.position;

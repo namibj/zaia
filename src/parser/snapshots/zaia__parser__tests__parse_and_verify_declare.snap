@@ -10,38 +10,47 @@ Root@0..175
       Ident@0..1
         Ident@0..1 "x"
     Assign@1..2 "="
-    LiteralExpr@2..3
-      Int@2..3 "5"
+    ExprList@2..3
+      LiteralExpr@2..3
+        Int@2..3 "5"
   DeclStmt@3..12
     Local@3..8 "local"
     DeclTarget@8..9
-      Ident@8..9 "y"
+      Ident@8..9
+        Ident@8..9 "y"
     Assign@9..10 "="
-    LiteralExpr@10..12
-      Int@10..12 "10"
+    ExprList@10..12
+      LiteralExpr@10..12
+        Int@10..12 "10"
   DeclStmt@12..22
     Local@12..17 "local"
     DeclTarget@17..19
-      Ident@17..19 "aq"
+      Ident@17..19
+        Ident@17..19 "aq"
     Comma@19..20 ","
     DeclTarget@20..22
-      Ident@20..22 "bf"
+      Ident@20..22
+        Ident@20..22 "bf"
   DeclStmt@22..38
     Local@22..27 "local"
     DeclTarget@27..35
-      Ident@27..28 "z"
+      Ident@27..28
+        Ident@27..28 "z"
       Const@28..35 "<const>"
     Assign@35..36 "="
-    LiteralExpr@36..38
-      Int@36..38 "15"
+    ExprList@36..38
+      LiteralExpr@36..38
+        Int@36..38 "15"
   DeclStmt@38..57
     Local@38..43 "local"
     DeclTarget@43..51
-      Ident@43..44 "w"
+      Ident@43..44
+        Ident@43..44 "w"
       Close@44..51 "<close>"
     Assign@51..52 "="
-    LiteralExpr@52..57
-      String@52..57 "\"abs\""
+    ExprList@52..57
+      LiteralExpr@52..57
+        String@52..57 "\"abs\""
   AssignStmt@57..75
     AssignList@57..60
       Ident@57..58
@@ -63,10 +72,12 @@ Root@0..175
   DeclStmt@75..99
     Local@75..80 "local"
     DeclTarget@80..81
-      Ident@80..81 "r"
+      Ident@80..81
+        Ident@80..81 "r"
     Comma@81..82 ","
     DeclTarget@82..83
-      Ident@82..83 "g"
+      Ident@82..83
+        Ident@82..83 "g"
     Assign@83..84 "="
     ExprList@84..99
       FuncCall@84..90
@@ -81,11 +92,13 @@ Root@0..175
   DeclStmt@99..137
     Local@99..104 "local"
     DeclTarget@104..112
-      Ident@104..105 "f"
+      Ident@104..105
+        Ident@104..105 "f"
       Const@105..112 "<const>"
     Comma@112..113 ","
     DeclTarget@113..121
-      Ident@113..114 "v"
+      Ident@113..114
+        Ident@113..114 "v"
       Const@114..121 "<const>"
     Assign@121..122 "="
     ExprList@122..137
@@ -101,11 +114,13 @@ Root@0..175
   DeclStmt@137..175
     Local@137..142 "local"
     DeclTarget@142..150
-      Ident@142..143 "p"
+      Ident@142..143
+        Ident@142..143 "p"
       Close@143..150 "<close>"
     Comma@150..151 ","
     DeclTarget@151..159
-      Ident@151..152 "o"
+      Ident@151..152
+        Ident@151..152 "o"
       Close@152..159 "<close>"
     Assign@159..160 "="
     ExprList@160..175

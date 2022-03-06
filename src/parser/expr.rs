@@ -14,11 +14,9 @@ use crate::{
 
 impl<'cache, 'source> Parser<'cache, 'source> {
     pub(super) fn r_expr_list(&mut self) {
-        let marker = self.start();
-        let mut count = 0;
+        let marker = self.start(T![expr_list]);
 
         while token_is_expr_start(self.at()) {
-            count += 1;
             self.r_expr();
             if self.at() != T![,] {
                 break;
@@ -27,11 +25,7 @@ impl<'cache, 'source> Parser<'cache, 'source> {
             self.expect(T![,]);
         }
 
-        if count > 1 {
-            marker.complete(self, T![expr_list]);
-        } else {
-            marker.abandon(self);
-        }
+        marker.complete(self);
     }
 
     pub(super) fn r_expr(&mut self) -> Option<CompletedMarker> {
@@ -45,18 +39,18 @@ impl<'cache, 'source> Parser<'cache, 'source> {
             let t = self.at();
 
             if t == T!['('] && CALL_BINDING_POWER >= min_bp {
-                let n = lhs.precede(self);
+                let n = lhs.precede(self, T![func_call]);
                 let _rhs = self.r_func_call_args()?;
-                lhs = n.complete(self, T![func_call]);
+                lhs = n.complete(self);
                 continue;
             }
 
             if t == T!['['] && INDEX_BINDING_POWER >= min_bp {
-                let n = lhs.precede(self);
+                let n = lhs.precede(self, T![index]);
                 self.expect(T!['[']);
                 let _rhs = self.r_expr()?;
                 self.expect(T![']']);
-                lhs = n.complete(self, T![index]);
+                lhs = n.complete(self);
                 continue;
             }
 
@@ -65,10 +59,10 @@ impl<'cache, 'source> Parser<'cache, 'source> {
                     break;
                 }
 
-                let n = lhs.precede(self);
+                let n = lhs.precede(self, T![bin_op]);
                 self.expect(t);
                 let _rhs = self.r_expr_inner(r_bp);
-                lhs = n.complete(self, T![bin_op]);
+                lhs = n.complete(self);
                 continue;
             }
 
@@ -92,38 +86,38 @@ impl<'cache, 'source> Parser<'cache, 'source> {
     }
 
     fn r_expr_unary(&mut self) -> Option<CompletedMarker> {
-        let n = self.start();
+        let n = self.start(T![prefix_op]);
         let op = self.at();
         self.expect(op);
         let ((), r_bp) = prefix_binding_power(op);
         let _rhs = self.r_expr_inner(r_bp);
-        Some(n.complete(self, T![prefix_op]))
+        Some(n.complete(self))
     }
 
     pub(super) fn r_ident(&mut self) -> Option<CompletedMarker> {
-        let marker = self.start();
+        let marker = self.start(T![ident]);
         self.expect(T![ident]);
-        Some(marker.complete(self, T![ident]))
+        Some(marker.complete(self))
     }
 
     pub(super) fn r_vararg(&mut self) -> Option<CompletedMarker> {
-        let marker = self.start();
+        let marker = self.start(T![vararg_expr]);
         self.expect(T![...]);
-        Some(marker.complete(self, T![vararg_expr]))
+        Some(marker.complete(self))
     }
 
     fn r_paren(&mut self) -> Option<CompletedMarker> {
-        let marker = self.start();
+        let marker = self.start(T![expr]);
         self.expect(T!['(']);
         let _rhs = self.r_expr()?;
         self.expect(T![')']);
-        Some(marker.complete(self, T![expr]))
+        Some(marker.complete(self))
     }
 
     fn r_literal(&mut self) -> Option<CompletedMarker> {
-        let marker = self.start();
+        let marker = self.start(T![literal_expr]);
         let kind = self.at();
         self.expect(kind);
-        Some(marker.complete(self, T![literal_expr]))
+        Some(marker.complete(self))
     }
 }

@@ -6,7 +6,7 @@ use crate::T;
 
 impl<'cache, 'source> Parser<'cache, 'source> {
     pub(super) fn r_table(&mut self) -> Option<CompletedMarker> {
-        let marker = self.start();
+        let marker = self.start(T![table_expr]);
         self.expect(T!['{']);
 
         loop {
@@ -29,7 +29,7 @@ impl<'cache, 'source> Parser<'cache, 'source> {
             }
         }
 
-        Some(marker.complete(self, T![table_expr]))
+        Some(marker.complete(self))
     }
 
     fn r_table_elem(&mut self) -> Option<CompletedMarker> {
@@ -42,26 +42,26 @@ impl<'cache, 'source> Parser<'cache, 'source> {
     }
 
     fn r_table_elem_array(&mut self) -> Option<CompletedMarker> {
-        let marker = self.start();
+        let marker = self.start(T![table_array_elem]);
         self.r_expr();
-        Some(marker.complete(self, T![table_array_elem]))
+        Some(marker.complete(self))
     }
 
     fn r_table_elem_map(&mut self) -> Option<CompletedMarker> {
-        let marker = self.start();
+        let marker = self.start(T![table_map_elem]);
         self.r_ident();
         self.expect(T![=]);
         self.r_expr();
-        Some(marker.complete(self, T![table_map_elem]))
+        Some(marker.complete(self))
     }
 
     fn r_table_elem_generic(&mut self) -> Option<CompletedMarker> {
-        let marker = self.start();
+        let marker = self.start(T![table_generic_elem]);
         self.expect(T!['[']);
         self.r_expr();
         self.expect(T![']']);
         self.expect(T![=]);
         self.r_expr();
-        Some(marker.complete(self, T![table_generic_elem]))
+        Some(marker.complete(self))
     }
 }

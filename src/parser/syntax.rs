@@ -95,9 +95,7 @@ impl Expr {
     const TOKENS: &'static [SyntaxKind] = &[T!['('], T![ident], T![func_call], T!['['], T![.]];
 
     fn cast(node: &SyntaxNode) -> Option<Self> {
-        match node.kind() {
-            _ => unreachable!(),
-        }
+        todo!()
     }
 }
 

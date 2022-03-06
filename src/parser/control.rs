@@ -9,32 +9,32 @@ use crate::T;
 
 impl<'cache, 'source> Parser<'cache, 'source> {
     pub(super) fn r_do(&mut self) -> Option<CompletedMarker> {
-        let marker = self.start();
+        let marker = self.start(T![do_stmt]);
         self.expect(T![do]);
         self.r_block(|t| t == T![end]);
         self.expect(T![end]);
-        Some(marker.complete(self, T![do_stmt]))
+        Some(marker.complete(self))
     }
 
     pub(super) fn r_while(&mut self) -> Option<CompletedMarker> {
-        let marker = self.start();
+        let marker = self.start(T![while_stmt]);
         self.expect(T![while]);
         self.r_expr();
         self.r_do();
-        Some(marker.complete(self, T![while_stmt]))
+        Some(marker.complete(self))
     }
 
     pub(super) fn r_repeat(&mut self) -> Option<CompletedMarker> {
-        let marker = self.start();
+        let marker = self.start(T![repeat_stmt]);
         self.expect(T![repeat]);
         self.r_block(|t| t == T![until]);
         self.expect(T![until]);
         self.r_expr();
-        Some(marker.complete(self, T![repeat_stmt]))
+        Some(marker.complete(self))
     }
 
     pub(super) fn r_if(&mut self, if_kind: SyntaxKind) -> Option<CompletedMarker> {
-        let marker = self.start();
+        let marker = self.start(T![if_stmt]);
         self.expect(if_kind);
         self.r_expr();
         self.expect(T![then]);
@@ -50,11 +50,11 @@ impl<'cache, 'source> Parser<'cache, 'source> {
             _ => unreachable!(),
         }
 
-        Some(marker.complete(self, T![if_stmt]))
+        Some(marker.complete(self))
     }
 
     pub(super) fn r_else(&mut self) -> Option<CompletedMarker> {
-        let marker = self.start();
+        let marker = self.start(T![else_chain]);
 
         match self.at() {
             T![else] => {
@@ -68,13 +68,13 @@ impl<'cache, 'source> Parser<'cache, 'source> {
             _ => unreachable!(),
         }
 
-        Some(marker.complete(self, T![else_chain]))
+        Some(marker.complete(self))
     }
 
     pub(super) fn r_for(&mut self) -> Option<CompletedMarker> {
-        let marker = self.start();
+        let marker = self.start(T![tombstone]);
         self.expect(T![for]);
-        let assign_list_marker = self.start();
+        let assign_list_marker = self.start(T![assign_list]);
         self.r_ident();
 
         if self.at() == T![=] {
@@ -96,7 +96,7 @@ impl<'cache, 'source> Parser<'cache, 'source> {
         }
 
         self.r_do();
-        Some(marker.complete(self, T![for_num_stmt]))
+        Some(marker.retype(self, T![for_num_stmt]).complete(self))
     }
 
     pub(super) fn r_gen_for(
@@ -109,35 +109,35 @@ impl<'cache, 'source> Parser<'cache, 'source> {
             self.r_ident();
         }
 
-        list_marker.complete(self, T![assign_list]);
+        list_marker.complete(self);
         self.expect(T![in]);
         self.r_expr_list();
         self.r_do();
-        Some(marker.complete(self, T![for_gen_stmt]))
+        Some(marker.retype(self, T![for_gen_stmt]).complete(self))
     }
 
     pub(super) fn r_return(&mut self) -> Option<CompletedMarker> {
-        let marker = self.start();
+        let marker = self.start(T![return_stmt]);
         self.expect(T![return]);
         self.r_expr_list();
-        Some(marker.complete(self, T![return_stmt]))
+        Some(marker.complete(self))
     }
 
     pub(super) fn r_break(&mut self) -> Option<CompletedMarker> {
-        let marker = self.start();
+        let marker = self.start(T![break_stmt]);
         self.expect(T![break]);
-        Some(marker.complete(self, T![break_stmt]))
+        Some(marker.complete(self))
     }
 
     pub(super) fn r_block<F>(&mut self, stop: F) -> Option<CompletedMarker>
     where
         F: Fn(SyntaxKind) -> bool,
     {
-        let marker = self.start();
+        let marker = self.start(T![stmt_list]);
         while !stop(self.at()) {
             self.r_stmt();
         }
 
-        Some(marker.complete(self, T![stmt_list]))
+        Some(marker.complete(self))
     }
 }
