@@ -71,18 +71,18 @@ pub enum Stmt<'cst> {
 impl<'cst> Stmt<'cst> {
     fn cast(node: &'cst SyntaxNode) -> Option<Self> {
         Some(match node.kind() {
-            T![decl_stmt] => Self::Decl(Decl::cast(node)?),
-            T![assign_stmt] => Self::Assign(Assign::cast(node)?),
-            T![func_stmt] => Self::Func(Func::cast(node)?),
-            T![break_stmt] => Self::Break(Break::cast(node)?),
-            T![return_stmt] => Self::Return(Return::cast(node)?),
-            T![do_stmt] => Self::Do(Do::cast(node)?),
-            T![while_stmt] => Self::While(While::cast(node)?),
-            T![repeat_stmt] => Self::Repeat(Repeat::cast(node)?),
-            T![if_stmt] => Self::If(If::cast(node)?),
-            T![for_num_stmt] => Self::ForNum(ForNum::cast(node)?),
-            T![for_gen_stmt] => Self::ForGen(ForGen::cast(node)?),
-            _ => Self::Expr(Expr::cast(node)?),
+            T![decl_stmt] => Decl::cast(node).map(Self::Decl)?,
+            T![assign_stmt] => Assign::cast(node).map(Self::Assign)?,
+            T![func_stmt] => Func::cast(node).map(Self::Func)?,
+            T![break_stmt] => Break::cast(node).map(Self::Break)?,
+            T![return_stmt] => Return::cast(node).map(Self::Return)?,
+            T![do_stmt] => Do::cast(node).map(Self::Do)?,
+            T![while_stmt] => While::cast(node).map(Self::While)?,
+            T![repeat_stmt] => Repeat::cast(node).map(Self::Repeat)?,
+            T![if_stmt] => If::cast(node).map(Self::If)?,
+            T![for_num_stmt] => ForNum::cast(node).map(Self::ForNum)?,
+            T![for_gen_stmt] => ForGen::cast(node).map(Self::ForGen)?,
+            _ => Expr::cast(node).map(Self::Expr)?,
         })
     }
 }
@@ -157,7 +157,7 @@ ast_node!(Ident, T![ident]);
 
 impl<'cst> Ident<'cst> {
     pub fn name<'a>(&self, interner: &'a TokenInterner) -> Option<&'a str> {
-        Some(self.0.first_token()?.resolve_text(interner))
+        self.0.first_token().map(|token| token.resolve_text(interner))
     }
 }
 
@@ -165,7 +165,7 @@ ast_node!(PrefixOp, T![prefix_op]);
 
 impl<'cst> PrefixOp<'cst> {
     pub fn op(&self) -> Option<PrefixOperator> {
-        PrefixOperator::cast(self.0.first_token()?)
+        self.0.first_token().and_then(PrefixOperator::cast)
     }
 
     pub fn rhs(&self) -> Option<Expr> {
@@ -182,8 +182,15 @@ pub enum PrefixOperator {
 }
 
 impl PrefixOperator {
-    fn cast(node: &SyntaxToken) -> Option<Self> {
-        todo!()
+    fn cast(token: &SyntaxToken) -> Option<Self> {
+        Some(match token.kind() {
+            T![+] => Self::None,
+            T![-] => Self::Neg,
+            T![~] => Self::BitNot,
+            T![#] => Self::Len,
+            T![not] => Self::Not,
+            _ => panic!(),
+        })
     }
 }
 
@@ -191,7 +198,7 @@ ast_node!(BinaryOp, T![bin_op]);
 
 impl<'cst> BinaryOp<'cst> {
     pub fn op(&self) -> Option<BinaryOperator> {
-        BinaryOperator::cast(self.0.first_token()?)
+        self.0.first_token().and_then(BinaryOperator::cast)
     }
 
     pub fn lhs(&self) -> Option<Expr<'cst>> {
@@ -230,8 +237,33 @@ pub enum BinaryOperator {
 }
 
 impl BinaryOperator {
-    fn cast(node: &SyntaxToken) -> Option<Self> {
-        todo!()
+    fn cast(token: &SyntaxToken) -> Option<Self> {
+        Some(match token.kind() {
+            T![and] => Self::And,
+            T![or] => Self::Or,
+            T![+] => Self::Add,
+            T![-] => Self::Sub,
+            T![*] => Self::Mul,
+            T![/] => Self::Div,
+            T![D/] => Self::IntDiv,
+            T![^] => Self::Exp,
+            T![%] => Self::Mod,
+            T![&] => Self::BitAnd,
+            T![|] => Self::BitOr,
+            T![<<] => Self::LShift,
+            T![>>] => Self::RShift,
+            T![==] => Self::Eq,
+            T![~] => Self::BitXor,
+            T![~=] => Self::NEq,
+            T![<=] => Self::LEq,
+            T![>=] => Self::GEq,
+            T![>] => Self::Gt,
+            T![<] => Self::Lt,
+            T![.] => Self::Property,
+            T![:] => Self::Method,
+            T![..] => Self::Concat,
+            _ => panic!(),
+        })
     }
 }
 
@@ -323,17 +355,17 @@ impl<'cst> Table<'cst> {
 }
 
 pub enum TableEntry<'cst> {
-    Array(TableArray<'cst>),
-    Map(TableMap<'cst>),
-    Generic(TableGeneric<'cst>),
+    TableArray(TableArray<'cst>),
+    TableMap(TableMap<'cst>),
+    TableGeneric(TableGeneric<'cst>),
 }
 
 impl<'cst> TableEntry<'cst> {
     fn cast(node: &'cst SyntaxNode) -> Option<Self> {
         Some(match node.kind() {
-            T![table_array_elem] => Self::Array(TableArray::cast(node)?),
-            T![table_map_elem] => Self::Map(TableMap::cast(node)?),
-            T![table_generic_elem] => Self::Generic(TableGeneric::cast(node)?),
+            T![table_array_elem] => TableArray::cast(node).map(Self::TableArray)?,
+            T![table_map_elem] => TableMap::cast(node).map(Self::TableMap)?,
+            T![table_generic_elem] => TableGeneric::cast(node).map(Self::TableGeneric)?,
             _ => panic!(),
         })
     }
