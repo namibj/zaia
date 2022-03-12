@@ -1,5 +1,10 @@
 use crate::{
-    parser::machinery::{cstree, cstree::interning::TokenInterner, kind::SyntaxKind, classifiers::token_is_literal},
+    parser::machinery::{
+        classifiers::token_is_literal,
+        cstree,
+        cstree::interning::TokenInterner,
+        kind::SyntaxKind,
+    },
     T,
 };
 
@@ -159,7 +164,7 @@ ast_node!(Literal, T![literal_expr]);
 
 impl Literal {
     pub fn value(&self) {
-        todo!()
+        panic!()
     }
 }
 
@@ -179,7 +184,9 @@ ast_node!(Ident, T![ident]);
 
 impl Ident {
     pub fn name<'a>(&self, interner: &'a TokenInterner) -> Option<&'a str> {
-        self.0.first_token().map(|token| token.resolve_text(interner))
+        self.0
+            .first_token()
+            .map(|token| token.resolve_text(interner))
     }
 }
 
@@ -321,14 +328,7 @@ impl Func {
     }
 
     pub fn args(&self) -> Option<impl Iterator<Item = Ident> + '_> {
-        Some(
-            self.0
-                .children()
-                .skip(1)
-                .next()?
-                .children()
-                .filter_map(Ident::cast),
-        )
+        Some(self.0.children().nth(1)?.children().filter_map(Ident::cast))
     }
 
     pub fn block(&self) -> Option<Stmt> {
@@ -389,17 +389,17 @@ impl Table {
 }
 
 pub enum TableEntry {
-    TableArray(TableArray),
-    TableMap(TableMap),
-    TableGeneric(TableGeneric),
+    Array(TableArray),
+    Map(TableMap),
+    Generic(TableGeneric),
 }
 
 impl TableEntry {
     fn cast(node: &SyntaxNode) -> Option<Self> {
         Some(match node.kind() {
-            T![table_array_elem] => TableArray::cast(node).map(Self::TableArray)?,
-            T![table_map_elem] => TableMap::cast(node).map(Self::TableMap)?,
-            T![table_generic_elem] => TableGeneric::cast(node).map(Self::TableGeneric)?,
+            T![table_array_elem] => TableArray::cast(node).map(Self::Array)?,
+            T![table_map_elem] => TableMap::cast(node).map(Self::Map)?,
+            T![table_generic_elem] => TableGeneric::cast(node).map(Self::Generic)?,
             _ => panic!(),
         })
     }
@@ -463,14 +463,7 @@ impl If {
     }
 
     pub fn stmts(&self) -> Option<impl Iterator<Item = Stmt> + '_> {
-        Some(
-            self.0
-                .children()
-                .skip(1)
-                .next()?
-                .children()
-                .filter_map(Stmt::cast),
-        )
+        Some(self.0.children().nth(1)?.children().filter_map(Stmt::cast))
     }
 
     pub fn else_chain(&self) -> Option<ElseChain> {
@@ -513,7 +506,7 @@ impl ForNum {
     }
 
     pub fn end(&self) -> Option<Expr> {
-        self.0.children().skip(2).next().and_then(Expr::cast)
+        self.0.children().nth(2).and_then(Expr::cast)
     }
 
     pub fn block(&self) -> Option<impl Iterator<Item = Stmt> + '_> {
@@ -529,14 +522,7 @@ impl ForGen {
     }
 
     pub fn values(&self) -> Option<impl Iterator<Item = Expr> + '_> {
-        Some(
-            self.0
-                .children()
-                .skip(1)
-                .next()?
-                .children()
-                .filter_map(Expr::cast),
-        )
+        Some(self.0.children().nth(1)?.children().filter_map(Expr::cast))
     }
 
     pub fn block(&self) -> Option<impl Iterator<Item = Stmt> + '_> {
