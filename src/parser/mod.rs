@@ -28,9 +28,9 @@ impl<'cache, 'source> Parser<'cache, 'source> {
     }
 
     fn root(&mut self) {
-        let marker = self.start();
+        let marker = self.start(T![root]);
         self.r_items();
-        marker.complete(self, T![root]);
+        marker.complete(self);
     }
 
     fn run(mut self) -> (SyntaxNode, Vec<ariadne::Report<Span>>) {

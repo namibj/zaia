@@ -50,8 +50,8 @@ impl<'cache, 'source> Parser<'cache, 'source> {
     }
 
     fn r_semicolon(&mut self) -> Option<CompletedMarker> {
-        let marker = self.start();
+        let marker = self.start(T![;]);
         self.expect(T![;]);
-        Some(marker.complete(self, T![;]))
+        Some(marker.complete(self))
     }
 }

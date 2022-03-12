@@ -2,6 +2,7 @@ use std::fmt::{self, Display};
 
 use logos::{Lexer, Logos};
 
+// TODO(#34): split into seperate SyntaxKind and Token enums
 #[allow(clippy::manual_non_exhaustive)]
 #[derive(Logos, Debug, PartialEq, Eq, PartialOrd, Ord, Hash, Clone, Copy)]
 #[repr(u16)]
@@ -16,7 +17,7 @@ pub enum SyntaxKind {
     Root,
     BreakStmt,
     ReturnStmt,
-    BlockStmt,
+    DoStmt,
     WhileStmt,
     RepeatStmt,
     StmtList,
@@ -42,6 +43,7 @@ pub enum SyntaxKind {
     TableGenericElem,
     AssignStmt,
     LiteralExpr,
+    AssignList,
 
     #[regex(r"[ \n\t\f\r]+", logos::skip)]
     Whitespace,
@@ -336,7 +338,7 @@ macro_rules! T {
     [root] => { $crate::parser::machinery::kind::SyntaxKind::Root };
     [break_stmt] => { $crate::parser::machinery::kind::SyntaxKind::BreakStmt };
     [return_stmt] => { $crate::parser::machinery::kind::SyntaxKind::ReturnStmt };
-    [block_stmt] => { $crate::parser::machinery::kind::SyntaxKind::BlockStmt };
+    [do_stmt] => { $crate::parser::machinery::kind::SyntaxKind::DoStmt };
     [while_stmt] => { $crate::parser::machinery::kind::SyntaxKind::WhileStmt };
     [repeat_stmt] => { $crate::parser::machinery::kind::SyntaxKind::RepeatStmt };
     [stmt_list] => { $crate::parser::machinery::kind::SyntaxKind::StmtList };
@@ -363,6 +365,7 @@ macro_rules! T {
     [assign_stmt] => { $crate::parser::machinery::kind::SyntaxKind::AssignStmt };
     [literal_expr] => { $crate::parser::machinery::kind::SyntaxKind::LiteralExpr };
     [ident] => { $crate::parser::machinery::kind::SyntaxKind::Ident };
+    [assign_list] => { $crate::parser::machinery::kind::SyntaxKind::AssignList };
     [+] => { $crate::parser::machinery::kind::SyntaxKind::Plus };
     [-] => { $crate::parser::machinery::kind::SyntaxKind::Minus };
     [*] => { $crate::parser::machinery::kind::SyntaxKind::Star };
