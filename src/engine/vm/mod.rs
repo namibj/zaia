@@ -1,9 +1,11 @@
 pub mod ctx;
 pub mod eval;
 
-use super::value::Table;
+use super::value::{Table, Value};
 use super::gc::Heap;
 use ctx::Ctx;
+use eval::Eval;
+use super::Error;
 
 pub struct VM {
     global: Table,
@@ -16,7 +18,8 @@ impl VM {
         }
     }
 
-    fn ctx<'a>(&'a mut self, heap: &'a Heap) -> Ctx<'a> {
-        Ctx::new(&mut self.global, heap)
+    pub fn eval<T>(&mut self, item: &T) -> Result<Value,Error> where T:Eval {
+        let mut ctx = Ctx::new(&mut self.global);
+        item.eval(&mut ctx)
     }
 }

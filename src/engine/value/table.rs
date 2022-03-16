@@ -61,6 +61,10 @@ impl Table {
             entry.remove();
         }
     }
+
+    pub fn is_empty(&self) -> bool {
+        self.map.is_empty()
+    }
 }
 
 impl Trace for Table {
