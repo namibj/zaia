@@ -1,19 +1,29 @@
-use super::super::value::{Value, Table};
-use hashbrown::HashMap;
 use std::collections::hash_map::RandomState;
+
+use hashbrown::HashMap;
+
+use super::super::{
+    gc::Heap,
+    value::{Table, Value},
+};
 
 pub struct Ctx<'a> {
     global: &'a mut Table,
     scope: Vec<HashMap<String, Value, RandomState>>,
+    heap: &'a Heap,
 }
 
-
 impl<'a> Ctx<'a> {
-    pub fn new(global: &'a mut Table) -> Self {
+    pub fn new(global: &'a mut Table, heap: &'a Heap) -> Self {
         Ctx {
             global,
             scope: vec![HashMap::with_hasher(RandomState::new())],
+            heap,
         }
+    }
+
+    pub fn heap(&self) -> &Heap {
+        self.heap
     }
 
     pub fn scope_push(&mut self) {
