@@ -27,7 +27,7 @@ pub trait Eval {
 
 pub enum Result<T = Value> {
     Value(T),
-    Return(Value),
+    Return(Vec<Value>),
     Break,
     Error(Error),
 }
@@ -126,32 +126,57 @@ impl Eval for Expr {
 }
 
 impl Eval for Break {
-    fn eval(&self, ctx: &mut Ctx) -> Result {
-        todo!()
+    fn eval(&self, _ctx: &mut Ctx) -> Result {
+        Result::Break
     }
 }
 
 impl Eval for Return {
     fn eval(&self, ctx: &mut Ctx) -> Result {
-        todo!()
+        let mut values = Vec::new();
+        for expr in self.exprs().unwrap() {
+            values.push(expr.eval(ctx)?);
+        }
+
+        Result::Return(values)
     }
 }
 
 impl Eval for Do {
     fn eval(&self, ctx: &mut Ctx) -> Result {
-        todo!()
+        for stmt in self.stmts() {
+            stmt.eval(ctx)?;
+        }
+
+        Result::Value(Value::from_nil())
     }
 }
 
 impl Eval for While {
     fn eval(&self, ctx: &mut Ctx) -> Result {
-        todo!()
+        while self.cond().unwrap().eval(ctx)?.op_eq(Value::from_bool(true)) {
+            for stmt in self.block().unwrap() {
+                stmt.eval(ctx)?;
+            }
+        }
+
+        Result::Value(Value::from_nil())
     }
 }
 
 impl Eval for Repeat {
     fn eval(&self, ctx: &mut Ctx) -> Result {
-        todo!()
+        loop {
+            for stmt in self.block().unwrap() {
+                stmt.eval(ctx)?;
+            }
+
+            if self.cond().unwrap().eval(ctx)?.op_eq(Value::from_bool(false)) {
+                break;
+            }
+        }
+
+        Result::Value(Value::from_nil())
     }
 }
 
