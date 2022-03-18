@@ -10,7 +10,6 @@ use super::{
     Error,
 };
 
-
 // TODO:
 //   - gc root tracked values in the api
 //   - ctx impl
@@ -26,7 +25,7 @@ impl VM {
         }
     }
 
-    pub fn eval<T>(&mut self, item: &T, heap: &Heap) -> Result<Value,Error>
+    pub fn eval<T>(&mut self, item: &T, heap: &Heap) -> Result<Value, Error>
     where
         T: Eval,
     {

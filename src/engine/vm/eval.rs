@@ -154,7 +154,12 @@ impl Eval for Do {
 
 impl Eval for While {
     fn eval(&self, ctx: &mut Ctx) -> Result {
-        while self.cond().unwrap().eval(ctx)?.op_eq(Value::from_bool(true)) {
+        while self
+            .cond()
+            .unwrap()
+            .eval(ctx)?
+            .op_eq(Value::from_bool(true))
+        {
             for stmt in self.block().unwrap() {
                 stmt.eval(ctx)?;
             }
@@ -171,7 +176,12 @@ impl Eval for Repeat {
                 stmt.eval(ctx)?;
             }
 
-            if self.cond().unwrap().eval(ctx)?.op_eq(Value::from_bool(false)) {
+            if self
+                .cond()
+                .unwrap()
+                .eval(ctx)?
+                .op_eq(Value::from_bool(false))
+            {
                 break;
             }
         }
