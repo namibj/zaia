@@ -1,24 +1,27 @@
 use std::collections::hash_map::RandomState;
-
+use crate::parser::machinery::cstree::interning::TokenInterner;
 use hashbrown::HashMap;
+use crate::parser::syntax::Ident;
 
 use super::super::{
-    gc::{Heap, Handle},
-    value::{Table, Value, ByteString},
+    gc::{Handle, Heap},
+    value::{ByteString, Table, Value},
 };
 
 pub struct Ctx<'a> {
     global: &'a mut Table,
     scope: Vec<HashMap<Handle<ByteString>, Value, RandomState>>,
     heap: &'a Heap,
+    interner: &'a TokenInterner,
 }
 
 impl<'a> Ctx<'a> {
-    pub fn new(global: &'a mut Table, heap: &'a Heap) -> Self {
+    pub fn new(global: &'a mut Table, heap: &'a Heap, interner: &'a TokenInterner) -> Self {
         Ctx {
             global,
             scope: vec![HashMap::with_hasher(RandomState::new())],
             heap,
+            interner,
         }
     }
 
@@ -60,5 +63,9 @@ impl<'a> Ctx<'a> {
         }
 
         Value::from_nil()
+    }
+
+    pub fn intern_ident(&mut self, ident: Ident) -> Handle<ByteString> {
+        todo!()
     }
 }

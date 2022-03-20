@@ -450,7 +450,7 @@ impl Repeat {
 ast_node!(If, T![if_stmt]);
 
 impl If {
-    pub fn cast_else(node: &SyntaxNode) -> Option<Self> {
+    fn cast_else(node: &SyntaxNode) -> Option<Self> {
         if node.kind() == T![elseif] {
             Some(Self(node.clone()))
         } else {
@@ -507,6 +507,14 @@ impl ForNum {
 
     pub fn end(&self) -> Option<Expr> {
         self.0.children().nth(2).and_then(Expr::cast)
+    }
+
+    pub fn step(&self) -> Option<Expr> {
+        if self.0.children().count() > 4 {
+            return self.0.children().nth(3).and_then(Expr::cast);
+        }
+
+        None
     }
 
     pub fn block(&self) -> Option<impl Iterator<Item = Stmt> + '_> {

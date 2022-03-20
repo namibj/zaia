@@ -170,6 +170,10 @@ impl Value {
         }
     }
 
+    pub fn op_add(self, other: Self) -> Self {
+        todo!()
+    }
+
     pub fn op_hash(self) -> u64 {
         mix_u64(self.data)
     }

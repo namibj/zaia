@@ -3,6 +3,7 @@ pub mod eval;
 
 use ctx::Ctx;
 use eval::Eval;
+use crate::parser::machinery::cstree::interning::TokenInterner;
 
 use super::{
     gc::Heap,
@@ -13,6 +14,7 @@ use super::{
 // TODO:
 //   - gc root tracked values in the api
 //   - vm eval impl
+//   - catch break stmts & handle scoping
 pub struct VM {
     global: Table,
 }
@@ -24,11 +26,11 @@ impl VM {
         }
     }
 
-    pub fn eval<T>(&mut self, item: &T, heap: &Heap) -> Result<Value, Error>
+    pub fn eval<T>(&mut self, item: &T, heap: &Heap, interner: &TokenInterner) -> Result<Value, Error>
     where
         T: Eval,
     {
-        let mut ctx = Ctx::new(&mut self.global, heap);
+        let mut ctx = Ctx::new(&mut self.global, heap, interner);
         item.eval(&mut ctx).into()
     }
 }

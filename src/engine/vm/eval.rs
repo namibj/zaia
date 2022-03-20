@@ -192,13 +192,60 @@ impl Eval for Repeat {
 
 impl Eval for If {
     fn eval(&self, ctx: &mut Ctx) -> Result {
-        todo!()
+        if self
+            .cond()
+            .unwrap()
+            .eval(ctx)?
+            .op_eq(Value::from_bool(true))
+        {
+            for stmt in self.stmts().unwrap() {
+                stmt.eval(ctx)?;
+            }
+        } else if let Some(elif) = self.else_chain() {
+            if let Some(el_if) = elif.elseif_block() {
+                el_if.eval(ctx)?;
+            } else if let Some(el) = elif.else_block() {
+                for stmt in el {
+                    stmt.eval(ctx)?;
+                }
+            }
+        }
+
+        Result::Value(Value::from_nil())
     }
 }
 
 impl Eval for ForNum {
     fn eval(&self, ctx: &mut Ctx) -> Result {
-        todo!()
+        let (counter, init) = self.counter().unwrap();
+        let init = init.eval(ctx)?;
+        let end = self.end().unwrap().eval(ctx)?;
+        let step = if let Some(expr) = self.step() {
+            expr.eval(ctx)?
+        } else {
+            Value::from_int(1)
+        };
+
+        ctx.scope_push();
+        let var = ctx.intern_ident(counter);
+        ctx.define_local(var, init);
+
+        while !ctx.resolve(var).op_eq(end) {
+            for stmt in self.block().unwrap() {
+                let res = stmt.eval(ctx);
+                if matches!(res, Result::Break | Result::Return(_) | Result::Error(_)) {
+                    ctx.scope_pop();
+                    res?;
+                }
+            }
+
+            let value = ctx.resolve(var);
+            let value = value.op_add(step);
+            ctx.define_local(var, value);
+        }
+
+        ctx.scope_pop();
+        Result::Value(Value::from_nil())
     }
 }
 
