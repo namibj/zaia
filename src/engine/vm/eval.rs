@@ -263,7 +263,7 @@ impl Eval for While {
             .cond()
             .unwrap()
             .eval(ctx)?
-            .op_eq(Value::from_bool(true))
+            == Value::from_bool(true)
         {
             let _scope = ctx.scope_push();
             for stmt in self.block().unwrap() {
@@ -287,7 +287,7 @@ impl Eval for Repeat {
                 .cond()
                 .unwrap()
                 .eval(ctx)?
-                .op_eq(Value::from_bool(false))
+                == Value::from_bool(true)
             {
                 break;
             }
@@ -303,7 +303,7 @@ impl Eval for If {
             .cond()
             .unwrap()
             .eval(ctx)?
-            .op_eq(Value::from_bool(true))
+            == Value::from_bool(true)
         {
             let _scope = ctx.scope_push();
             for stmt in self.stmts().unwrap() {
@@ -340,7 +340,7 @@ impl Eval for ForNum {
         ctx.local(var);
         ctx.assign(var, init);
 
-        while !ctx.resolve(var).op_eq(end) {
+        while ctx.resolve(var) != end {
             let _scope = ctx.scope_push();
             for stmt in self.block().unwrap() {
                 stmt.eval(ctx)?;
@@ -374,7 +374,7 @@ impl Eval for ForGen {
             let first_target = self.targets().unwrap().next().unwrap();
             let first_var = ctx.intern_ident(&first_target);
 
-            if ctx.resolve(first_var).op_eq(Value::from_nil()) {
+            if ctx.resolve(first_var) == Value::from_nil() {
                 break;
             }
 

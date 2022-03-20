@@ -69,7 +69,7 @@ macro_rules! dispatch {
 //     - String: a heap-allocated UTF-8 string
 //     - Function: a Lua function, possibly with captured upvalues
 //     - Userdata: a custom type defined outside of Lua
-#[derive(Clone, Copy)]
+#[derive(Clone, Copy, PartialEq)]
 pub struct Value {
     data: u64,
 }
@@ -134,43 +134,123 @@ impl Value {
         )
     }
 
-    pub fn op_eq(self, other: Self) -> bool {
-        self.data == other.data
+    pub fn op_eq(self, other: Self) -> Value {
+        Value::from_bool(self.data == other.data)
     }
 
-    pub fn op_gt(self, other: Self) -> bool {
+    pub fn op_gt(self, other: Self) -> Value {
         let ty_1 = self.ty();
         let ty_2 = other.ty();
 
         if ty_1 != ty_2 {
-            return false;
+            return Value::from_bool(false);
         }
 
-        match ty_1 {
+        Value::from_bool(match ty_1 {
             ValueType::Int => get_int(self.data) > get_int(other.data),
             ValueType::Float => get_float(self.data) > get_float(other.data),
             ValueType::String => **self.cast_string() > **other.cast_string(),
             _ => panic!("attempted op_gt on unsupported type: {:?}", ty_1),
-        }
+        })
     }
 
-    pub fn op_lt(self, other: Self) -> bool {
+    pub fn op_lt(self, other: Self) -> Value {
         let ty_1 = self.ty();
         let ty_2 = other.ty();
 
         if ty_1 != ty_2 {
-            return false;
+            return Value::from_bool(false);;
         }
 
-        match ty_1 {
+       Value::from_bool( match ty_1 {
             ValueType::Int => get_int(self.data) < get_int(other.data),
             ValueType::Float => get_float(self.data) < get_float(other.data),
             ValueType::String => **self.cast_string() < **other.cast_string(),
             _ => panic!("attempted op_lt on unsupported type: {:?}", ty_1),
-        }
+        })
+    }
+
+    pub fn op_and(self, other: Self) -> Self {
+        todo!()
+    }
+
+    pub fn op_oe(self, other: Self) -> Self {
+        todo!()
     }
 
     pub fn op_add(self, other: Self) -> Self {
+        todo!()
+    }
+
+    pub fn op_sub(self, other: Self) -> Self {
+        todo!()
+    }
+
+    pub fn op_mul(self, other: Self) -> Self {
+        todo!()
+    }
+
+    pub fn op_div(self, other: Self) -> Self {
+        todo!()
+    }
+
+    pub fn op_int_div(self, other: Self) -> Self {
+        todo!()
+    }
+
+    pub fn op_exp(self, other: Self) -> Self {
+        todo!()
+    }
+
+    pub fn op_mod(self, other: Self) -> Self {
+        todo!()
+    }
+
+    pub fn op_bit_and(self, other: Self) -> Self {
+        todo!()
+    }
+
+    pub fn op_bit_or(self, other: Self) -> Self {
+        todo!()
+    }
+
+    pub fn op_lshift(self, other: Self) -> Self {
+        todo!()
+    }
+
+    pub fn op_rshift(self, other: Self) -> Self {
+        todo!()
+    }
+
+    pub fn op_bit_xor(self, other: Self) -> Self {
+        todo!()
+    }
+
+    pub fn op_neq(self, other: Self) -> Self {
+        todo!()
+    }
+
+    pub fn op_or(self, other: Self) -> Self {
+        todo!()
+    }
+
+    pub fn op_leq(self, other: Self) -> Self {
+        todo!()
+    }
+
+    pub fn op_geq(self, other: Self) -> Self {
+        todo!()
+    }
+
+    pub fn op_property(self, other: Self) -> Self {
+        todo!()
+    }
+
+    pub fn op_method(self, other: Self) -> Self {
+        todo!()
+    }
+
+    pub fn op_concat(self, other: Self) -> Self {
         todo!()
     }
 
