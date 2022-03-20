@@ -22,7 +22,7 @@ use crate::parser::syntax::{
 };
 
 pub trait Eval {
-    fn eval(&self, ctx: &mut Ctx) -> Result;
+    fn eval(&self, ctx: &Ctx) -> Result;
 }
 
 pub enum Result<T = Value> {
@@ -73,7 +73,7 @@ impl Into<std::result::Result<Value, Error>> for Result {
 }
 
 impl Eval for Root {
-    fn eval(&self, ctx: &mut Ctx) -> Result {
+    fn eval(&self, ctx: &Ctx) -> Result {
         for stmt in self.block() {
             stmt.eval(ctx)?;
         }
@@ -83,7 +83,7 @@ impl Eval for Root {
 }
 
 impl Eval for Stmt {
-    fn eval(&self, ctx: &mut Ctx) -> Result {
+    fn eval(&self, ctx: &Ctx) -> Result {
         match self {
             Self::Decl(decl) => decl.eval(ctx),
             Self::Assign(assign) => assign.eval(ctx),
@@ -102,37 +102,37 @@ impl Eval for Stmt {
 }
 
 impl Eval for Decl {
-    fn eval(&self, ctx: &mut Ctx) -> Result {
+    fn eval(&self, ctx: &Ctx) -> Result {
         todo!()
     }
 }
 
 impl Eval for Assign {
-    fn eval(&self, ctx: &mut Ctx) -> Result {
+    fn eval(&self, ctx: &Ctx) -> Result {
         todo!()
     }
 }
 
 impl Eval for Func {
-    fn eval(&self, ctx: &mut Ctx) -> Result {
+    fn eval(&self, ctx: &Ctx) -> Result {
         todo!()
     }
 }
 
 impl Eval for Expr {
-    fn eval(&self, ctx: &mut Ctx) -> Result {
+    fn eval(&self, ctx: &Ctx) -> Result {
         todo!()
     }
 }
 
 impl Eval for Break {
-    fn eval(&self, _ctx: &mut Ctx) -> Result {
+    fn eval(&self, _ctx: &Ctx) -> Result {
         Result::Break
     }
 }
 
 impl Eval for Return {
-    fn eval(&self, ctx: &mut Ctx) -> Result {
+    fn eval(&self, ctx: &Ctx) -> Result {
         let mut values = Vec::new();
         for expr in self.exprs().unwrap() {
             values.push(expr.eval(ctx)?);
@@ -143,39 +143,28 @@ impl Eval for Return {
 }
 
 impl Eval for Do {
-    fn eval(&self, ctx: &mut Ctx) -> Result {
-        ctx.scope_push();
+    fn eval(&self, ctx: &Ctx) -> Result {
+        let _scope = ctx.scope_push();
         for stmt in self.stmts() {
-            let res = stmt.eval(ctx);
-                if matches!(res, Result::Break | Result::Return(_) | Result::Error(_)) {
-                    ctx.scope_pop();
-                    res?;
-                }
+            stmt.eval(ctx)?;
         }
 
-        ctx.scope_pop();
         Result::Value(Value::from_nil())
     }
 }
 
 impl Eval for While {
-    fn eval(&self, ctx: &mut Ctx) -> Result {
+    fn eval(&self, ctx: &Ctx) -> Result {
         while self
             .cond()
             .unwrap()
             .eval(ctx)?
             .op_eq(Value::from_bool(true))
         {
-            ctx.scope_push();
+            let _scope = ctx.scope_push();
             for stmt in self.block().unwrap() {
-                let res = stmt.eval(ctx);
-                if matches!(res, Result::Break | Result::Return(_) | Result::Error(_)) {
-                    ctx.scope_pop();
-                    res?;
-                }
+                stmt.eval(ctx)?;
             }
-            
-            ctx.scope_pop();
         }
 
         Result::Value(Value::from_nil())
@@ -183,15 +172,11 @@ impl Eval for While {
 }
 
 impl Eval for Repeat {
-    fn eval(&self, ctx: &mut Ctx) -> Result {
+    fn eval(&self, ctx: &Ctx) -> Result {
         loop {
-            ctx.scope_push();
+            let _scope = ctx.scope_push();
             for stmt in self.block().unwrap() {
-                let res = stmt.eval(ctx);
-                if matches!(res, Result::Break | Result::Return(_) | Result::Error(_)) {
-                    ctx.scope_pop();
-                    res?;
-                }
+                stmt.eval(ctx)?;
             }
 
             if self
@@ -200,11 +185,8 @@ impl Eval for Repeat {
                 .eval(ctx)?
                 .op_eq(Value::from_bool(false))
             {
-                ctx.scope_pop();
                 break;
             }
-
-            ctx.scope_pop();
         }
 
         Result::Value(Value::from_nil())
@@ -212,47 +194,35 @@ impl Eval for Repeat {
 }
 
 impl Eval for If {
-    fn eval(&self, ctx: &mut Ctx) -> Result {
+    fn eval(&self, ctx: &Ctx) -> Result {
         if self
             .cond()
             .unwrap()
             .eval(ctx)?
             .op_eq(Value::from_bool(true))
         {
-            ctx.scope_push();
+            let _scope = ctx.scope_push();
             for stmt in self.stmts().unwrap() {
-                let res = stmt.eval(ctx);
-                if matches!(res, Result::Break | Result::Return(_) | Result::Error(_)) {
-                    ctx.scope_pop();
-                    res?;
-                }
+                stmt.eval(ctx)?;
             }
         } else if let Some(elif) = self.else_chain() {
             if let Some(el_if) = elif.elseif_block() {
-                let res = el_if.eval(ctx);
-                if matches!(res, Result::Break | Result::Return(_) | Result::Error(_)) {
-                    ctx.scope_pop();
-                    res?;
-                }
+                el_if.eval(ctx)?;
             } else if let Some(el) = elif.else_block() {
+                let _scope = ctx.scope_push();
                 for stmt in el {
-                    let res = stmt.eval(ctx);
-                    if matches!(res, Result::Break | Result::Return(_) | Result::Error(_)) {
-                        ctx.scope_pop();
-                        res?;
-                    }
+                    stmt.eval(ctx)?;
                 }
             }
         }
 
-        ctx.scope_pop();
         Result::Value(Value::from_nil())
     }
 }
 
 // fix repeat scoping
 impl Eval for ForNum {
-    fn eval(&self, ctx: &mut Ctx) -> Result {
+    fn eval(&self, ctx: &Ctx) -> Result {
         let (counter, init) = self.counter().unwrap();
         let init = init.eval(ctx)?;
         let end = self.end().unwrap().eval(ctx)?;
@@ -262,39 +232,36 @@ impl Eval for ForNum {
             Value::from_int(1)
         };
 
-        ctx.scope_push();
+        let _scope = ctx.scope_push();
         let var = ctx.intern_ident(counter);
-        ctx.define_local(var, init);
+        ctx.local(var);
+        ctx.assign(var, init);
 
         while !ctx.resolve(var).op_eq(end) {
             for stmt in self.block().unwrap() {
-                let res = stmt.eval(ctx);
-                if matches!(res, Result::Break | Result::Return(_) | Result::Error(_)) {
-                    ctx.scope_pop();
-                    res?;
-                }
+                stmt.eval(ctx)?;
             }
 
             let value = ctx.resolve(var);
             let value = value.op_add(step);
-            ctx.define_local(var, value);
+            ctx.assign(var, value);
         }
 
-        ctx.scope_pop();
         Result::Value(Value::from_nil())
     }
 }
 
 // fix repeat scoping
 impl Eval for ForGen {
-    fn eval(&self, ctx: &mut Ctx) -> Result {
-        ctx.scope_push();
+    fn eval(&self, ctx: &Ctx) -> Result {
+        let _scope = ctx.scope_push();
 
         loop {
             for (target, value) in self.targets().unwrap().zip(self.values().unwrap()) {
                 let var = ctx.intern_ident(target);
                 let value = value.eval(ctx)?;
-                ctx.define_local(var, value);
+                ctx.local(var);
+                ctx.assign(var, value);
             }
 
             let first_target = self.targets().unwrap().next().unwrap();
@@ -305,15 +272,10 @@ impl Eval for ForGen {
             }
 
             for stmt in self.block().unwrap() {
-                let res = stmt.eval(ctx);
-                if matches!(res, Result::Break | Result::Return(_) | Result::Error(_)) {
-                    ctx.scope_pop();
-                    res?;
-                }
+                stmt.eval(ctx)?;
             }
         }
 
-        ctx.scope_pop();
         Result::Value(Value::from_nil())
     }
 }
