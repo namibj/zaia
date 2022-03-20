@@ -12,7 +12,6 @@ use super::{
 
 // TODO:
 //   - gc root tracked values in the api
-//   - ctx impl
 //   - vm eval impl
 pub struct VM {
     global: Table,

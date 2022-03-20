@@ -38,11 +38,12 @@ impl<'a> Ctx<'a> {
         }
     }
 
-    pub fn define_local(&mut self, key: String, value: Value) {
-        todo!()
+    pub fn define_local(&mut self, key: Handle<ByteString>, value: Value) {
+        self.scope.last_mut().unwrap().insert(key, value);
     }
 
-    pub fn define_global(&mut self, key: Value, value: Value) {
+    pub fn define_global(&mut self, key: Handle<ByteString>, value: Value) {
+        let key = Value::from_string(key);
         self.global.insert(key, value);
     }
 
