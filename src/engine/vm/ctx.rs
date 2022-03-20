@@ -88,7 +88,7 @@ impl<'a> Ctx<'a> {
         Value::from_nil()
     }
 
-    pub fn intern_ident(&self, ident: Ident) -> Handle<ByteString> {
+    pub fn intern_ident(&self, ident:&Ident) -> Handle<ByteString> {
         let mut internal = self.internal.borrow_mut();
         let name = ident.name(internal.interner).unwrap();
 

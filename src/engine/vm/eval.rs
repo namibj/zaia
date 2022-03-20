@@ -19,6 +19,16 @@ use crate::parser::syntax::{
     Root,
     Stmt,
     While,
+    Ident,
+    Literal,
+    BinaryOp,
+    PrefixOp,
+    FuncExpr,
+    Table,
+    FuncCall,
+    Index,
+    PrefixOperator,
+    BinaryOperator
 };
 
 pub trait Eval {
@@ -120,6 +130,100 @@ impl Eval for Func {
 }
 
 impl Eval for Expr {
+    fn eval(&self, ctx: &Ctx) -> Result {
+        match self {
+            Self::Ident(ident) => ident.eval(ctx),
+            Self::Literal(literal) => literal.eval(ctx),
+            Self::Func(func) => func.eval(ctx),
+            Self::Table(call) => call.eval(ctx),
+            Self::PrefixOp(prefix_op) => prefix_op.eval(ctx),
+            Self::BinaryOp(binary_op) => binary_op.eval(ctx),
+            Self::FuncCall(call) => call.eval(ctx),
+            Self::Index(index) => index.eval(ctx),
+            Self::VarArg => panic!("varargs are currently unsupported"),
+        }
+    }
+}
+
+impl Eval for Ident {
+    fn eval(&self, ctx: &Ctx) -> Result {
+        let key = ctx.intern_ident(self);
+        Result::Value(ctx.resolve(key))
+    }
+}
+
+impl Eval for Literal {
+    fn eval(&self, ctx: &Ctx) -> Result {
+        todo!()
+    }
+}
+
+impl Eval for FuncExpr {
+    fn eval(&self, ctx: &Ctx) -> Result {
+        todo!()
+    }
+}
+
+impl Eval for Table {
+    fn eval(&self, ctx: &Ctx) -> Result {
+        todo!()
+    }
+}
+
+impl Eval for PrefixOp {
+    fn eval(&self, ctx: &Ctx) -> Result {
+        let rhs = self.rhs().unwrap().eval(ctx)?;
+
+        Result::Value(match self.op().unwrap() {
+            PrefixOperator::None => rhs,
+            PrefixOperator::Neg => rhs.op_neg(),
+            PrefixOperator::Not => rhs.op_not(),
+            PrefixOperator::Len => rhs.op_len(),
+            PrefixOperator::BitNot => rhs.op_bit_not(),
+        })
+    }
+}
+
+impl Eval for BinaryOp {
+    fn eval(&self, ctx: &Ctx) -> Result {
+        let lhs = self.lhs().unwrap().eval(ctx)?;
+        let rhs = self.rhs().unwrap().eval(ctx)?;
+
+        Result::Value(match self.op().unwrap() {
+            BinaryOperator::And => lhs.op_and(rhs),
+            BinaryOperator::Or => lhs.op_or(rhs),
+            BinaryOperator::Add=> lhs.op_add(rhs),
+            BinaryOperator::Sub => lhs.op_sub(rhs),
+            BinaryOperator::Mul => lhs.op_mul(rhs),
+            BinaryOperator::Div => lhs.op_div(rhs),
+            BinaryOperator::IntDiv => lhs.op_int_div(rhs),
+            BinaryOperator::Exp => lhs.op_exp(rhs),
+            BinaryOperator::Mod => lhs.op_mod(rhs),
+            BinaryOperator::BitAnd => lhs.op_bit_and(rhs),
+            BinaryOperator::BitOr => lhs.op_bit_or(rhs),
+            BinaryOperator::LShift => lhs.op_lshift(rhs),
+            BinaryOperator::RShift => lhs.op_rshift(rhs),
+            BinaryOperator::Eq => lhs.op_eq(rhs),
+            BinaryOperator::BitXor => lhs.op_bit_xor(rhs),
+            BinaryOperator::NEq => lhs.op_neq(rhs),
+            BinaryOperator::LEq => lhs.op_leq(rhs),
+            BinaryOperator::GEq => lhs.op_geq(rhs),
+            BinaryOperator::Gt => lhs.op_gt(rhs),
+            BinaryOperator::Lt => lhs.op_lt(rhs),
+            BinaryOperator::Property => lhs.op_property(rhs),
+            BinaryOperator::Method => lhs.op_method(rhs),
+            BinaryOperator::Concat => lhs.op_concat(rhs),
+        })
+    }
+}
+
+impl Eval for Index {
+    fn eval(&self, ctx: &Ctx) -> Result {
+        todo!()
+    }
+}
+
+impl Eval for FuncCall {
     fn eval(&self, ctx: &Ctx) -> Result {
         todo!()
     }
@@ -232,7 +336,7 @@ impl Eval for ForNum {
         };
 
         let _scope = ctx.scope_push();
-        let var = ctx.intern_ident(counter);
+        let var = ctx.intern_ident(&counter);
         ctx.local(var);
         ctx.assign(var, init);
 
@@ -256,19 +360,19 @@ impl Eval for ForGen {
         let _scope = ctx.scope_push();
 
         for target in self.targets().unwrap() {
-            let var = ctx.intern_ident(target);
+            let var = ctx.intern_ident(&target);
             ctx.local(var);
         }
 
         loop {
             for (target, value) in self.targets().unwrap().zip(self.values().unwrap()) {
-                let var = ctx.intern_ident(target);
+                let var = ctx.intern_ident(&target);
                 let value = value.eval(ctx)?;
                 ctx.assign(var, value);
             }
 
             let first_target = self.targets().unwrap().next().unwrap();
-            let first_var = ctx.intern_ident(first_target);
+            let first_var = ctx.intern_ident(&first_target);
 
             if ctx.resolve(first_var).op_eq(Value::from_nil()) {
                 break;

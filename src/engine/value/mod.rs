@@ -174,6 +174,22 @@ impl Value {
         todo!()
     }
 
+    pub fn op_neg(self) -> Self {
+        todo!()
+    }
+
+    pub fn op_not(self) -> Self {
+        todo!()
+    }
+
+    pub fn op_len(self) -> Self {
+        todo!()
+    }
+
+    pub fn op_bit_not(self) -> Self {
+        todo!()
+    }
+
     pub fn op_hash(self) -> u64 {
         mix_u64(self.data)
     }
