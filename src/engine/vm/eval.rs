@@ -217,6 +217,7 @@ impl Eval for If {
 
 impl Eval for ForNum {
     fn eval(&self, ctx: &mut Ctx) -> Result {
+        ctx.scope_push();
         let (counter, init) = self.counter().unwrap();
         let init = init.eval(ctx)?;
         let end = self.end().unwrap().eval(ctx)?;
@@ -226,7 +227,6 @@ impl Eval for ForNum {
             Value::from_int(1)
         };
 
-        ctx.scope_push();
         let var = ctx.intern_ident(counter);
         ctx.define_local(var, init);
 
@@ -251,6 +251,32 @@ impl Eval for ForNum {
 
 impl Eval for ForGen {
     fn eval(&self, ctx: &mut Ctx) -> Result {
-        todo!()
+        ctx.scope_push();
+
+        loop {
+            for (target, value) in self.targets().unwrap().zip(self.values().unwrap()) {
+                let var = ctx.intern_ident(target);
+                let value = value.eval(ctx)?;
+                ctx.define_local(var, value);
+            }
+
+            let first_target = self.targets().unwrap().next().unwrap();
+            let first_var = ctx.intern_ident(first_target);
+
+            if ctx.resolve(first_var).op_eq(Value::from_nil()) {
+                break;
+            }
+
+            for stmt in self.block().unwrap() {
+                let res = stmt.eval(ctx);
+                if matches!(res, Result::Break | Result::Return(_) | Result::Error(_)) {
+                    ctx.scope_pop();
+                    res?;
+                }
+            }
+        }
+
+        ctx.scope_pop();
+        Result::Value(Value::from_nil())
     }
 }

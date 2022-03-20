@@ -15,6 +15,8 @@ use super::{
 //   - gc root tracked values in the api
 //   - vm eval impl
 //   - catch break stmts & handle scoping
+//   - impl _ENV
+//   - handle multivalue
 pub struct VM {
     global: Table,
 }
