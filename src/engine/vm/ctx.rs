@@ -3,13 +3,13 @@ use std::collections::hash_map::RandomState;
 use hashbrown::HashMap;
 
 use super::super::{
-    gc::Heap,
-    value::{Table, Value},
+    gc::{Heap, Handle},
+    value::{Table, Value, ByteString},
 };
 
 pub struct Ctx<'a> {
     global: &'a mut Table,
-    scope: Vec<HashMap<String, Value, RandomState>>,
+    scope: Vec<HashMap<Handle<ByteString>, Value, RandomState>>,
     heap: &'a Heap,
 }
 
@@ -42,11 +42,22 @@ impl<'a> Ctx<'a> {
         todo!()
     }
 
-    pub fn define_global(&mut self, key: String, value: Value) {
-        todo!()
+    pub fn define_global(&mut self, key: Value, value: Value) {
+        self.global.insert(key, value);
     }
 
-    pub fn resolve(&self, key: &str) -> Value {
-        todo!()
+    pub fn resolve(&self, key: Handle<ByteString>) -> Value {
+        for scope in self.scope.iter().rev() {
+            if let Some(value) = scope.get(&key) {
+                return value.clone();
+            }
+        }
+
+        let key = Value::from_string(key);
+        if let Some(value) = self.global.get(key) {
+            return *value;
+        }
+
+        Value::from_nil()
     }
 }
