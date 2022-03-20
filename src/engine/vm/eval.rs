@@ -220,7 +220,6 @@ impl Eval for If {
     }
 }
 
-// fix repeat scoping
 impl Eval for ForNum {
     fn eval(&self, ctx: &Ctx) -> Result {
         let (counter, init) = self.counter().unwrap();
@@ -238,6 +237,7 @@ impl Eval for ForNum {
         ctx.assign(var, init);
 
         while !ctx.resolve(var).op_eq(end) {
+            let _scope = ctx.scope_push();
             for stmt in self.block().unwrap() {
                 stmt.eval(ctx)?;
             }
@@ -251,7 +251,6 @@ impl Eval for ForNum {
     }
 }
 
-// fix repeat scoping
 impl Eval for ForGen {
     fn eval(&self, ctx: &Ctx) -> Result {
         let _scope = ctx.scope_push();
@@ -271,6 +270,7 @@ impl Eval for ForGen {
                 break;
             }
 
+            let _scope = ctx.scope_push();
             for stmt in self.block().unwrap() {
                 stmt.eval(ctx)?;
             }
