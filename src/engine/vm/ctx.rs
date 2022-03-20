@@ -40,7 +40,7 @@ impl<'a> Ctx<'a> {
         Ref::map(self.internal.borrow(), |internal| internal.heap)
     }
 
-    pub fn scope_push(&self) -> ScopeKey<'a, '_> {
+    pub fn scope(&self) -> ScopeKey<'a, '_> {
         let mut internal = self.internal.borrow_mut();
 
         if !internal.scope.last().unwrap().is_empty() {
@@ -52,7 +52,7 @@ impl<'a> Ctx<'a> {
         ScopeKey { ctx: self }
     }
 
-    fn scope_pop(&self) {
+    fn scope_destroy(&self) {
         let mut internal = self.internal.borrow_mut();
 
         if !internal.scope.last().unwrap().is_empty() {
@@ -117,6 +117,6 @@ pub struct ScopeKey<'a, 'ctx> {
 
 impl<'a, 'ctx> Drop for ScopeKey<'a, 'ctx> {
     fn drop(&mut self) {
-        self.ctx.scope_pop();
+        self.ctx.scope_destroy();
     }
 }

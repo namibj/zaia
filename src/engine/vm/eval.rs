@@ -248,7 +248,7 @@ impl Eval for Return {
 
 impl Eval for Do {
     fn eval(&self, ctx: &Ctx) -> Result {
-        let _scope = ctx.scope_push();
+        let _scope = ctx.scope();
         for stmt in self.stmts() {
             stmt.eval(ctx)?;
         }
@@ -260,7 +260,7 @@ impl Eval for Do {
 impl Eval for While {
     fn eval(&self, ctx: &Ctx) -> Result {
         while self.cond().unwrap().eval(ctx)?.cast_bool_unchecked() {
-            let _scope = ctx.scope_push();
+            let _scope = ctx.scope();
             for stmt in self.block().unwrap() {
                 stmt.eval(ctx)?;
             }
@@ -273,7 +273,7 @@ impl Eval for While {
 impl Eval for Repeat {
     fn eval(&self, ctx: &Ctx) -> Result {
         loop {
-            let _scope = ctx.scope_push();
+            let _scope = ctx.scope();
             for stmt in self.block().unwrap() {
                 stmt.eval(ctx)?;
             }
@@ -290,7 +290,7 @@ impl Eval for Repeat {
 impl Eval for If {
     fn eval(&self, ctx: &Ctx) -> Result {
         if self.cond().unwrap().eval(ctx)?.cast_bool_unchecked() {
-            let _scope = ctx.scope_push();
+            let _scope = ctx.scope();
             for stmt in self.stmts().unwrap() {
                 stmt.eval(ctx)?;
             }
@@ -298,7 +298,7 @@ impl Eval for If {
             if let Some(el_if) = elif.elseif_block() {
                 el_if.eval(ctx)?;
             } else if let Some(el) = elif.else_block() {
-                let _scope = ctx.scope_push();
+                let _scope = ctx.scope();
                 for stmt in el {
                     stmt.eval(ctx)?;
                 }
@@ -320,13 +320,13 @@ impl Eval for ForNum {
             Value::from_int(1)
         };
 
-        let _scope = ctx.scope_push();
+        let _scope = ctx.scope();
         let var = ctx.intern_ident(&counter);
         ctx.local(var);
         ctx.assign(var, init);
 
         while ctx.resolve(var).op_eq(end).cast_bool_unchecked() {
-            let _scope = ctx.scope_push();
+            let _scope = ctx.scope();
             for stmt in self.block().unwrap() {
                 stmt.eval(ctx)?;
             }
@@ -342,7 +342,7 @@ impl Eval for ForNum {
 
 impl Eval for ForGen {
     fn eval(&self, ctx: &Ctx) -> Result {
-        let _scope = ctx.scope_push();
+        let _scope = ctx.scope();
 
         for target in self.targets().unwrap() {
             let var = ctx.intern_ident(&target);
@@ -363,7 +363,7 @@ impl Eval for ForGen {
                 break;
             }
 
-            let _scope = ctx.scope_push();
+            let _scope = ctx.scope();
             for stmt in self.block().unwrap() {
                 stmt.eval(ctx)?;
             }
