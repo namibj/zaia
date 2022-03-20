@@ -14,6 +14,7 @@ struct CtxInternal<'a> {
     scope: Vec<HashMap<Handle<ByteString>, Value, RandomState>>,
     heap: &'a Heap,
     interner: &'a TokenInterner,
+    ident_cache: HashMap<String, Handle<ByteString>, RandomState>,
 }
 
 pub struct Ctx<'a> {
@@ -28,6 +29,7 @@ impl<'a> Ctx<'a> {
             scope: vec![HashMap::with_hasher(RandomState::new())],
             heap,
             interner,
+            ident_cache: HashMap::with_hasher(RandomState::new()),
             })
         }
     }
@@ -59,7 +61,14 @@ impl<'a> Ctx<'a> {
     }
 
     pub fn assign(&self, key: Handle<ByteString>, value: Value) {
-        todo!()
+        let mut internal = self.internal.borrow_mut();
+
+        for scope in internal.scope.iter_mut().rev() {
+            if scope.contains_key(&key) {
+                scope.insert(key, value);
+                return;
+            }
+        }
     }
 
     pub fn resolve(&self, key: Handle<ByteString>) -> Value {
@@ -80,7 +89,16 @@ impl<'a> Ctx<'a> {
     }
 
     pub fn intern_ident(&self, ident: Ident) -> Handle<ByteString> {
-        todo!()
+        let mut internal = self.internal.borrow_mut();
+        let name = ident.name(internal.interner).unwrap();
+
+       if let Some(handle) = internal.ident_cache.get(name) {
+           return *handle;
+       }
+
+       let handle = todo!();
+       internal.ident_cache.insert(name.to_owned(), handle);
+       handle
     }
 }
 
