@@ -23,7 +23,7 @@ impl Table {
 
         self.map
             .raw_entry_mut()
-            .from_hash(hash, |other| key == *other)
+            .from_hash(hash, |other| key.op_eq(*other).cast_bool_unchecked())
     }
 
     pub fn get(&self, key: Value) -> Option<&Value> {
@@ -31,7 +31,7 @@ impl Table {
 
         self.map
             .raw_entry()
-            .from_hash(hash, |other| key == *other)
+            .from_hash(hash, |other| key.op_eq(*other).cast_bool_unchecked())
             .map(|(_, v)| v)
     }
 

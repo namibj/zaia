@@ -6,6 +6,8 @@ use super::{
 };
 use crate::parser::syntax::{
     Assign,
+    BinaryOp,
+    BinaryOperator,
     Break,
     Decl,
     Do,
@@ -13,22 +15,20 @@ use crate::parser::syntax::{
     ForGen,
     ForNum,
     Func,
+    FuncCall,
+    FuncExpr,
+    Ident,
     If,
+    Index,
+    Literal,
+    PrefixOp,
+    PrefixOperator,
     Repeat,
     Return,
     Root,
     Stmt,
-    While,
-    Ident,
-    Literal,
-    BinaryOp,
-    PrefixOp,
-    FuncExpr,
     Table,
-    FuncCall,
-    Index,
-    PrefixOperator,
-    BinaryOperator
+    While,
 };
 
 pub trait Eval {
@@ -71,9 +71,9 @@ impl ops::FromResidual for Result {
     }
 }
 
-impl Into<std::result::Result<Value, Error>> for Result {
-    fn into(self) -> std::result::Result<Value, Error> {
-        match self {
+impl From<Result> for std::result::Result<Value, Error> {
+    fn from(result: Result) -> std::result::Result<Value, Error> {
+        match result {
             Result::Value(value) => Ok(value),
             Result::Return(_) => Err(Error::UncaughtReturn),
             Result::Break => Err(Error::UncaughtBreak),
@@ -112,19 +112,19 @@ impl Eval for Stmt {
 }
 
 impl Eval for Decl {
-    fn eval(&self, ctx: &Ctx) -> Result {
+    fn eval(&self, _ctx: &Ctx) -> Result {
         todo!()
     }
 }
 
 impl Eval for Assign {
-    fn eval(&self, ctx: &Ctx) -> Result {
+    fn eval(&self, _ctx: &Ctx) -> Result {
         todo!()
     }
 }
 
 impl Eval for Func {
-    fn eval(&self, ctx: &Ctx) -> Result {
+    fn eval(&self, _ctx: &Ctx) -> Result {
         todo!()
     }
 }
@@ -153,19 +153,19 @@ impl Eval for Ident {
 }
 
 impl Eval for Literal {
-    fn eval(&self, ctx: &Ctx) -> Result {
+    fn eval(&self, _ctx: &Ctx) -> Result {
         todo!()
     }
 }
 
 impl Eval for FuncExpr {
-    fn eval(&self, ctx: &Ctx) -> Result {
+    fn eval(&self, _ctx: &Ctx) -> Result {
         todo!()
     }
 }
 
 impl Eval for Table {
-    fn eval(&self, ctx: &Ctx) -> Result {
+    fn eval(&self, _ctx: &Ctx) -> Result {
         todo!()
     }
 }
@@ -192,7 +192,7 @@ impl Eval for BinaryOp {
         Result::Value(match self.op().unwrap() {
             BinaryOperator::And => lhs.op_and(rhs),
             BinaryOperator::Or => lhs.op_or(rhs),
-            BinaryOperator::Add=> lhs.op_add(rhs),
+            BinaryOperator::Add => lhs.op_add(rhs),
             BinaryOperator::Sub => lhs.op_sub(rhs),
             BinaryOperator::Mul => lhs.op_mul(rhs),
             BinaryOperator::Div => lhs.op_div(rhs),
@@ -218,13 +218,13 @@ impl Eval for BinaryOp {
 }
 
 impl Eval for Index {
-    fn eval(&self, ctx: &Ctx) -> Result {
+    fn eval(&self, _ctx: &Ctx) -> Result {
         todo!()
     }
 }
 
 impl Eval for FuncCall {
-    fn eval(&self, ctx: &Ctx) -> Result {
+    fn eval(&self, _ctx: &Ctx) -> Result {
         todo!()
     }
 }
@@ -259,12 +259,7 @@ impl Eval for Do {
 
 impl Eval for While {
     fn eval(&self, ctx: &Ctx) -> Result {
-        while self
-            .cond()
-            .unwrap()
-            .eval(ctx)?
-            == Value::from_bool(true)
-        {
+        while self.cond().unwrap().eval(ctx)?.cast_bool_unchecked() {
             let _scope = ctx.scope_push();
             for stmt in self.block().unwrap() {
                 stmt.eval(ctx)?;
@@ -283,12 +278,7 @@ impl Eval for Repeat {
                 stmt.eval(ctx)?;
             }
 
-            if self
-                .cond()
-                .unwrap()
-                .eval(ctx)?
-                == Value::from_bool(true)
-            {
+            if self.cond().unwrap().eval(ctx)?.cast_bool_unchecked() {
                 break;
             }
         }
@@ -299,12 +289,7 @@ impl Eval for Repeat {
 
 impl Eval for If {
     fn eval(&self, ctx: &Ctx) -> Result {
-        if self
-            .cond()
-            .unwrap()
-            .eval(ctx)?
-            == Value::from_bool(true)
-        {
+        if self.cond().unwrap().eval(ctx)?.cast_bool_unchecked() {
             let _scope = ctx.scope_push();
             for stmt in self.stmts().unwrap() {
                 stmt.eval(ctx)?;
@@ -340,7 +325,7 @@ impl Eval for ForNum {
         ctx.local(var);
         ctx.assign(var, init);
 
-        while ctx.resolve(var) != end {
+        while ctx.resolve(var).op_eq(end).cast_bool_unchecked() {
             let _scope = ctx.scope_push();
             for stmt in self.block().unwrap() {
                 stmt.eval(ctx)?;

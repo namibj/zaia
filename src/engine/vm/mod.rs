@@ -37,7 +37,7 @@ impl VM {
     where
         T: Eval,
     {
-        let mut ctx = Ctx::new(&mut self.global, heap, interner);
-        item.eval(&mut ctx).into()
+        let ctx = Ctx::new(&mut self.global, heap, interner);
+        item.eval(&ctx).into()
     }
 }

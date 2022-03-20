@@ -117,8 +117,12 @@ impl Value {
         }
     }
 
-    pub fn cast_string<'a>(self) -> &'a ByteString {
+    pub fn cast_string_unchecked<'a>(self) -> &'a ByteString {
         unsafe { &*(get_string(self.data) as *const ByteString) }
+    }
+
+    pub fn cast_bool_unchecked(&self) -> bool {
+        todo!()
     }
 
     fn ty(self) -> ValueType {
@@ -149,7 +153,7 @@ impl Value {
         Value::from_bool(match ty_1 {
             ValueType::Int => get_int(self.data) > get_int(other.data),
             ValueType::Float => get_float(self.data) > get_float(other.data),
-            ValueType::String => **self.cast_string() > **other.cast_string(),
+            ValueType::String => **self.cast_string_unchecked() > **other.cast_string_unchecked(),
             _ => panic!("attempted op_gt on unsupported type: {:?}", ty_1),
         })
     }
@@ -159,98 +163,98 @@ impl Value {
         let ty_2 = other.ty();
 
         if ty_1 != ty_2 {
-            return Value::from_bool(false);;
+            return Value::from_bool(false);
         }
 
-       Value::from_bool( match ty_1 {
+        Value::from_bool(match ty_1 {
             ValueType::Int => get_int(self.data) < get_int(other.data),
             ValueType::Float => get_float(self.data) < get_float(other.data),
-            ValueType::String => **self.cast_string() < **other.cast_string(),
+            ValueType::String => **self.cast_string_unchecked() < **other.cast_string_unchecked(),
             _ => panic!("attempted op_lt on unsupported type: {:?}", ty_1),
         })
     }
 
-    pub fn op_and(self, other: Self) -> Self {
+    pub fn op_and(self, _other: Self) -> Self {
         todo!()
     }
 
-    pub fn op_oe(self, other: Self) -> Self {
+    pub fn op_oe(self, _other: Self) -> Self {
         todo!()
     }
 
-    pub fn op_add(self, other: Self) -> Self {
+    pub fn op_add(self, _other: Self) -> Self {
         todo!()
     }
 
-    pub fn op_sub(self, other: Self) -> Self {
+    pub fn op_sub(self, _other: Self) -> Self {
         todo!()
     }
 
-    pub fn op_mul(self, other: Self) -> Self {
+    pub fn op_mul(self, _other: Self) -> Self {
         todo!()
     }
 
-    pub fn op_div(self, other: Self) -> Self {
+    pub fn op_div(self, _other: Self) -> Self {
         todo!()
     }
 
-    pub fn op_int_div(self, other: Self) -> Self {
+    pub fn op_int_div(self, _other: Self) -> Self {
         todo!()
     }
 
-    pub fn op_exp(self, other: Self) -> Self {
+    pub fn op_exp(self, _other: Self) -> Self {
         todo!()
     }
 
-    pub fn op_mod(self, other: Self) -> Self {
+    pub fn op_mod(self, _other: Self) -> Self {
         todo!()
     }
 
-    pub fn op_bit_and(self, other: Self) -> Self {
+    pub fn op_bit_and(self, _other: Self) -> Self {
         todo!()
     }
 
-    pub fn op_bit_or(self, other: Self) -> Self {
+    pub fn op_bit_or(self, _other: Self) -> Self {
         todo!()
     }
 
-    pub fn op_lshift(self, other: Self) -> Self {
+    pub fn op_lshift(self, _other: Self) -> Self {
         todo!()
     }
 
-    pub fn op_rshift(self, other: Self) -> Self {
+    pub fn op_rshift(self, _other: Self) -> Self {
         todo!()
     }
 
-    pub fn op_bit_xor(self, other: Self) -> Self {
+    pub fn op_bit_xor(self, _other: Self) -> Self {
         todo!()
     }
 
-    pub fn op_neq(self, other: Self) -> Self {
+    pub fn op_neq(self, _other: Self) -> Self {
         todo!()
     }
 
-    pub fn op_or(self, other: Self) -> Self {
+    pub fn op_or(self, _other: Self) -> Self {
         todo!()
     }
 
-    pub fn op_leq(self, other: Self) -> Self {
+    pub fn op_leq(self, _other: Self) -> Self {
         todo!()
     }
 
-    pub fn op_geq(self, other: Self) -> Self {
+    pub fn op_geq(self, _other: Self) -> Self {
         todo!()
     }
 
-    pub fn op_property(self, other: Self) -> Self {
+    pub fn op_property(self, _other: Self) -> Self {
         todo!()
     }
 
-    pub fn op_method(self, other: Self) -> Self {
+    pub fn op_method(self, _other: Self) -> Self {
         todo!()
     }
 
-    pub fn op_concat(self, other: Self) -> Self {
+    pub fn op_concat(self, _other: Self) -> Self {
         todo!()
     }
 

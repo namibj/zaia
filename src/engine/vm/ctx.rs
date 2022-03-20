@@ -1,13 +1,15 @@
-use std::{collections::hash_map::RandomState};
-use crate::parser::machinery::cstree::interning::TokenInterner;
+use std::{
+    cell::{Ref, RefCell},
+    collections::hash_map::RandomState,
+};
+
 use hashbrown::HashMap;
-use crate::parser::syntax::Ident;
 
 use super::super::{
     gc::{Handle, Heap},
     value::{ByteString, Table, Value},
 };
-use std::cell::{RefCell, Ref};
+use crate::parser::{machinery::cstree::interning::TokenInterner, syntax::Ident};
 
 struct CtxInternal<'a> {
     global: &'a mut Table,
@@ -24,13 +26,13 @@ pub struct Ctx<'a> {
 impl<'a> Ctx<'a> {
     pub fn new(global: &'a mut Table, heap: &'a Heap, interner: &'a TokenInterner) -> Self {
         Ctx {
-            internal:RefCell::new(CtxInternal {
+            internal: RefCell::new(CtxInternal {
                 global,
-            scope: vec![HashMap::with_hasher(RandomState::new())],
-            heap,
-            interner,
-            ident_cache: HashMap::with_hasher(RandomState::new()),
-            })
+                scope: vec![HashMap::with_hasher(RandomState::new())],
+                heap,
+                interner,
+                ident_cache: HashMap::with_hasher(RandomState::new()),
+            }),
         }
     }
 
@@ -42,10 +44,12 @@ impl<'a> Ctx<'a> {
         let mut internal = self.internal.borrow_mut();
 
         if !internal.scope.last().unwrap().is_empty() {
-            internal.scope.push(HashMap::with_hasher(RandomState::new()));
+            internal
+                .scope
+                .push(HashMap::with_hasher(RandomState::new()));
         }
 
-        ScopeKey { ctx:self}
+        ScopeKey { ctx: self }
     }
 
     fn scope_pop(&self) {
@@ -57,7 +61,12 @@ impl<'a> Ctx<'a> {
     }
 
     pub fn local(&self, key: Handle<ByteString>) {
-        self.internal.borrow_mut().scope.last_mut().unwrap().insert(key, Value::from_nil());
+        self.internal
+            .borrow_mut()
+            .scope
+            .last_mut()
+            .unwrap()
+            .insert(key, Value::from_nil());
     }
 
     pub fn assign(&self, key: Handle<ByteString>, value: Value) {
@@ -76,7 +85,7 @@ impl<'a> Ctx<'a> {
 
         for scope in internal.scope.iter().rev() {
             if let Some(value) = scope.get(&key) {
-                return value.clone();
+                return *value;
             }
         }
 
@@ -88,17 +97,17 @@ impl<'a> Ctx<'a> {
         Value::from_nil()
     }
 
-    pub fn intern_ident(&self, ident:&Ident) -> Handle<ByteString> {
-        let mut internal = self.internal.borrow_mut();
+    pub fn intern_ident(&self, ident: &Ident) -> Handle<ByteString> {
+        let internal = self.internal.borrow_mut();
         let name = ident.name(internal.interner).unwrap();
 
-       if let Some(handle) = internal.ident_cache.get(name) {
-           return *handle;
-       }
+        if let Some(handle) = internal.ident_cache.get(name) {
+            return *handle;
+        }
 
-       let handle = todo!();
-       internal.ident_cache.insert(name.to_owned(), handle);
-       handle
+        let handle = todo!();
+        internal.ident_cache.insert(name.to_owned(), handle);
+        handle
     }
 }
 
