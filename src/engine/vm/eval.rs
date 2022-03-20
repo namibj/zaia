@@ -255,11 +255,15 @@ impl Eval for ForGen {
     fn eval(&self, ctx: &Ctx) -> Result {
         let _scope = ctx.scope_push();
 
+        for target in self.targets().unwrap() {
+            let var = ctx.intern_ident(target);
+            ctx.local(var);
+        }
+
         loop {
             for (target, value) in self.targets().unwrap().zip(self.values().unwrap()) {
                 let var = ctx.intern_ident(target);
                 let value = value.eval(ctx)?;
-                ctx.local(var);
                 ctx.assign(var, value);
             }
 
