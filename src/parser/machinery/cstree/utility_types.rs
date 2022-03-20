@@ -40,6 +40,7 @@ impl<N, T> NodeOrToken<N, T> {
     }
 
     pub(crate) fn as_ref(&self) -> NodeOrToken<&N, &T> {
+        #[allow(clippy::needless_match)]
         match self {
             NodeOrToken::Node(node) => NodeOrToken::Node(node),
             NodeOrToken::Token(token) => NodeOrToken::Token(token),

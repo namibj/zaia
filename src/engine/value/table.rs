@@ -23,7 +23,7 @@ impl Table {
 
         self.map
             .raw_entry_mut()
-            .from_hash(hash, |other| key.op_eq(*other))
+            .from_hash(hash, |other| key.op_eq(*other).cast_bool_unchecked())
     }
 
     pub fn get(&self, key: Value) -> Option<&Value> {
@@ -31,7 +31,7 @@ impl Table {
 
         self.map
             .raw_entry()
-            .from_hash(hash, |other| key.op_eq(*other))
+            .from_hash(hash, |other| key.op_eq(*other).cast_bool_unchecked())
             .map(|(_, v)| v)
     }
 
@@ -60,6 +60,10 @@ impl Table {
         if let hash_map::RawEntryMut::Occupied(entry) = self.entry_mut(key) {
             entry.remove();
         }
+    }
+
+    pub fn is_empty(&self) -> bool {
+        self.map.is_empty()
     }
 }
 

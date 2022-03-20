@@ -64,6 +64,7 @@ impl<'cache, 'source> Sink<'cache, 'source> {
                         }
                     }
 
+                    #[allow(clippy::iter_with_drain)]
                     for kind in preceded_nodes.drain(..).rev() {
                         self.builder.start_node(kind.into());
                     }
