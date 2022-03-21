@@ -1,9 +1,10 @@
 use std::{
+    borrow::Borrow,
     cell::{Ref, RefCell},
     collections::hash_map::RandomState,
 };
 
-use hashbrown::HashMap;
+use hashbrown::{HashMap, HashSet};
 
 use super::super::{
     gc::{Handle, Heap},
@@ -16,7 +17,7 @@ struct CtxInternal<'a> {
     scope: Vec<HashMap<Handle<ByteString>, Value, RandomState>>,
     heap: &'a Heap,
     interner: &'a TokenInterner,
-    ident_cache: HashMap<String, Handle<ByteString>, RandomState>,
+    strings: HashSet<Handle<ByteString>, RandomState>,
 }
 
 pub struct Ctx<'a> {
@@ -31,7 +32,7 @@ impl<'a> Ctx<'a> {
                 scope: vec![HashMap::with_hasher(RandomState::new())],
                 heap,
                 interner,
-                ident_cache: HashMap::with_hasher(RandomState::new()),
+                strings: HashSet::with_hasher(RandomState::new()),
             }),
         }
     }
@@ -97,17 +98,29 @@ impl<'a> Ctx<'a> {
         Value::from_nil()
     }
 
-    pub fn intern_ident(&self, ident: &Ident) -> Handle<ByteString> {
+    pub fn intern(&self, key: &[u8]) -> Handle<ByteString> {
         let mut internal = self.internal.borrow_mut();
-        let name = ident.name(internal.interner).unwrap();
 
-        if let Some(handle) = internal.ident_cache.get(name) {
+        impl Borrow<[u8]> for Handle<ByteString> {
+            fn borrow(&self) -> &[u8] {
+                unsafe { self.get_unchecked() }
+            }
+        }
+
+        if let Some(handle) = internal.strings.get(key) {
             return *handle;
         }
 
-        let handle = internal.heap.insert_string(name.as_bytes());
-        internal.ident_cache.insert(name.to_owned(), handle);
+        let handle = internal.heap.insert_string(key);
+        internal.strings.insert(handle);
         handle
+    }
+
+    pub fn intern_ident(&self, ident: &Ident) -> Handle<ByteString> {
+        let internal = self.internal.borrow();
+        let name = ident.name(internal.interner).unwrap();
+        drop(internal);
+        self.intern(name.as_bytes())
     }
 }
 

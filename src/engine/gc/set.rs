@@ -7,6 +7,7 @@ pub struct ObjectSet {
 }
 
 impl ObjectSet {
+    #[allow(clippy::new_without_default)]
     pub fn new() -> Self {
         Self {
             set: HashMap::with_hasher(()),

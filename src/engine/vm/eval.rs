@@ -212,7 +212,7 @@ impl Eval for BinaryOp {
             BinaryOperator::Lt => lhs.op_lt(rhs),
             BinaryOperator::Property => lhs.op_property(rhs),
             BinaryOperator::Method => lhs.op_method(rhs),
-            BinaryOperator::Concat => lhs.op_concat(rhs),
+            BinaryOperator::Concat => lhs.op_concat(rhs, ctx),
         })
     }
 }

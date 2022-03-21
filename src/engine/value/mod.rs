@@ -12,7 +12,10 @@ pub use string::ByteString;
 pub use table::Table;
 pub use userdata::Userdata;
 
-use super::gc::{Handle, TaggedHandle, Trace, Visitor};
+use super::{
+    gc::{Handle, TaggedHandle, Trace, Visitor},
+    vm::ctx::Ctx,
+};
 use crate::util::mix_u64;
 
 #[derive(Debug, PartialEq)]
@@ -117,12 +120,24 @@ impl Value {
         }
     }
 
-    pub fn cast_string_unchecked<'a>(self) -> &'a ByteString {
+    fn cast_string_unchecked<'a>(self) -> &'a ByteString {
         unsafe { &*(get_string(self.data) as *const ByteString) }
     }
 
     pub fn cast_bool_unchecked(&self) -> bool {
-        todo!()
+        get_bool(self.data)
+    }
+
+    fn cast_table_unchecked<'a>(self) -> &'a Table {
+        unsafe { &*(get_table(self.data) as *const Table) }
+    }
+
+    pub fn is_truthy(&self) -> bool {
+        match self.ty() {
+            ValueType::Nil => false,
+            ValueType::Bool => get_bool(self.data),
+            _ => true,
+        }
     }
 
     fn ty(self) -> ValueType {
@@ -238,12 +253,36 @@ impl Value {
         todo!()
     }
 
-    pub fn op_leq(self, _other: Self) -> Self {
-        todo!()
+    pub fn op_leq(self, other: Self) -> Self {
+        let ty_1 = self.ty();
+        let ty_2 = other.ty();
+
+        if ty_1 != ty_2 {
+            return Value::from_bool(false);
+        }
+
+        Value::from_bool(match ty_1 {
+            ValueType::Int => get_int(self.data) <= get_int(other.data),
+            ValueType::Float => get_float(self.data) <= get_float(other.data),
+            ValueType::String => **self.cast_string_unchecked() <= **other.cast_string_unchecked(),
+            _ => panic!("attempted op_leq on unsupported type: {:?}", ty_1),
+        })
     }
 
-    pub fn op_geq(self, _other: Self) -> Self {
-        todo!()
+    pub fn op_geq(self, other: Self) -> Self {
+        let ty_1 = self.ty();
+        let ty_2 = other.ty();
+
+        if ty_1 != ty_2 {
+            return Value::from_bool(false);
+        }
+
+        Value::from_bool(match ty_1 {
+            ValueType::Int => get_int(self.data) >= get_int(other.data),
+            ValueType::Float => get_float(self.data) >= get_float(other.data),
+            ValueType::String => **self.cast_string_unchecked() >= **other.cast_string_unchecked(),
+            _ => panic!("attempted op_geq on unsupported type: {:?}", ty_1),
+        })
     }
 
     pub fn op_property(self, _other: Self) -> Self {
@@ -254,34 +293,56 @@ impl Value {
         todo!()
     }
 
-    pub fn op_concat(self, _other: Self) -> Self {
-        todo!()
+    pub fn op_concat(self, other: Self, ctx: &Ctx) -> Self {
+        let ty_1 = self.ty();
+        let ty_2 = other.ty();
+
+        if ty_1 != ValueType::String && ty_2 != ValueType::String {
+            panic!()
+        }
+
+        let str_1 = self.cast_string_unchecked();
+        let str_2 = other.cast_string_unchecked();
+        let mut buf = Vec::new();
+        buf.extend_from_slice(str_1);
+        buf.extend_from_slice(str_2);
+        let new_str = ctx.intern(&buf);
+        Value::from_string(new_str)
     }
 
     pub fn op_neg(self) -> Self {
-        todo!()
+        match self.ty() {
+            ValueType::Int => Value::from_int(-get_int(self.data)),
+            ValueType::Float => Value::from_float(-get_float(self.data)),
+            _ => panic!(),
+        }
     }
 
     pub fn op_not(self) -> Self {
-        todo!()
+        Value::from_bool(!self.is_truthy())
     }
 
     pub fn op_len(self) -> Self {
-        let ty_1 = self.ty();
-
         match self.ty() {
             ValueType::Table => {
-                todo!()
-            }
+                let len = self.cast_table_unchecked().len();
+                Value::from_int(len as i32)
+            },
             ValueType::String => {
-                todo!()
-            }
+                let len = self.cast_string_unchecked().len();
+                Value::from_int(len as i32)
+            },
             _ => panic!(),
         }
     }
 
     pub fn op_bit_not(self) -> Self {
-        todo!()
+        if let ValueType::Int = self.ty() {
+            let x = get_int(self.data);
+            return Value::from_int(!x);
+        }
+
+        panic!()
     }
 
     pub fn op_hash(self) -> u64 {
