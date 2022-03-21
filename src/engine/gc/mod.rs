@@ -119,7 +119,7 @@ impl HeapInternal {
         let layout = ByteString::layout(len);
 
         unsafe {
-            let ptr = alloc::alloc(layout) as *mut ByteString;
+            let ptr = alloc::Allocator::allocate(self, layout).unwrap().as_ptr() as *mut ByteString;
             ByteString::initialize_into(ptr, len);
             ptr::copy_nonoverlapping(bytes.as_ptr(), (&mut *ptr).offset(0), len as usize);
             let handle = Handle::new(ptr);
