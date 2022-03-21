@@ -24,6 +24,17 @@ impl Heap {
         }
     }
 
+    pub fn insert<T>(&self, value: T) -> Handle<T>
+    where
+        T: PtrTag,
+    {
+        self.internal.insert(value)
+    }
+
+    pub fn insert_string(&self, bytes: &[u8]) -> Handle<ByteString> {
+        self.internal.insert_string(bytes)
+    }
+
     pub unsafe fn destroy(&self, handle: TaggedHandle) {
         self.internal.destroy(handle);
     }
@@ -101,6 +112,10 @@ impl HeapInternal {
         let handle = Handle::new(ptr);
         self.tree.borrow_mut().objects.insert(handle.tagged());
         handle
+    }
+
+    fn insert_string(&self, _bytes: &[u8]) -> Handle<ByteString> {
+        todo!()
     }
 
     unsafe fn destroy(&self, handle: TaggedHandle) {

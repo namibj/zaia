@@ -97,18 +97,17 @@ impl<'a> Ctx<'a> {
         Value::from_nil()
     }
 
-    pub fn intern_ident(&self, _ident: &Ident) -> Handle<ByteString> {
-        // let internal = self.internal.borrow_mut();
-        // let name = ident.name(internal.interner).unwrap();
+    pub fn intern_ident(&self, ident: &Ident) -> Handle<ByteString> {
+        let mut internal = self.internal.borrow_mut();
+        let name = ident.name(internal.interner).unwrap();
 
-        // if let Some(handle) = internal.ident_cache.get(name) {
-        //    return *handle;
-        //}
+        if let Some(handle) = internal.ident_cache.get(name) {
+            return *handle;
+        }
 
-        // let handle = todo!();
-        // internal.ident_cache.insert(name.to_owned(), handle);
-        // handle
-        todo!()
+        let handle = internal.heap.insert_string(name.as_bytes());
+        internal.ident_cache.insert(name.to_owned(), handle);
+        handle
     }
 }
 
