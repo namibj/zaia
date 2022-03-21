@@ -267,7 +267,17 @@ impl Value {
     }
 
     pub fn op_len(self) -> Self {
-        todo!()
+        let ty_1 = self.ty();
+
+        match self.ty() {
+            ValueType::Table => {
+                todo!()
+            }
+            ValueType::String => {
+                todo!()
+            }
+            _ => panic!(),
+        }
     }
 
     pub fn op_bit_not(self) -> Self {
