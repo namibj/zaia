@@ -114,8 +114,16 @@ impl HeapInternal {
         handle
     }
 
-    fn insert_string(&self, _bytes: &[u8]) -> Handle<ByteString> {
-        todo!()
+    fn insert_string(&self, bytes: &[u8]) -> Handle<ByteString> {
+        let len = bytes.len() as u32;
+        let layout = ByteString::layout(len);
+
+        unsafe {
+            let ptr = alloc::alloc(layout) as *mut ByteString;
+            ByteString::initialize_into(ptr, len);
+            ptr::copy_nonoverlapping(bytes.as_ptr(), (&mut *ptr).offset(0), len as usize);
+            Handle::new(ptr)
+        }
     }
 
     unsafe fn destroy(&self, handle: TaggedHandle) {
