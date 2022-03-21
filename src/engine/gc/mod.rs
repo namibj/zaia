@@ -205,7 +205,6 @@ unsafe impl alloc::Allocator for Heap {
 unsafe impl alloc::Allocator for HeapInternal {
     fn allocate(&self, layout: alloc::Layout) -> Result<ptr::NonNull<[u8]>, alloc::AllocError> {
         self.heuristics.update_allocated(|x| x + layout.size());
-
         alloc::Global.allocate(layout)
     }
 

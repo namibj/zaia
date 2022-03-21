@@ -25,6 +25,7 @@ impl Heuristics {
     pub fn adjust(&self) {
         let new_threshold = self.threshold();
         self.threshold.set(new_threshold);
+        self.should_collect.set(false);
     }
 
     fn check_collect(&self) {
