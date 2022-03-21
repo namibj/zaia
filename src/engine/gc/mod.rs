@@ -122,7 +122,9 @@ impl HeapInternal {
             let ptr = alloc::alloc(layout) as *mut ByteString;
             ByteString::initialize_into(ptr, len);
             ptr::copy_nonoverlapping(bytes.as_ptr(), (&mut *ptr).offset(0), len as usize);
-            Handle::new(ptr)
+            let handle = Handle::new(ptr);
+            self.tree.borrow_mut().objects.insert(handle.tagged());
+            handle
         }
     }
 
