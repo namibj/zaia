@@ -2,12 +2,10 @@ use std::fmt::{self, Display};
 
 use logos::{Lexer, Logos};
 
-// TODO(#34): split into seperate SyntaxKind and Token enums
 #[allow(clippy::manual_non_exhaustive)]
 #[derive(Logos, Debug, PartialEq, Eq, PartialOrd, Ord, Hash, Clone, Copy)]
 #[repr(u16)]
 pub enum SyntaxKind {
-    // Miscellaneous
     #[error]
     Invalid = 0,
 
@@ -51,7 +49,6 @@ pub enum SyntaxKind {
     #[regex("--", skip_comment)]
     Comment,
 
-    // Operators
     #[token("+")]
     Plus,
 
@@ -118,7 +115,6 @@ pub enum SyntaxKind {
     #[token("..")]
     DDot,
 
-    // Keywords
     #[token("local")]
     Local,
 
@@ -179,7 +175,6 @@ pub enum SyntaxKind {
     #[token("<close>")]
     Close,
 
-    // Literals
     #[token("nil")]
     Nil,
 
@@ -208,7 +203,6 @@ pub enum SyntaxKind {
     #[regex(r"0x[0-9a-fA-F]*\.[0-9a-fA-F]+([pP][+-][0-9a-fA-F]+)?")]
     HexFloat,
 
-    // Grouping
     #[regex(r"[a-zA-Z_][a-zA-Z0-9_]*", priority = 3)]
     Ident,
 
