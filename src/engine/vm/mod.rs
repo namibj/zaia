@@ -5,7 +5,7 @@ use std::collections::hash_map::RandomState;
 
 use ctx::Ctx;
 use eval::Eval;
-use hashbrown::HashMap;
+use hashbrown::HashSet;
 
 use super::{
     gc::{Handle, Heap},
@@ -20,17 +20,16 @@ use crate::parser::machinery::cstree::interning::TokenInterner;
 //   - catch break stmts & handle scoping
 //   - impl _ENV
 //   - handle multivalue
-//   - gc interned strings
 pub struct VM {
     global: Table,
-    strings: HashMap<Vec<u8>, Handle<ByteString>, RandomState>,
+    strings: HashSet<Handle<ByteString>, RandomState>,
 }
 
 impl VM {
     pub fn new(heap: Heap) -> Self {
         VM {
             global: Table::new(heap),
-            strings: HashMap::with_hasher(RandomState::new()),
+            strings: HashSet::with_hasher(RandomState::new()),
         }
     }
 
@@ -43,7 +42,7 @@ impl VM {
     where
         T: Eval,
     {
-        let ctx = Ctx::new(&mut self.global, heap, interner);
+        let ctx = Ctx::new(&mut self.global, heap, interner, &mut self.strings);
         item.eval(&ctx).into()
     }
 }

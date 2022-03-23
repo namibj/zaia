@@ -17,7 +17,7 @@ struct CtxInternal<'a> {
     scope: Vec<HashMap<Handle<ByteString>, Value, RandomState>>,
     heap: &'a Heap,
     interner: &'a TokenInterner,
-    strings: HashSet<Handle<ByteString>, RandomState>,
+    strings: &'a mut HashSet<Handle<ByteString>, RandomState>,
 }
 
 pub struct Ctx<'a> {
@@ -25,14 +25,14 @@ pub struct Ctx<'a> {
 }
 
 impl<'a> Ctx<'a> {
-    pub fn new(global: &'a mut Table, heap: &'a Heap, interner: &'a TokenInterner) -> Self {
+    pub fn new(global: &'a mut Table, heap: &'a Heap, interner: &'a TokenInterner, strings: &'a mut HashSet<Handle<ByteString>, RandomState>) -> Self {
         Ctx {
             internal: RefCell::new(CtxInternal {
                 global,
                 scope: vec![HashMap::with_hasher(RandomState::new())],
                 heap,
                 interner,
-                strings: HashSet::with_hasher(RandomState::new()),
+                strings,
             }),
         }
     }
