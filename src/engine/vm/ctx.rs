@@ -25,7 +25,12 @@ pub struct Ctx<'a> {
 }
 
 impl<'a> Ctx<'a> {
-    pub fn new(global: &'a mut Table, heap: &'a Heap, interner: &'a TokenInterner, strings: &'a mut HashSet<Handle<ByteString>, RandomState>) -> Self {
+    pub fn new(
+        global: &'a mut Table,
+        heap: &'a Heap,
+        interner: &'a TokenInterner,
+        strings: &'a mut HashSet<Handle<ByteString>, RandomState>,
+    ) -> Self {
         Ctx {
             internal: RefCell::new(CtxInternal {
                 global,

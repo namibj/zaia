@@ -15,9 +15,9 @@ use super::{
 use crate::parser::machinery::cstree::interning::TokenInterner;
 
 // TODO:
-//   - gc root tracked values in the api
 //   - vm eval impl
 //   - catch break stmts & handle scoping
+//   - gc root tracked values in the api
 //   - impl _ENV
 //   - handle multivalue
 pub struct VM {
