@@ -96,11 +96,7 @@ impl<'a> Ctx<'a> {
         }
 
         let key = Value::from_string(key);
-        if let Some(value) = internal.global.get(key) {
-            return *value;
-        }
-
-        Value::from_nil()
+        internal.global.get(key)
     }
 
     pub fn intern(&self, key: &[u8]) -> Handle<ByteString> {

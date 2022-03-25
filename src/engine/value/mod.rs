@@ -403,12 +403,28 @@ impl Value {
         })
     }
 
-    pub fn op_property(self, _other: Self) -> Self {
-        todo!()
+    pub fn op_property(self, other: Self) -> Self {
+        if self.ty() != ValueType::Table {
+            panic!()
+        }
+
+        let table = self.cast_table_unchecked();
+        table.get(other)
     }
 
-    pub fn op_method(self, _other: Self) -> Self {
-        todo!()
+    pub fn op_method(self, other: Self) -> Self {
+        if self.ty() != ValueType::Table {
+            panic!()
+        }
+
+        let table = self.cast_table_unchecked();
+        let value = table.get(other);
+
+        if value.ty() != ValueType::Function {
+            panic!()
+        }
+
+        value
     }
 
     pub fn op_concat(self, other: Self, ctx: &Ctx) -> Self {

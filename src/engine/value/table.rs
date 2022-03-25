@@ -26,21 +26,13 @@ impl Table {
             .from_hash(hash, |other| key.op_eq(*other).cast_bool_unchecked())
     }
 
-    pub fn get(&self, key: Value) -> Option<&Value> {
+    pub fn get(&self, key: Value) -> Value {
         let hash = key.op_hash();
 
         self.map
             .raw_entry()
             .from_hash(hash, |other| key.op_eq(*other).cast_bool_unchecked())
-            .map(|(_, v)| v)
-    }
-
-    pub fn get_mut(&mut self, key: Value) -> Option<&mut Value> {
-        if let hash_map::RawEntryMut::Occupied(entry) = self.entry_mut(key) {
-            Some(entry.into_mut())
-        } else {
-            None
-        }
+            .map(|(_, v)| v).copied().unwrap_or(Value::from_nil())
     }
 
     pub fn insert(&mut self, key: Value, value: Value) {
