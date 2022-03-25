@@ -197,24 +197,79 @@ impl Value {
         Value::from_bool(self.is_truthy() || other.is_truthy())
     }
 
-    pub fn op_add(self, _other: Self) -> Self {
-        todo!()
+    pub fn op_add(self, other: Self) -> Self {
+        let ty_1 = self.ty();
+        let ty_2 = other.ty();
+
+        if ty_1 != ty_2 {
+            panic!();
+        }
+
+        match ty_1 {
+            ValueType::Int => Value::from_int(get_int(self.data) + get_int(other.data)),
+            ValueType::Float => Value::from_float(get_float(self.data) + get_float(other.data)),
+            _ => panic!("attempted op_mod on unsupported type: {:?}", ty_1),
+        }
     }
 
-    pub fn op_sub(self, _other: Self) -> Self {
-        todo!()
+    pub fn op_sub(self, other: Self) -> Self {
+        let ty_1 = self.ty();
+        let ty_2 = other.ty();
+
+        if ty_1 != ty_2 {
+            panic!();
+        }
+
+        match ty_1 {
+            ValueType::Int => Value::from_int(get_int(self.data) - get_int(other.data)),
+            ValueType::Float => Value::from_float(get_float(self.data) - get_float(other.data)),
+            _ => panic!("attempted op_sub on unsupported type: {:?}", ty_1),
+        }
     }
 
-    pub fn op_mul(self, _other: Self) -> Self {
-        todo!()
+    pub fn op_mul(self, other: Self) -> Self {
+        let ty_1 = self.ty();
+        let ty_2 = other.ty();
+
+        if ty_1 != ty_2 {
+            panic!();
+        }
+
+        match ty_1 {
+            ValueType::Int => Value::from_int(get_int(self.data) * get_int(other.data)),
+            ValueType::Float => Value::from_float(get_float(self.data) * get_float(other.data)),
+            _ => panic!("attempted op_mul on unsupported type: {:?}", ty_1),
+        }
     }
 
-    pub fn op_div(self, _other: Self) -> Self {
-        todo!()
+    pub fn op_div(self, other: Self) -> Self {
+        let ty_1 = self.ty();
+        let ty_2 = other.ty();
+
+        if ty_1 != ty_2 {
+            panic!();
+        }
+
+        match ty_1 {
+            ValueType::Int => Value::from_int(get_int(self.data) / get_int(other.data)),
+            ValueType::Float => Value::from_float(get_float(self.data) / get_float(other.data)),
+            _ => panic!("attempted op_div on unsupported type: {:?}", ty_1),
+        }
     }
 
-    pub fn op_int_div(self, _other: Self) -> Self {
-        todo!()
+    pub fn op_int_div(self, other: Self) -> Self {
+        let ty_1 = self.ty();
+        let ty_2 = other.ty();
+
+        if ty_1 != ty_2 {
+            panic!();
+        }
+
+        match ty_1 {
+            ValueType::Int => Value::from_int(get_int(self.data) / get_int(other.data)),
+            ValueType::Float => Value::from_int((get_float(self.data) / get_float(other.data)) as i32),
+            _ => panic!("attempted op_mod on unsupported type: {:?}", ty_1),
+        }
     }
 
     pub fn op_exp(self, other: Self) -> Self {
