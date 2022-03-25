@@ -208,7 +208,7 @@ impl Value {
         match ty_1 {
             ValueType::Int => Value::from_int(get_int(self.data) + get_int(other.data)),
             ValueType::Float => Value::from_float(get_float(self.data) + get_float(other.data)),
-            _ => panic!("attempted op_mod on unsupported type: {:?}", ty_1),
+            _ => panic!("attempted op_add on unsupported type: {:?}", ty_1),
         }
     }
 
@@ -268,7 +268,7 @@ impl Value {
         match ty_1 {
             ValueType::Int => Value::from_int(get_int(self.data) / get_int(other.data)),
             ValueType::Float => Value::from_int((get_float(self.data) / get_float(other.data)) as i32),
-            _ => panic!("attempted op_mod on unsupported type: {:?}", ty_1),
+            _ => panic!("attempted op_int_div on unsupported type: {:?}", ty_1),
         }
     }
 
