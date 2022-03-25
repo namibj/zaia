@@ -228,7 +228,7 @@ impl Value {
         match ty_1 {
             ValueType::Int => Value::from_int(get_int(self.data).pow(get_int(other.data) as u32)),
             ValueType::Float => Value::from_float(get_float(self.data).powf(get_float(other.data))),
-            _ => panic!("attempted op_mod on unsupported type: {:?}", ty_1),
+            _ => panic!("attempted op_exp on unsupported type: {:?}", ty_1),
         }
     }
 
