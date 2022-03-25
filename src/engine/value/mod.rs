@@ -189,12 +189,12 @@ impl Value {
         })
     }
 
-    pub fn op_and(self, _other: Self) -> Self {
-        todo!()
+    pub fn op_and(self, other: Self) -> Self {
+        Value::from_bool(self.is_truthy() && other.is_truthy())
     }
 
-    pub fn op_oe(self, _other: Self) -> Self {
-        todo!()
+    pub fn op_or(self, other: Self) -> Self {
+        Value::from_bool(self.is_truthy() || other.is_truthy())
     }
 
     pub fn op_add(self, _other: Self) -> Self {
@@ -217,40 +217,103 @@ impl Value {
         todo!()
     }
 
-    pub fn op_exp(self, _other: Self) -> Self {
-        todo!()
+    pub fn op_exp(self, other: Self) -> Self {
+        let ty_1 = self.ty();
+        let ty_2 = other.ty();
+
+        if ty_1 != ty_2 {
+            panic!();
+        }
+
+        match ty_1 {
+            ValueType::Int => Value::from_int(get_int(self.data).pow(get_int(other.data) as u32)),
+            ValueType::Float => Value::from_float(get_float(self.data).powf(get_float(other.data))),
+            _ => panic!("attempted op_mod on unsupported type: {:?}", ty_1),
+        }
     }
 
-    pub fn op_mod(self, _other: Self) -> Self {
-        todo!()
+    pub fn op_mod(self, other: Self) -> Self {
+        let ty_1 = self.ty();
+        let ty_2 = other.ty();
+
+        if ty_1 != ty_2 {
+            panic!();
+        }
+
+        match ty_1 {
+            ValueType::Int => Value::from_int(get_int(self.data) % get_int(other.data)),
+            ValueType::Float => Value::from_float(get_float(self.data) % get_float(other.data)),
+            _ => panic!("attempted op_mod on unsupported type: {:?}", ty_1),
+        }
     }
 
-    pub fn op_bit_and(self, _other: Self) -> Self {
-        todo!()
+    pub fn op_bit_and(self, other: Self) -> Self {
+        let ty_1 = self.ty();
+        let ty_2 = other.ty();
+
+        if ty_1 != ValueType::Int && ty_2 != ValueType::Int {
+            panic!()
+        }
+
+        let v1 = get_int(self.data);
+        let v2 = get_int(other.data);
+        Value::from_int(v1 & v2)
     }
 
-    pub fn op_bit_or(self, _other: Self) -> Self {
-        todo!()
+    pub fn op_bit_or(self, other: Self) -> Self {
+        let ty_1 = self.ty();
+        let ty_2 = other.ty();
+
+        if ty_1 != ValueType::Int && ty_2 != ValueType::Int {
+            panic!()
+        }
+
+        let v1 = get_int(self.data);
+        let v2 = get_int(other.data);
+        Value::from_int(v1 | v2)
     }
 
-    pub fn op_lshift(self, _other: Self) -> Self {
-        todo!()
+    pub fn op_lshift(self, other: Self) -> Self {
+        let ty_1 = self.ty();
+        let ty_2 = other.ty();
+
+        if ty_1 != ValueType::Int && ty_2 != ValueType::Int {
+            panic!()
+        }
+
+        let v1 = get_int(self.data);
+        let v2 = get_int(other.data);
+        Value::from_int(v1 << v2)
     }
 
-    pub fn op_rshift(self, _other: Self) -> Self {
-        todo!()
+    pub fn op_rshift(self, other: Self) -> Self {
+        let ty_1 = self.ty();
+        let ty_2 = other.ty();
+
+        if ty_1 != ValueType::Int && ty_2 != ValueType::Int {
+            panic!()
+        }
+
+        let v1 = get_int(self.data);
+        let v2 = get_int(other.data);
+        Value::from_int(v1 >> v2)
     }
 
-    pub fn op_bit_xor(self, _other: Self) -> Self {
-        todo!()
+    pub fn op_bit_xor(self, other: Self) -> Self {
+        let ty_1 = self.ty();
+        let ty_2 = other.ty();
+
+        if ty_1 != ValueType::Int && ty_2 != ValueType::Int {
+            panic!()
+        }
+
+        let v1 = get_int(self.data);
+        let v2 = get_int(other.data);
+        Value::from_int(v1 ^ v2)
     }
 
-    pub fn op_neq(self, _other: Self) -> Self {
-        todo!()
-    }
-
-    pub fn op_or(self, _other: Self) -> Self {
-        todo!()
+    pub fn op_neq(self, other: Self) -> Self {
+        Value::from_bool(!get_bool(self.op_eq(other).data))
     }
 
     pub fn op_leq(self, other: Self) -> Self {
