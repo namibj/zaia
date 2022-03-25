@@ -84,6 +84,9 @@ impl<'a> Ctx<'a> {
                 return;
             }
         }
+
+        let key = Value::from_string(key);
+        internal.global.insert(key, value);
     }
 
     pub fn resolve(&self, key: Handle<ByteString>) -> Value {
