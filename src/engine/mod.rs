@@ -1,5 +1,6 @@
 mod error;
 pub mod gc;
+mod util;
 pub mod value;
 pub mod vm;
 

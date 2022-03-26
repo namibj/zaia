@@ -212,7 +212,7 @@ impl Eval for BinaryOp {
             BinaryOperator::Lt => lhs.op_lt(rhs),
             BinaryOperator::Property => lhs.op_property(rhs),
             BinaryOperator::Method => lhs.op_method(rhs),
-            BinaryOperator::Concat => lhs.op_concat(rhs),
+            BinaryOperator::Concat => lhs.op_concat(rhs, ctx),
         })
     }
 }
@@ -262,7 +262,12 @@ impl Eval for While {
         while self.cond().unwrap().eval(ctx)?.cast_bool_unchecked() {
             let _scope = ctx.scope();
             for stmt in self.block().unwrap() {
-                stmt.eval(ctx)?;
+                let res = stmt.eval(ctx);
+                if let Result::Break = res {
+                    break;
+                }
+
+                res?;
             }
         }
 
@@ -275,7 +280,12 @@ impl Eval for Repeat {
         loop {
             let _scope = ctx.scope();
             for stmt in self.block().unwrap() {
-                stmt.eval(ctx)?;
+                let res = stmt.eval(ctx);
+                if let Result::Break = res {
+                    break;
+                }
+
+                res?;
             }
 
             if self.cond().unwrap().eval(ctx)?.cast_bool_unchecked() {
@@ -292,7 +302,12 @@ impl Eval for If {
         if self.cond().unwrap().eval(ctx)?.cast_bool_unchecked() {
             let _scope = ctx.scope();
             for stmt in self.stmts().unwrap() {
-                stmt.eval(ctx)?;
+                let res = stmt.eval(ctx);
+                if let Result::Break = res {
+                    break;
+                }
+
+                res?;
             }
         } else if let Some(elif) = self.else_chain() {
             if let Some(el_if) = elif.elseif_block() {
@@ -300,7 +315,12 @@ impl Eval for If {
             } else if let Some(el) = elif.else_block() {
                 let _scope = ctx.scope();
                 for stmt in el {
-                    stmt.eval(ctx)?;
+                    let res = stmt.eval(ctx);
+                    if let Result::Break = res {
+                        break;
+                    }
+
+                    res?;
                 }
             }
         }

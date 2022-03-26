@@ -12,8 +12,11 @@ pub use string::ByteString;
 pub use table::Table;
 pub use userdata::Userdata;
 
-use super::gc::{Handle, TaggedHandle, Trace, Visitor};
-use crate::util::mix_u64;
+use super::{
+    gc::{Handle, TaggedHandle, Trace, Visitor},
+    util::mix_u64,
+    vm::ctx::Ctx,
+};
 
 #[derive(Debug, PartialEq)]
 enum ValueType {
@@ -52,6 +55,22 @@ macro_rules! dispatch {
             },
         }
     }}
+}
+
+fn int_op(iop: fn(i32, i32) -> i32, a: Value, b: Value) -> Value {
+    if a.ty() != ValueType::Int || b.ty() != ValueType::Int {
+        panic!("int_op: invalid types");
+    }
+
+    Value::from_int(iop(get_int(a.data), get_int(b.data)))
+}
+
+fn arith_op(iop: fn(i32, i32) -> Value, fop: fn(f64, f64) -> Value, a: Value, b: Value) -> Value {
+    if a.ty() == ValueType::Float || b.ty() == ValueType::Float {
+        fop(a.convert_float(), b.convert_float())
+    } else {
+        iop(a.cast_int(), b.cast_int())
+    }
 }
 
 // Value represents runtime values such as integers and strings.
@@ -117,12 +136,39 @@ impl Value {
         }
     }
 
-    pub fn cast_string_unchecked<'a>(self) -> &'a ByteString {
+    fn cast_string_unchecked<'a>(self) -> &'a ByteString {
         unsafe { &*(get_string(self.data) as *const ByteString) }
     }
 
     pub fn cast_bool_unchecked(&self) -> bool {
-        todo!()
+        get_bool(self.data)
+    }
+
+    fn cast_table_unchecked<'a>(self) -> &'a Table {
+        unsafe { &*(get_table(self.data) as *const Table) }
+    }
+
+    pub fn is_truthy(self) -> bool {
+        match self.ty() {
+            ValueType::Nil => false,
+            ValueType::Bool => get_bool(self.data),
+            _ => true,
+        }
+    }
+
+    pub fn convert_float(self) -> f64 {
+        match self.ty() {
+            ValueType::Float => get_float(self.data),
+            ValueType::Int => get_int(self.data) as f64,
+            _ => panic!("cannot convert to float"),
+        }
+    }
+
+    pub fn cast_int(self) -> i32 {
+        match self.ty() {
+            ValueType::Int => get_int(self.data),
+            _ => panic!("value is not int"),
+        }
     }
 
     fn ty(self) -> ValueType {
@@ -174,104 +220,207 @@ impl Value {
         })
     }
 
-    pub fn op_and(self, _other: Self) -> Self {
-        todo!()
+    pub fn op_and(self, other: Self) -> Self {
+        Value::from_bool(self.is_truthy() && other.is_truthy())
     }
 
-    pub fn op_oe(self, _other: Self) -> Self {
-        todo!()
+    pub fn op_or(self, other: Self) -> Self {
+        Value::from_bool(self.is_truthy() || other.is_truthy())
     }
 
-    pub fn op_add(self, _other: Self) -> Self {
-        todo!()
+    pub fn op_add(self, other: Self) -> Self {
+        arith_op(
+            |a, b| Value::from_int(a + b),
+            |a, b| Value::from_float(a + b),
+            self,
+            other,
+        )
     }
 
-    pub fn op_sub(self, _other: Self) -> Self {
-        todo!()
+    pub fn op_sub(self, other: Self) -> Self {
+        arith_op(
+            |a, b| Value::from_int(a - b),
+            |a, b| Value::from_float(a - b),
+            self,
+            other,
+        )
     }
 
-    pub fn op_mul(self, _other: Self) -> Self {
-        todo!()
+    pub fn op_mul(self, other: Self) -> Self {
+        arith_op(
+            |a, b| Value::from_int(a * b),
+            |a, b| Value::from_float(a * b),
+            self,
+            other,
+        )
     }
 
-    pub fn op_div(self, _other: Self) -> Self {
-        todo!()
+    pub fn op_div(self, other: Self) -> Self {
+        arith_op(
+            |a, b| Value::from_float(a as f64 / b as f64),
+            |a, b| Value::from_float(a / b),
+            self,
+            other,
+        )
     }
 
-    pub fn op_int_div(self, _other: Self) -> Self {
-        todo!()
+    pub fn op_int_div(self, other: Self) -> Self {
+        arith_op(
+            |a, b| Value::from_int(a / b),
+            |a, b| Value::from_int((a / b).floor() as i32),
+            self,
+            other,
+        )
     }
 
-    pub fn op_exp(self, _other: Self) -> Self {
-        todo!()
+    pub fn op_exp(self, other: Self) -> Self {
+        arith_op(
+            |a, b| Value::from_int(a.pow(b as u32)),
+            |a, b| Value::from_float(a.powf(b)),
+            self,
+            other,
+        )
     }
 
-    pub fn op_mod(self, _other: Self) -> Self {
-        todo!()
+    pub fn op_mod(self, other: Self) -> Self {
+        arith_op(
+            |a, b| Value::from_int(a % b),
+            |a, b| Value::from_float(a % b),
+            self,
+            other,
+        )
     }
 
-    pub fn op_bit_and(self, _other: Self) -> Self {
-        todo!()
+    pub fn op_bit_and(self, other: Self) -> Self {
+        int_op(|a, b| a & b, self, other)
     }
 
-    pub fn op_bit_or(self, _other: Self) -> Self {
-        todo!()
+    pub fn op_bit_or(self, other: Self) -> Self {
+        int_op(|a, b| a | b, self, other)
     }
 
-    pub fn op_lshift(self, _other: Self) -> Self {
-        todo!()
+    pub fn op_lshift(self, other: Self) -> Self {
+        int_op(|a, b| a << b, self, other)
     }
 
-    pub fn op_rshift(self, _other: Self) -> Self {
-        todo!()
+    pub fn op_rshift(self, other: Self) -> Self {
+        int_op(|a, b| a >> b, self, other)
     }
 
-    pub fn op_bit_xor(self, _other: Self) -> Self {
-        todo!()
+    pub fn op_bit_xor(self, other: Self) -> Self {
+        int_op(|a, b| a ^ b, self, other)
     }
 
-    pub fn op_neq(self, _other: Self) -> Self {
-        todo!()
+    pub fn op_neq(self, other: Self) -> Self {
+        Value::from_bool(!get_bool(self.op_eq(other).data))
     }
 
-    pub fn op_or(self, _other: Self) -> Self {
-        todo!()
+    pub fn op_leq(self, other: Self) -> Self {
+        let ty_1 = self.ty();
+        let ty_2 = other.ty();
+
+        if ty_1 != ty_2 {
+            return Value::from_bool(false);
+        }
+
+        Value::from_bool(match ty_1 {
+            ValueType::Int => get_int(self.data) <= get_int(other.data),
+            ValueType::Float => get_float(self.data) <= get_float(other.data),
+            ValueType::String => **self.cast_string_unchecked() <= **other.cast_string_unchecked(),
+            _ => panic!("attempted op_leq on unsupported type: {:?}", ty_1),
+        })
     }
 
-    pub fn op_leq(self, _other: Self) -> Self {
-        todo!()
+    pub fn op_geq(self, other: Self) -> Self {
+        let ty_1 = self.ty();
+        let ty_2 = other.ty();
+
+        if ty_1 != ty_2 {
+            return Value::from_bool(false);
+        }
+
+        Value::from_bool(match ty_1 {
+            ValueType::Int => get_int(self.data) >= get_int(other.data),
+            ValueType::Float => get_float(self.data) >= get_float(other.data),
+            ValueType::String => **self.cast_string_unchecked() >= **other.cast_string_unchecked(),
+            _ => panic!("attempted op_geq on unsupported type: {:?}", ty_1),
+        })
     }
 
-    pub fn op_geq(self, _other: Self) -> Self {
-        todo!()
+    pub fn op_property(self, other: Self) -> Self {
+        if self.ty() != ValueType::Table {
+            panic!()
+        }
+
+        let table = self.cast_table_unchecked();
+        table.get(other)
     }
 
-    pub fn op_property(self, _other: Self) -> Self {
-        todo!()
+    pub fn op_method(self, other: Self) -> Self {
+        if self.ty() != ValueType::Table {
+            panic!()
+        }
+
+        let table = self.cast_table_unchecked();
+        let value = table.get(other);
+
+        if value.ty() != ValueType::Function {
+            panic!()
+        }
+
+        value
     }
 
-    pub fn op_method(self, _other: Self) -> Self {
-        todo!()
-    }
+    pub fn op_concat(self, other: Self, ctx: &Ctx) -> Self {
+        let ty_1 = self.ty();
+        let ty_2 = other.ty();
 
-    pub fn op_concat(self, _other: Self) -> Self {
-        todo!()
+        if ty_1 != ValueType::String && ty_2 != ValueType::String {
+            panic!()
+        }
+
+        let str_1 = self.cast_string_unchecked();
+        let str_2 = other.cast_string_unchecked();
+        let mut buf = Vec::new();
+        buf.extend_from_slice(str_1);
+        buf.extend_from_slice(str_2);
+        let new_str = ctx.intern(&buf);
+        Value::from_string(new_str)
     }
 
     pub fn op_neg(self) -> Self {
-        todo!()
+        match self.ty() {
+            ValueType::Int => Value::from_int(-get_int(self.data)),
+            ValueType::Float => Value::from_float(-get_float(self.data)),
+            _ => panic!(),
+        }
     }
 
     pub fn op_not(self) -> Self {
-        todo!()
+        Value::from_bool(!self.is_truthy())
     }
 
     pub fn op_len(self) -> Self {
-        todo!()
+        match self.ty() {
+            ValueType::Table => {
+                let len = self.cast_table_unchecked().len();
+                Value::from_int(len as i32)
+            },
+            ValueType::String => {
+                let len = self.cast_string_unchecked().len();
+                Value::from_int(len as i32)
+            },
+            _ => panic!(),
+        }
     }
 
     pub fn op_bit_not(self) -> Self {
-        todo!()
+        if let ValueType::Int = self.ty() {
+            let x = get_int(self.data);
+            return Value::from_int(!x);
+        }
+
+        panic!()
     }
 
     pub fn op_hash(self) -> u64 {

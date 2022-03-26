@@ -24,6 +24,17 @@ impl Heap {
         }
     }
 
+    pub fn insert<T>(&self, value: T) -> Handle<T>
+    where
+        T: PtrTag,
+    {
+        self.internal.insert(value)
+    }
+
+    pub fn insert_string(&self, bytes: &[u8]) -> Handle<ByteString> {
+        self.internal.insert_string(bytes)
+    }
+
     pub unsafe fn destroy(&self, handle: TaggedHandle) {
         self.internal.destroy(handle);
     }
@@ -103,6 +114,20 @@ impl HeapInternal {
         handle
     }
 
+    fn insert_string(&self, bytes: &[u8]) -> Handle<ByteString> {
+        let len = bytes.len() as u32;
+        let layout = ByteString::layout(len);
+
+        unsafe {
+            let ptr = alloc::Allocator::allocate(self, layout).unwrap().as_ptr() as *mut ByteString;
+            ByteString::initialize_into(ptr, len);
+            ptr::copy_nonoverlapping(bytes.as_ptr(), (&mut *ptr).offset(0), len as usize);
+            let handle = Handle::new(ptr);
+            self.tree.borrow_mut().objects.insert(handle.tagged());
+            handle
+        }
+    }
+
     unsafe fn destroy(&self, handle: TaggedHandle) {
         let tagged = handle.value();
 
@@ -180,7 +205,6 @@ unsafe impl alloc::Allocator for Heap {
 unsafe impl alloc::Allocator for HeapInternal {
     fn allocate(&self, layout: alloc::Layout) -> Result<ptr::NonNull<[u8]>, alloc::AllocError> {
         self.heuristics.update_allocated(|x| x + layout.size());
-
         alloc::Global.allocate(layout)
     }
 

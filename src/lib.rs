@@ -5,4 +5,3 @@
 
 mod engine;
 pub mod parser;
-mod util;
