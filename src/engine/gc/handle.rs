@@ -1,6 +1,6 @@
 use std::{cmp, fmt, hash};
 
-use crate::util;
+use super::super::util;
 
 /// # Safety
 /// `PtrTag` must be implemented directly using the functions

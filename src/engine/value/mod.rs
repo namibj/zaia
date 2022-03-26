@@ -16,7 +16,7 @@ use super::{
     gc::{Handle, TaggedHandle, Trace, Visitor},
     vm::ctx::Ctx,
 };
-use crate::util::mix_u64;
+use super::util::mix_u64;
 
 #[derive(Debug, PartialEq)]
 enum ValueType {
