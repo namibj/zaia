@@ -32,7 +32,9 @@ impl Table {
         self.map
             .raw_entry()
             .from_hash(hash, |other| key.op_eq(*other).cast_bool_unchecked())
-            .map(|(_, v)| v).copied().unwrap_or(Value::from_nil())
+            .map(|(_, v)| v)
+            .copied()
+            .unwrap_or_else(Value::from_nil)
     }
 
     pub fn insert(&mut self, key: Value, value: Value) {

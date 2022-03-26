@@ -14,9 +14,9 @@ pub use userdata::Userdata;
 
 use super::{
     gc::{Handle, TaggedHandle, Trace, Visitor},
+    util::mix_u64,
     vm::ctx::Ctx,
 };
-use super::util::mix_u64;
 
 #[derive(Debug, PartialEq)]
 enum ValueType {
@@ -267,7 +267,8 @@ impl Value {
 
         match ty_1 {
             ValueType::Int => Value::from_int(get_int(self.data) / get_int(other.data)),
-            ValueType::Float => Value::from_int((get_float(self.data) / get_float(other.data)) as i32),
+            ValueType::Float =>
+                Value::from_int((get_float(self.data) / get_float(other.data)) as i32),
             _ => panic!("attempted op_int_div on unsupported type: {:?}", ty_1),
         }
     }

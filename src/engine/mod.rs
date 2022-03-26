@@ -1,7 +1,7 @@
 mod error;
 pub mod gc;
+mod util;
 pub mod value;
 pub mod vm;
-mod util;
 
 pub use error::Error;
