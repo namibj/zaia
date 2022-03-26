@@ -48,22 +48,16 @@ impl<'a> Ctx<'a> {
 
     pub fn scope(&self) -> ScopeKey<'a, '_> {
         let mut internal = self.internal.borrow_mut();
-
-        if !internal.scope.last().unwrap().is_empty() {
-            internal
-                .scope
-                .push(HashMap::with_hasher(RandomState::new()));
-        }
+        internal
+            .scope
+            .push(HashMap::with_hasher(RandomState::new()));
 
         ScopeKey { ctx: self }
     }
 
     fn scope_destroy(&self) {
         let mut internal = self.internal.borrow_mut();
-
-        if !internal.scope.last().unwrap().is_empty() {
-            internal.scope.pop();
-        }
+        internal.scope.pop();
     }
 
     pub fn local(&self, key: Handle<ByteString>) {

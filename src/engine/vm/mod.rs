@@ -5,7 +5,7 @@ use std::collections::hash_map::RandomState;
 
 use ctx::Ctx;
 use eval::Eval;
-use hashbrown::HashSet;
+use hashbrown::{HashMap, HashSet};
 
 use super::{
     gc::{Handle, Heap},
@@ -22,6 +22,7 @@ use crate::parser::machinery::cstree::interning::TokenInterner;
 pub struct VM {
     global: Table,
     strings: HashSet<Handle<ByteString>, RandomState>,
+    extern_ref: HashMap<Value, usize, RandomState>,
 }
 
 impl VM {
@@ -29,6 +30,7 @@ impl VM {
         VM {
             global: Table::new(heap),
             strings: HashSet::with_hasher(RandomState::new()),
+            extern_ref: HashMap::with_hasher(RandomState::new()),
         }
     }
 
