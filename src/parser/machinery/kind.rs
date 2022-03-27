@@ -194,13 +194,13 @@ pub enum SyntaxKind {
     #[regex(r"[0-9]+", priority = 2)]
     Int,
 
-    #[regex(r"0x[0-9a-fA-F]+")]
+    #[regex(r"0x[0-9a-fA-F]+", priority = 6)]
     HexInt,
 
     #[regex(r"[0-9]+(\.[0-9]+)?([eE][+-]?[0-9]+)?")]
     Float,
 
-    #[regex(r"0x[0-9a-fA-F]*\.[0-9a-fA-F]+([pP][+-][0-9a-fA-F]+)?")]
+    #[regex(r"0x[0-9a-fA-F]+(\.[0-9a-fA-F]+)?([pP][+-][0-9a-fA-F]+)?")]
     HexFloat,
 
     #[regex(r"[a-zA-Z_][a-zA-Z0-9_]*", priority = 3)]
