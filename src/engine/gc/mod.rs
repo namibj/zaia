@@ -108,7 +108,7 @@ impl HeapInternal {
     where
         T: PtrTag,
     {
-        let ptr = Box::into_raw(Box::new(value));
+        let ptr = Box::into_raw(Box::new_in(value, self));
         let handle = Handle::new(ptr);
         self.tree.borrow_mut().objects.insert(handle.tagged());
         handle
@@ -257,5 +257,25 @@ impl Drop for HeapInternal {
         tree.objects.iter().for_each(|object| unsafe {
             self.destroy(object);
         });
+    }
+}
+
+#[cfg(test)]
+mod tests {
+    use super::Heap;
+    use super::super::value::Table;
+
+    #[test]
+    fn collect_notrace() {
+        let heap = Heap::new();
+        let table1 = Table::new(heap.clone());
+        let table2 = Table::new(heap.clone());
+
+        heap.insert(table1);
+        heap.insert(table2);
+
+        let mut ctr = - 0;
+        heap.collect(|_| (), |_| ctr += 1);
+        assert_eq!(ctr, 2);
     }
 }

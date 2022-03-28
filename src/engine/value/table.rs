@@ -6,6 +6,7 @@ use super::{
     super::gc::{Heap, Trace, Visitor},
     Value,
 };
+use super::{super::gc::PtrTag, encoding};
 
 pub struct Table {
     map: HashMap<Value, Value, (), Heap>,
@@ -71,5 +72,15 @@ impl Trace for Table {
             key.visit(visitor);
             value.visit(visitor);
         });
+    }
+}
+
+unsafe impl PtrTag for Table {
+    fn is(x: u64) -> bool {
+        encoding::is_table(x)
+    }
+
+    fn tag(x: usize) -> u64 {
+        encoding::make_table(x as *mut u8)
     }
 }

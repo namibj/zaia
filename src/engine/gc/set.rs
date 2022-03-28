@@ -37,6 +37,7 @@ impl ObjectSet {
     pub fn remove(&mut self, handle: TaggedHandle) {
         if let hash_map::RawEntryMut::Occupied(entry) = self.entry_mut(handle) {
             entry.remove();
+            return;
         }
 
         unreachable!()
