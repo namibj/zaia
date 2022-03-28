@@ -274,8 +274,26 @@ mod tests {
         heap.insert(table1);
         heap.insert(table2);
 
-        let mut ctr = - 0;
+        let mut ctr = 0;
         heap.collect(|_| (), |_| ctr += 1);
         assert_eq!(ctr, 2);
+    }
+
+    #[test]
+    fn collect_mark_direct() {
+        let heap = Heap::new();
+        let table1 = Table::new(heap.clone());
+        let table2 = Table::new(heap.clone());
+        let table3 = Table::new(heap.clone());
+        let table4 = Table::new(heap.clone());
+
+        let handle1 = heap.insert(table1).tagged();
+        heap.insert(table2);
+        heap.insert(table3);
+        heap.insert(table4);
+
+        let mut ctr = 0;
+        heap.collect(|visitor| visitor.mark(handle1), |_| ctr += 1);
+        assert_eq!(ctr, 3);
     }
 }
