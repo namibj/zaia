@@ -266,7 +266,7 @@ mod tests {
     use super::super::value::Table;
 
     #[test]
-    fn collect_notrace() {
+    fn collect_no_trace() {
         let heap = Heap::new();
         let table1 = Table::new(heap.clone());
         let table2 = Table::new(heap.clone());
