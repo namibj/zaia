@@ -3,10 +3,10 @@
 use hashbrown::{hash_map, HashMap};
 
 use super::{
-    super::gc::{Heap, Trace, Visitor},
+    super::gc::{Heap, PtrTag, Trace, Visitor},
+    encoding,
     Value,
 };
-use super::{super::gc::PtrTag, encoding};
 
 pub struct Table {
     map: HashMap<Value, Value, (), Heap>,

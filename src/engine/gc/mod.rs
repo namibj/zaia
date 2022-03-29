@@ -262,8 +262,11 @@ impl Drop for HeapInternal {
 
 #[cfg(test)]
 mod tests {
-    use super::Heap;
-    use super::super::value::Table;
+    use super::{
+        super::value::{Table, Value},
+        Heap,
+    };
+    use crate::engine::gc::Trace;
 
     #[test]
     fn collect_no_trace() {
@@ -295,5 +298,47 @@ mod tests {
         let mut ctr = 0;
         heap.collect(|visitor| visitor.mark(handle1), |_| ctr += 1);
         assert_eq!(ctr, 3);
+    }
+
+    #[test]
+    fn collect_mark_indirect() {
+        let heap = Heap::new();
+        let table1 = Table::new(heap.clone());
+        let table2 = Table::new(heap.clone());
+        let table3 = Table::new(heap.clone());
+
+        let handle1 = heap.insert(table1);
+        let handle2 = heap.insert(table2);
+        let handle3 = heap.insert(table3);
+
+        let k1 = Value::from_int(3);
+        let k2 = Value::from_int(5);
+
+        let tab = unsafe { handle1.get_unchecked_mut() };
+        tab.insert(k1, Value::from_table(handle2));
+        tab.insert(k2, Value::from_table(handle3));
+
+        let mut ctr = 0;
+        macro_rules! collect {
+            () => {{
+                heap.collect(
+                    |visitor| {
+                        let handle = handle1.tagged();
+                        visitor.mark(handle);
+                        tab.visit(visitor);
+                    },
+                    |_| ctr += 1,
+                );
+            }};
+        }
+
+        collect!();
+        assert_eq!(ctr, 0);
+
+        tab.remove(k1);
+        tab.remove(k2);
+
+        collect!();
+        assert_eq!(ctr, 2);
     }
 }
