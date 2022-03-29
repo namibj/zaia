@@ -9,10 +9,10 @@ pub struct ByteString {
 }
 
 impl ByteString {
-    pub fn initialize_into(ptr: *mut Self, len: u32) {
-        unsafe {
-            (*ptr).len = len;
-        }
+    /// # Safety
+    /// - ptr must point to an uninitialized ByteString.
+    pub unsafe fn initialize_into(ptr: *mut Self, len: u32) {
+        (*ptr).len = len;
     }
 
     pub fn offset(&mut self, offset: usize) -> *mut u8 {

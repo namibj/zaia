@@ -35,6 +35,8 @@ impl Heap {
         self.internal.insert_string(bytes)
     }
 
+    /// # Safety
+    /// - Handle must point to a living instance of `T`.
     pub unsafe fn destroy(&self, handle: TaggedHandle) {
         self.internal.destroy(handle);
     }
