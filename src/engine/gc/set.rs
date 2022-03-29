@@ -43,7 +43,7 @@ impl ObjectSet {
         unreachable!()
     }
 
-    fn contains(&self, handle: TaggedHandle) -> bool {
+    pub fn contains(&self, handle: TaggedHandle) -> bool {
         let hash = handle.hash();
 
         self.set
