@@ -7,7 +7,7 @@ const OBJECTS_COUNT: u64 = 100000;
 fn criterion_benchmark(c: &mut Criterion) {
     let mut group = c.benchmark_group("parse");
     group.throughput(Throughput::Elements(OBJECTS_COUNT));
-    group.bench_function("sweep", |b| {
+    group.bench_function(format!("sweep {}", OBJECTS_COUNT), |b| {
         b.iter_batched(|| {
             let heap = Heap::new();
 
