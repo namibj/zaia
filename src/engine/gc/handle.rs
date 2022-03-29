@@ -128,9 +128,3 @@ impl cmp::PartialEq for TaggedHandle {
 }
 
 impl cmp::Eq for TaggedHandle {}
-
-impl hash::Hash for TaggedHandle {
-    fn hash<H: hash::Hasher>(&self, state: &mut H) {
-        self.tagged.hash(state);
-    }
-}
