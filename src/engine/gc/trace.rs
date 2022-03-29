@@ -22,10 +22,6 @@ impl Visitor {
         self.marked.insert(handle);
     }
 
-    pub fn run(&mut self, root: &dyn Trace) {
-        root.visit(self);
-    }
-
     pub fn unmarked<'a>(
         &'a mut self,
         objects: &ObjectSet,

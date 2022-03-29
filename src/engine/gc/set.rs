@@ -28,7 +28,7 @@ impl ObjectSet {
     pub fn insert(&mut self, handle: TaggedHandle) {
         if let hash_map::RawEntryMut::Vacant(entry) = self.entry_mut(handle) {
             let hash = handle.hash();
-            entry.insert_with_hasher(hash, handle, (), |handle| handle.value() as u64);
+            entry.insert_with_hasher(hash, handle, (), |handle| handle.hash());
         } else {
             unreachable!()
         }
@@ -37,6 +37,7 @@ impl ObjectSet {
     pub fn remove(&mut self, handle: TaggedHandle) {
         if let hash_map::RawEntryMut::Occupied(entry) = self.entry_mut(handle) {
             entry.remove();
+            return;
         }
 
         unreachable!()

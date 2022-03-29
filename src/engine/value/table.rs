@@ -3,7 +3,8 @@
 use hashbrown::{hash_map, HashMap};
 
 use super::{
-    super::gc::{Heap, Trace, Visitor},
+    super::gc::{Heap, PtrTag, Trace, Visitor},
+    encoding,
     Value,
 };
 
@@ -71,5 +72,15 @@ impl Trace for Table {
             key.visit(visitor);
             value.visit(visitor);
         });
+    }
+}
+
+unsafe impl PtrTag for Table {
+    fn is(x: u64) -> bool {
+        encoding::is_table(x)
+    }
+
+    fn tag(x: usize) -> u64 {
+        encoding::make_table(x as *mut u8)
     }
 }

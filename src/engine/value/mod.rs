@@ -112,9 +112,9 @@ impl Value {
         }
     }
 
-    pub fn from_table(x: *mut u8) -> Self {
+    pub fn from_table(x: Handle<Table>) -> Self {
         Value {
-            data: make_table(x),
+            data: make_table(x.as_ptr() as *mut u8),
         }
     }
 
