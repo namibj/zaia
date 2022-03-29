@@ -25,10 +25,14 @@ where
         Handle { ptr }
     }
 
+    /// # Safety
+    /// - Handle must point to a living instance of `T`.
     pub unsafe fn get_unchecked<'a>(self) -> &'a T {
         &*self.ptr
     }
 
+    /// # Safety
+    /// - Handle must point to a living instance of `T`.
     pub unsafe fn get_unchecked_mut<'a>(self) -> &'a mut T {
         &mut *self.ptr
     }
