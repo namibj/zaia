@@ -430,8 +430,9 @@ impl Value {
 
 impl Trace for Value {
     fn visit(&self, visitor: &mut Visitor) {
-        if is_ptr(self.data) {
-            let handle = TaggedHandle::new(self.data);
+        let handle = TaggedHandle::new(self.data);
+
+        if is_ptr(self.data) && !visitor.is_marked(handle) {
             visitor.mark(handle);
 
             if is_table(self.data) {

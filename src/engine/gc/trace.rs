@@ -30,6 +30,10 @@ impl Visitor {
         self.stale.iter().copied()
     }
 
+    pub fn is_marked(&self, handle: TaggedHandle) -> bool {
+        self.marked.contains(handle)
+    }
+
     pub fn reset(&mut self) {
         self.marked.clear();
         self.stale.clear();
