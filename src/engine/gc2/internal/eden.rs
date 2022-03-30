@@ -35,7 +35,7 @@ impl Eden {
         // Make sure we have enough space eden memory for this allocation
         let remaining = unsafe { self.cursor.sub(self.base as usize) as usize };
         if remaining < total_size {
-            todo!()
+            self.evacuate();
         }
 
         // Advance the eden cursor
@@ -48,5 +48,9 @@ impl Eden {
         // Compute the payload pointer by skipping past the header
         let payload = unsafe { alloc_start.add(mem::size_of::<usize>()) };
         payload
+    }
+
+    pub fn evacuate(&mut self) {
+        todo!()
     }
 }
