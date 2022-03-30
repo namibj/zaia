@@ -10,6 +10,7 @@ use deck::Deck;
 use pacer::Pacer;
 use std::time::Duration;
 use std::collections::HashSet;
+use std::alloc::Layout;
 
 const LARGE_OBJECT_THRESHOLD: usize = 2 * 1024;
 const MAX_PAUSE: Duration = Duration::from_millis(100);
@@ -19,7 +20,7 @@ pub struct InternalHeap {
     eden: Eden,
     deck: Deck,
     regions: LinkedList<Arena>,
-    large_objects: HashSet<*mut u8>,
+    large_objects: HashSet<(*mut u8, Layout)>,
 }
 
 impl InternalHeap {
