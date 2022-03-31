@@ -51,7 +51,6 @@ impl Pacer {
         let observed_evacuation_rate = bytes / elapsed.as_secs_f32();
         self.evacuation_rate = smoothed(self.evacuation_rate, observed_evacuation_rate);
 
-
         // Measure the amount of work that was required for this collection and
         // step the optimizer to produce a new initial eden size.
         let observed_evacuation_survivors = objects as f32 / survivors as f32;
@@ -65,7 +64,7 @@ impl Pacer {
         // Limit eden size to a proportion of the heap size which is generally more stable.
         // This is done to prevent the eden size from growing extremely large
         // in comparison to heap which may be unexpected.
-        let proportional = heap_size / 5;
+        let proportional = heap_size / 4;
         size = cmp::min(size, proportional);
 
         // Bound the eden size to a minimum and maximum.
