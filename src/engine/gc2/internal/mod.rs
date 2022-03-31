@@ -2,6 +2,7 @@ mod arena;
 mod eden;
 mod deck;
 mod pacer;
+mod optimizer;
 
 use arena::Arena;
 use eden::Eden;
