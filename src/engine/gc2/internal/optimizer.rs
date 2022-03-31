@@ -21,6 +21,11 @@ impl ConvexOptimizer {
         }
     }
 
+    /// Return the last recommended value of `x`.
+    pub fn x(&self) -> f32 {
+        self.x
+    }
+
     /// Step the optimizer forward by one iteration.
     /// Accepts the `y` value for the previous `x` value and yields a new `x` value.
     pub fn step(&mut self, y: f32) -> f32 {
