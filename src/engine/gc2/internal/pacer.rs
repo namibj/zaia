@@ -5,7 +5,7 @@ const EDEN_SIZE_MINIMUM: usize = 1024 * 16;
 const EDEN_SIZE_MAXIMUM: usize = 1024 * 1024 * 16;
 
 fn smoothed(current: f32, new: f32) -> f32 {
-    (current * 3.0 + new) / 4.0
+    (current * 2.0 + new) / 3.0
 }
 
 pub struct Pacer {
