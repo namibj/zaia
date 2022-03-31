@@ -17,8 +17,8 @@ pub struct Pacer {
     /// order to smooth out various extreme values caused by the environment.
     evacuation_rate: f32,
 
-    /// `evacuation_survivors` is the factor of the eden space that survived the last evacuation.
-    evacuation_survivors: f32,
+    /// `work` is an arbitrary measure of the relative work performed every evacuation.
+    work: f32,
 }
 
 impl Pacer {
@@ -26,7 +26,7 @@ impl Pacer {
         Self {
             max_pause: max_pause.as_secs_f32(),
             evacuation_rate: 0.0,
-            evacuation_survivors: 0.0,
+            work: 0.0,
         }
     }
 
@@ -39,20 +39,19 @@ impl Pacer {
         self.evacuation_rate = smoothed(self.evacuation_rate, observed_evacuation_rate);
         
         let observed_evacuation_survivors = objects as f32 / survivors as f32;
-        self.evacuation_survivors = smoothed(self.evacuation_survivors, observed_evacuation_survivors);
+        self.work = smoothed(self.work, observed_evacuation_survivors * bytes as f32);
     }
 
-    // Optimization notes:
-    //   - We want to optimize to minimize runtime
-    //   - Runtime is dependent on survivor rate and cache behaviour
-    //   - Cache behaviour improves with a smaller eden size
-    //   - Smaller eden sizes work best with workloads that discard objects quicker
-    //   - Increase eden size to lower survivor rate at the expense of cache performance
-    //   - We expect this to be an unknown convex function
-    //   - We can optimize for it with gradient descent
-    pub fn recommended_eden_size(&self, heap_size: usize) -> usize {
-        // The starting point we'll use is 90% of what we can process while hitting latency goals.
-        let mut size = (self.max_pause * self.evacuation_rate * 0.9) as usize;
+    /// `recommend_eden_size` recommends the next size of the eden region.
+    /// The algorithm attempts to adapts to runtime conditions of the existing system
+    /// by dynamically updaing internal tuning parameters based on previous collection metrics
+    /// to minimize the runtime of the next collection and hit latency goals.
+    pub fn recommended_eden_size(&mut self, heap_size: usize, eden_size: usize) -> usize {
+        let mut size = eden_size;
+
+        // Constrict size so that we always evacuate within the time limit.
+        let latency = (self.max_pause * self.evacuation_rate * 0.9) as usize;
+        size = cmp::min(size, latency);
 
         // Limit eden size to a proportion of the heap size which is generally more stable.
         // This is done to prevent the eden size from growing extremely large
