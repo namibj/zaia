@@ -42,12 +42,14 @@ impl Pacer {
         self.evacuation_survivors = smoothed(self.evacuation_survivors, observed_evacuation_survivors);
     }
 
-    // TODO: optimize after survivorship ratio
-    // TODO: optimize after total work done (copying etc)
-    // NOTE: we want to minimize the survivor ratio
-    // NOTE: we assume the evacuation rate remains fairly steady as the eden size changes
-    // NOTE: survivor ratio is a convex function of eden size that we need to optimize
-    // NOTE: gradient descent? other optimization techniques?
+    // Optimization notes:
+    //   - We want to optimize to minimize runtime
+    //   - Runtime is dependent on survivor rate and cache behaviour
+    //   - Cache behaviour improves with a smaller eden size
+    //   - Smaller eden sizes work best with workloads that discard objects quicker
+    //   - Increase eden size to lower survivor rate at the expense of cache performance
+    //   - We expect this to be an unknown convex function
+    //   - We can optimize for it with gradient descent
     pub fn recommended_eden_size(&self, heap_size: usize) -> usize {
         // The starting point we'll use is 90% of what we can process while hitting latency goals.
         let mut size = (self.max_pause * self.evacuation_rate * 0.9) as usize;
