@@ -24,18 +24,22 @@ impl ConvexOptimizer {
         }
     }
 
+    /// Calcuate the absolute change in the function input since the last step.
     fn x_diff(&self) -> f32 {
-        self.x - self.prev_x + 1e-8
+        self.x - self.prev_x
     }
 
+    /// Approximate the derivative using the derivative definition.
     fn gradient(&self, y: f32) -> f32 {
-        (y - self.prev_y) / self.x_diff()
+        (y - self.prev_y) / (self.x_diff() + 1e-8)
     }
 
+    /// Calculate an absolute base change based on the approximate gradient.
     fn change(&self, y: f32) -> f32 {
         LEARNING_RATE * self.gradient(y)
     }
 
+    /// Accelerate the base change using previous momentum.
     fn accelerated_change(&self, y: f32) -> f32 {
         self.change(y) + MOMENTUM * self.prev_change
     }
@@ -51,15 +55,12 @@ impl ConvexOptimizer {
             return self.x;
         }
 
-        // Update the guess with the change.
-        let new_x = self.x - change;
-
-        // Update state
+        // Update internal state with new data.
         self.prev_x = self.x;
-        self.x = new_x;
+        self.x -= change;
         self.prev_y = y;
         self.prev_change = change;
 
-        new_x
+        self.x
     }
 }
