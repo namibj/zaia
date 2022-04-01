@@ -3,7 +3,6 @@ use std::cmp;
 use super::optimizer::ConvexOptimizer;
 
 const EDEN_SIZE_MINIMUM: usize = 1024 * 16;
-const EDEN_SIZE_MAXIMUM: usize = 1024 * 1024 * 16;
 const EDEN_SIZE_STABILITY_THRESHOLD: f32 = 1024.0;
 const EDEN_SIZE_ROUNDING: usize = 1024;
 
@@ -67,9 +66,8 @@ impl Pacer {
         let proportional = heap_size / 4;
         size = cmp::min(size, proportional);
 
-        // Bound the eden size to a minimum and maximum.
+        // Bound the eden size to a minimum.
         size = cmp::max(size, EDEN_SIZE_MINIMUM);
-        size = cmp::min(size, EDEN_SIZE_MAXIMUM);
 
         // Round the eden size to prevent tiny fluctuations.
         size as usize / EDEN_SIZE_ROUNDING * EDEN_SIZE_ROUNDING
