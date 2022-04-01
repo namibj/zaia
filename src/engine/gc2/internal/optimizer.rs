@@ -48,13 +48,15 @@ impl ConvexOptimizer {
     /// Step the optimizer forward by one iteration.
     /// Accepts the `y` value for the previous `x` value and yields a new `x`-value.
     pub fn step(&mut self, y: f32) -> f32 {
+        // Compute the new momentum-accelerated change.
+        let change = self.accelerated_change(y);
+        
         // Early-exit if the change is too small.
-        if self.change(y) < self.threshold {
+        if change.abs() < self.threshold {
             return self.x;
         }
 
-        // Accelerate the change by the momentum and calculate the new x-value.
-        let change = self.accelerated_change(y);
+        // Update the guess with the change.
         let new_x = self.x - change;
 
         // Update state
