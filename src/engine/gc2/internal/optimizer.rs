@@ -1,5 +1,5 @@
-const LEARNING_RATE: f32 = 0.3;
-const MOMENTUM: f32 = 0.3;
+const LEARNING_RATE: f32 = 0.1;
+const MOMENTUM: f32 = 0.8;
 
 /// [`ConvexOptimizer`] is an optimizer than finds a local minimum for an
 /// unknown convex function using an adaptive gradient descent algorithm.
