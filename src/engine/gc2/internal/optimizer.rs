@@ -2,13 +2,13 @@ const LEARNING_RATE: f32 = 0.3;
 const MOMENTUM: f32 = 0.3;
 
 /// [`ConvexOptimizer`] is an optimizer than finds a local minimum for an
-/// unknown convex function using a momentum-adaptive gradient descent algorithm.
+/// unknown convex function using an adaptive gradient descent algorithm.
 pub struct ConvexOptimizer {
     x: f32,
-    px: f32,
-    py: f32,
+    prev_x: f32,
+    prev_y: f32,
+    prev_change: f32,
     threshold: f32,
-    pc: f32,
 }
 
 impl ConvexOptimizer {
@@ -17,10 +17,10 @@ impl ConvexOptimizer {
     pub fn new(x: f32, threshold: f32) -> Self {
         Self {
             x,
-            px: 0.0,
-            py: 0.0,
+            prev_x: 0.0,
+            prev_y: 0.0,
+            prev_change: 0.0,
             threshold,
-            pc: 0.0,
         }
     }
 
@@ -29,25 +29,41 @@ impl ConvexOptimizer {
         self.x
     }
 
+    fn x_diff(&self) -> f32 {
+        self.x - self.prev_x + 1e-8
+    }
+
+    fn gradient(&self, y: f32) -> f32 {
+        (y - self.prev_y) / self.x_diff()
+    }
+
+    fn change(&self, y: f32) -> f32 {
+        LEARNING_RATE * self.gradient(y)
+    }
+
+    fn accelerated_change(&self, y: f32) -> f32 {
+        self.change(y) + MOMENTUM * self.prev_change
+    }
+
     /// Step the optimizer forward by one iteration.
     /// Accepts the `y` value for the previous `x` value and yields a new `x`
     /// value.
     pub fn step(&mut self, y: f32) -> f32 {
-        let mut xd = self.x - self.px;
-        if xd.abs() < 1e-6 {
-            xd = 1e-6;
-        }
-
-        let gradient = (y - self.py) / xd;
-        let change = LEARNING_RATE * gradient;
-        if change.abs() < self.threshold {
+        // Early-exit if the change is too small.
+        if self.change(y) < self.threshold {
             return self.x;
         }
 
-        self.px = self.x;
-        self.py = y;
-        self.x -= change + MOMENTUM * self.pc;
-        self.pc = change;
-        self.x
+        // Accelerate the change by the momentum and calculate the new x-value.
+        let change = self.accelerated_change(y);
+        let new_x = self.x - change;
+        
+        // Update state
+        self.prev_x = self.x;
+        self.x = new_x;
+        self.prev_y = y;
+        self.prev_change = change;
+
+        new_x
     }
 }
