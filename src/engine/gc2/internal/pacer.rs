@@ -1,5 +1,5 @@
-use std::time::Duration;
-use std::cmp;
+use std::{cmp, time::Duration};
+
 use super::optimizer::ConvexOptimizer;
 
 const EDEN_SIZE_MINIMUM: usize = 1024 * 16;
@@ -11,15 +11,18 @@ fn smoothed(current: f32, new: f32) -> f32 {
 }
 
 pub struct Pacer {
-    /// `max_pause` is the maximum GC pause time that we should allow in seconds.
+    /// `max_pause` is the maximum GC pause time that we should allow in
+    /// seconds.
     max_pause: f32,
 
-    /// `evacuation_rate` is the evacuation speed from the eden region in bytes per second.
-    /// This is stored in the form of an exponential moving average in
-    /// order to smooth out various extreme values caused by the environment.
+    /// `evacuation_rate` is the evacuation speed from the eden region in bytes
+    /// per second. This is stored in the form of an exponential moving
+    /// average in order to smooth out various extreme values caused by the
+    /// environment.
     evacuation_rate: f32,
 
-    /// `eden_optimizer` is a convex optimizer used to find the optimal eden size.
+    /// `eden_optimizer` is a convex optimizer used to find the optimal eden
+    /// size.
     eden_optimizer: ConvexOptimizer,
 }
 
@@ -28,7 +31,10 @@ impl Pacer {
         Self {
             max_pause: max_pause.as_secs_f32(),
             evacuation_rate: 0.0,
-            eden_optimizer: ConvexOptimizer::new(EDEN_SIZE_MINIMUM as f32, EDEN_SIZE_STABILITY_THRESHOLD),
+            eden_optimizer: ConvexOptimizer::new(
+                EDEN_SIZE_MINIMUM as f32,
+                EDEN_SIZE_STABILITY_THRESHOLD,
+            ),
         }
     }
 
@@ -36,17 +42,24 @@ impl Pacer {
         self.max_pause = max_pause.as_secs_f32();
     }
 
-    /// `step_eden` collects eden evacuation metrics and recommends the new size of the eden region.
-    /// The algorithm attempts to adapts to runtime conditions of the existing system
-    /// by dynamically modifying internal tuning parameters based on previous collection metrics
-    /// to minimize the runtime of the next collection and hit latency goals.
-    pub fn step_eden(&mut self, heap_size: usize, elapsed: Duration, objects: usize, survivors: usize) -> usize {
+    /// `step_eden` collects eden evacuation metrics and recommends the new size
+    /// of the eden region. The algorithm attempts to adapts to runtime
+    /// conditions of the existing system by dynamically modifying internal
+    /// tuning parameters based on previous collection metrics to minimize
+    /// the runtime of the next collection and hit latency goals.
+    pub fn step_eden(
+        &mut self,
+        heap_size: usize,
+        elapsed: Duration,
+        objects: usize,
+        survivors: usize,
+    ) -> usize {
         // Fetch the previous recommended eden size.
         let bytes = self.eden_optimizer.x();
 
         // Calculate the evacauation rate. This is smoothed to prevent
         // fluctuations in the metrics from throwing off the maximum eden size
-        // which could potentially cause us to miss latency goals during the next cycle. 
+        // which could potentially cause us to miss latency goals during the next cycle.
         let observed_evacuation_rate = bytes / elapsed.as_secs_f32();
         self.evacuation_rate = smoothed(self.evacuation_rate, observed_evacuation_rate);
 
@@ -60,9 +73,9 @@ impl Pacer {
         let latency = (self.max_pause * self.evacuation_rate * 0.9) as usize;
         size = cmp::min(size, latency);
 
-        // Limit eden size to a proportion of the heap size which is generally more stable.
-        // This is done to prevent the eden size from growing extremely large
-        // in comparison to heap which may be unexpected.
+        // Limit eden size to a proportion of the heap size which is generally more
+        // stable. This is done to prevent the eden size from growing extremely
+        // large in comparison to heap which may be unexpected.
         let proportional = heap_size / 4;
         size = cmp::min(size, proportional);
 

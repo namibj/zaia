@@ -1,17 +1,19 @@
 mod arena;
-mod eden;
 mod deck;
-mod pacer;
+mod eden;
 mod optimizer;
+mod pacer;
+
+use std::{
+    alloc::Layout,
+    collections::{HashSet, LinkedList},
+    time::Duration,
+};
 
 use arena::Arena;
-use eden::Eden;
-use std::collections::LinkedList;
 use deck::Deck;
+use eden::Eden;
 use pacer::Pacer;
-use std::time::Duration;
-use std::collections::HashSet;
-use std::alloc::Layout;
 
 const LARGE_OBJECT_THRESHOLD: usize = 2 * 1024;
 const MAX_PAUSE: Duration = Duration::from_millis(100);

@@ -1,6 +1,4 @@
-pub struct Arena {
-
-}
+pub struct Arena {}
 
 impl Arena {
     pub fn new() -> Self {

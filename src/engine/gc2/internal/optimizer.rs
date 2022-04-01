@@ -1,17 +1,17 @@
 const LEARNING_RATE: f32 = 0.3;
 
-/// [`ConvexOptimizer`] is an optimizer than finds a local minimum for an unknown
-/// convex function using a gradient descent algorithm.
+/// [`ConvexOptimizer`] is an optimizer than finds a local minimum for an
+/// unknown convex function using a gradient descent algorithm.
 pub struct ConvexOptimizer {
     x: f32,
     px: f32,
     py: f32,
-    threshold: f32
+    threshold: f32,
 }
 
 impl ConvexOptimizer {
-    /// Create a new optimizer with an initial guess of `x` and a threshold of when to stop
-    /// optimization based on the change of `x`.
+    /// Create a new optimizer with an initial guess of `x` and a threshold of
+    /// when to stop optimization based on the change of `x`.
     pub fn new(x: f32, threshold: f32) -> Self {
         Self {
             x,
@@ -27,7 +27,8 @@ impl ConvexOptimizer {
     }
 
     /// Step the optimizer forward by one iteration.
-    /// Accepts the `y` value for the previous `x` value and yields a new `x` value.
+    /// Accepts the `y` value for the previous `x` value and yields a new `x`
+    /// value.
     pub fn step(&mut self, y: f32) -> f32 {
         let mut xd = self.x - self.px;
         if xd.abs() < 1e-6 {

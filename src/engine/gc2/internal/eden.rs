@@ -1,12 +1,12 @@
-use std::alloc::{Layout, alloc};
-use std::mem;
+use std::{
+    alloc::{alloc, Layout},
+    mem,
+};
 
 const EDEN_INITIAL_SIZE: usize = 1024 * 64;
 
 fn layout(size: usize) -> Layout {
-    unsafe {
-        Layout::from_size_align_unchecked(size, 1)
-    }
+    unsafe { Layout::from_size_align_unchecked(size, 1) }
 }
 
 pub struct Eden {
@@ -40,14 +40,13 @@ impl Eden {
 
         // Advance the eden cursor
         self.cursor = unsafe { self.cursor.add(total_size) };
-        
+
         // Write the size of the allocation into the header
         let header = alloc_start as *mut usize;
         unsafe { *header = size };
 
         // Compute the payload pointer by skipping past the header
-        let payload = unsafe { alloc_start.add(mem::size_of::<usize>()) };
-        payload
+        unsafe { alloc_start.add(mem::size_of::<usize>()) }
     }
 
     pub fn evacuate(&mut self) {
