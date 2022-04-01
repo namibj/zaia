@@ -24,11 +24,6 @@ impl ConvexOptimizer {
         }
     }
 
-    /// Return the last recommended value of `x`.
-    pub fn x(&self) -> f32 {
-        self.x
-    }
-
     fn x_diff(&self) -> f32 {
         self.x - self.prev_x + 1e-8
     }
@@ -50,7 +45,7 @@ impl ConvexOptimizer {
     pub fn step(&mut self, y: f32) -> f32 {
         // Compute the new momentum-accelerated change.
         let change = self.accelerated_change(y);
-        
+
         // Early-exit if the change is too small.
         if change.abs() < self.threshold {
             return self.x;

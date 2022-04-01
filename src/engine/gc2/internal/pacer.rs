@@ -49,24 +49,22 @@ impl Pacer {
     /// the runtime of the next collection and hit latency goals.
     pub fn step_eden(
         &mut self,
+        eden_size: usize,
         heap_size: usize,
         elapsed: Duration,
         objects: usize,
         survivors: usize,
     ) -> usize {
-        // Fetch the previous recommended eden size.
-        let bytes = self.eden_optimizer.x();
-
         // Calculate the evacauation rate. This is smoothed to prevent
         // fluctuations in the metrics from throwing off the maximum eden size
         // which could potentially cause us to miss latency goals during the next cycle.
-        let observed_evacuation_rate = bytes / elapsed.as_secs_f32();
+        let observed_evacuation_rate = eden_size as f32 / elapsed.as_secs_f32();
         self.evacuation_rate = smoothed(self.evacuation_rate, observed_evacuation_rate);
 
         // Measure the amount of work that was required for this collection and
         // step the optimizer to produce a new initial eden size.
-        let observed_evacuation_survivors = objects as f32 / survivors as f32;
-        let evacuation_work = observed_evacuation_survivors * bytes;
+        let observed_evacuation_survivors = survivors as f32 / objects as f32;
+        let evacuation_work = observed_evacuation_survivors * eden_size as f32;
         let mut size = self.eden_optimizer.step(evacuation_work) as usize;
 
         // Constrict size so that we always evacuate within the time limit.
