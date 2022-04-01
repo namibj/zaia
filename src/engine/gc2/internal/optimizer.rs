@@ -24,7 +24,7 @@ impl ConvexOptimizer {
         }
     }
 
-    /// Calcuate the absolute change in the function input since the last step.
+    /// Calculate the absolute change in the function input since the last step.
     fn x_diff(&self) -> f32 {
         self.x - self.prev_x
     }
