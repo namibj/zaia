@@ -1,12 +1,14 @@
 const LEARNING_RATE: f32 = 0.3;
+const MOMENTUM: f32 = 0.3;
 
 /// [`ConvexOptimizer`] is an optimizer than finds a local minimum for an
-/// unknown convex function using a gradient descent algorithm.
+/// unknown convex function using a momentum-adaptive gradient descent algorithm.
 pub struct ConvexOptimizer {
     x: f32,
     px: f32,
     py: f32,
     threshold: f32,
+    pc: f32,
 }
 
 impl ConvexOptimizer {
@@ -18,6 +20,7 @@ impl ConvexOptimizer {
             px: 0.0,
             py: 0.0,
             threshold,
+            pc: 0.0,
         }
     }
 
@@ -36,7 +39,7 @@ impl ConvexOptimizer {
         }
 
         let gradient = (y - self.py) / xd;
-        let change = LEARNING_RATE * gradient;
+        let change = LEARNING_RATE * gradient + MOMENTUM * self.pc;
         if change.abs() < self.threshold {
             return self.x;
         }
@@ -44,6 +47,7 @@ impl ConvexOptimizer {
         self.px = self.x;
         self.py = y;
         self.x -= change;
+        self.pc = change;
         self.x
     }
 }
