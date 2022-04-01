@@ -39,14 +39,14 @@ impl ConvexOptimizer {
         }
 
         let gradient = (y - self.py) / xd;
-        let change = LEARNING_RATE * gradient + MOMENTUM * self.pc;
+        let change = LEARNING_RATE * gradient;
         if change.abs() < self.threshold {
             return self.x;
         }
 
         self.px = self.x;
         self.py = y;
-        self.x -= change;
+        self.x -= change + MOMENTUM * self.pc;
         self.pc = change;
         self.x
     }
